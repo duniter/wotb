@@ -3,6 +3,10 @@
   "version": "0.0.1",
   "description": "C binding for Web of Trust fast tools",
   "main": "index.js",
+  "engines": {
+    "node": ">=4.2.0",
+    "npm": ">=2.11"
+  },
   "scripts": {
     "test": "node_modules/mocha/bin/mocha tests/",
     "configure": "node-gyp configure",
@@ -15,6 +19,6 @@
   "devDependencies": {
     "mocha": "2.2.5",
     "node-gyp": "1.0.3",
-    "should": "^8.1.1"
+    "should": "8.1.1"
   }
 }
