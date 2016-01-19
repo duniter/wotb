@@ -10,4 +10,5 @@ module.exports = new function() {
   this.setEnabled = binding.setEnabled;
   this.existsLink = binding.existsLink;
   this.addLink = binding.addLink;
+  this.removeLink = binding.removeLink;
 };

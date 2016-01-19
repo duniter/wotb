@@ -74,6 +74,17 @@ describe('Basic operations', function() {
     should.equal(addon.existsLink(2, 1, TEST_FILE_PATH), false);
   });
 
+  it('should be able to remove some links', function() {
+    should.equal(addon.removeLink(4, 0, TEST_FILE_PATH), 2);
+  });
+
+  it('should exist less links', function() {
+    should.equal(addon.existsLink(2, 0, TEST_FILE_PATH), true);
+    should.equal(addon.existsLink(4, 0, TEST_FILE_PATH), false);
+    should.equal(addon.existsLink(5, 0, TEST_FILE_PATH), true);
+    should.equal(addon.existsLink(2, 1, TEST_FILE_PATH), false);
+  });
+
   //it('should success on verify', function() {
   //  let nbMembers = 1000 * 1000; // 1 million
   //  let nbCerts = 16; // 16 per member

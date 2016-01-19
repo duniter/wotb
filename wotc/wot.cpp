@@ -13,9 +13,14 @@ namespace libwot {
     using namespace std::chrono;
     using namespace libwot;
 
+    int32_t* pointerOfCert(Node *node, int32_t number) {
+        int32_t* end = node->links + node->nbLinks;
+        return find(node->links, end, number);
+    }
+
     bool hasCert(Node *node, int32_t number) {
-        int32_t *end = node->links + node->nbLinks;
-        int32_t *result = find(node->links, end, number);
+        int32_t* end = node->links + node->nbLinks;
+        int32_t* result = pointerOfCert(node, number);
         return result != end;
     }
 
@@ -263,6 +268,33 @@ namespace libwot {
             }
             newCerts[node->nbLinks] = from;
             node->nbLinks++;
+            delete[] node->links;
+            node->links = newCerts;
+        }
+        writeWoT(f, wot);
+        int32_t linksCount = node->nbLinks;
+        freeWoT(wot);
+        return linksCount;
+    }
+
+    int32_t removeLink(int32_t from, int32_t to, string f) {
+        WebOfTrust* wot = readWoT(f);
+        Node* node = &wot->nodes[to];
+        int32_t* index = pointerOfCert(node, from);
+        int32_t* end = node->links + node->nbLinks;
+        if (index != end) {
+            // Remove only if not exists
+            int32_t* newCerts = new int32_t[node->nbLinks - 1];
+            bool found = false;
+            for (int i = 0; i < node->nbLinks; ++i) {
+                if (!found && &node->links[i] == index) {
+                    found = true;
+                }
+                if (&node->links[i] != index) {
+                    newCerts[!found ? i : i - 1] = node->links[i];
+                }
+            }
+            node->nbLinks--;
             delete[] node->links;
             node->links = newCerts;
         }

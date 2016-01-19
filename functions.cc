@@ -95,3 +95,12 @@ NAN_METHOD(addLink) {
   string file = string(*fileParam);
   info.GetReturnValue().Set(New<Number>(libwot::addLink(from, to, file)));
 }
+
+NAN_METHOD(removeLink) {
+  int32_t from = Nan::To<int32_t>(info[0]).FromJust();
+  int32_t to = Nan::To<int32_t>(info[1]).FromJust();
+  v8::Local<v8::String> fileJSString = Nan::To<v8::String>(info[2]).ToLocalChecked();
+  v8::String::Utf8Value fileParam(fileJSString);
+  string file = string(*fileParam);
+  info.GetReturnValue().Set(New<Number>(libwot::removeLink(from, to, file)));
+}

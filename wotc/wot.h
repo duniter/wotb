@@ -67,6 +67,11 @@ namespace libwot {
      */
     int32_t addLink(int32_t from, int32_t to, string f);
 
+    /**
+     * Remove a link of a member and return how many he now has.
+     */
+    int32_t removeLink(int32_t from, int32_t to, string f);
+
 }
 
 #endif

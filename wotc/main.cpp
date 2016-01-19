@@ -51,6 +51,9 @@ int main() {
     addLink(10, 0, EXPORT_FILE);
     addLink(43, 2, EXPORT_FILE);
     addLink(46, 2, EXPORT_FILE);
+    removeLink(46, 2, EXPORT_FILE);
+    removeLink(46, 2, EXPORT_FILE);
+    removeLink(43, 2, EXPORT_FILE);
     wot2 = readWoT(EXPORT_FILE);
 
     showTable(wot2);
