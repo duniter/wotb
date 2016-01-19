@@ -13,9 +13,8 @@ namespace libwot {
     using namespace std::chrono;
     using namespace libwot;
 
-    bool hasCert(Node *node, int32_t number, int32_t sizeOfArray) {
-        int32_t *end = node->links + sizeOfArray;
-        // find the value 0:
+    bool hasCert(Node *node, int32_t number) {
+        int32_t *end = node->links + node->nbLinks;
         int32_t *result = find(node->links, end, number);
         return result != end;
     }
@@ -25,7 +24,7 @@ namespace libwot {
         cout << "[" << setw(sprintf(s, "%d", wot->nbMembers - 1)) << right << "M" << "] [E] -> " << "Links" <<
         endl;
         for (int32_t i = 0; i < wot->nbMembers; i++) {
-            cout << "[" << setw(sprintf(s, "%d", wot->nbMembers - 1)) << right << i << "] [" << wot->nodes[i].enabled << "] -> ";
+            cout << "[" << setw(sprintf(s, "%d", wot->nbMembers - 1)) << right << i << "] [" << wot->nodes[i].enabled << "] [" << wot->nodes[i].nbLinks << "] -> ";
             for (int32_t j = 0; j < wot->nodes[i].nbLinks; j++) {
                 cout << setw(sprintf(s, "%d", wot->nbMembers)) << right << wot->nodes[i].links[j] << " | ";
             }
@@ -110,7 +109,7 @@ namespace libwot {
                 do {
                     r = ((double) rand() / (RAND_MAX));
                     randMember = (int32_t) lrint(r * (nbMembers - 1));
-                    isNotValid = randMember == i && hasCert(&wot->nodes[i], randMember, maxCertStock);
+                    isNotValid = randMember == i && hasCert(&wot->nodes[i], randMember);
                 }
                 while (isNotValid);
                 wot->nodes[i].links[j] = randMember;
@@ -207,7 +206,7 @@ namespace libwot {
 
         // Create a new Node
         Node* node = new Node;
-        node->nbLinks = 2;
+        node->nbLinks = 0;
         node->links = new int32_t[0];
 
         // Write new node
@@ -244,6 +243,33 @@ namespace libwot {
         writeWoT(f, wot);
         freeWoT(wot);
         return enabled;
+    }
+
+    bool existsLink(int32_t from, int32_t to, string f) {
+        WebOfTrust* wot = readWoT(f);
+        bool exists = hasCert(&wot->nodes[to], from);
+        freeWoT(wot);
+        return exists;
+    }
+
+    int32_t addLink(int32_t from, int32_t to, string f) {
+        WebOfTrust* wot = readWoT(f);
+        Node* node = &wot->nodes[to];
+        if (!hasCert(node, from)) {
+            // Add only if not exists already
+            int32_t* newCerts = new int32_t[node->nbLinks + 1];
+            for (int i = 0; i < node->nbLinks; ++i) {
+                newCerts[i] = node->links[i];
+            }
+            newCerts[node->nbLinks] = from;
+            node->nbLinks++;
+            delete[] node->links;
+            node->links = newCerts;
+        }
+        writeWoT(f, wot);
+        int32_t linksCount = node->nbLinks;
+        freeWoT(wot);
+        return linksCount;
     }
 
 }

@@ -8,4 +8,6 @@ module.exports = new function() {
   this.addNode = binding.addNode;
   this.isEnabled = binding.isEnabled;
   this.setEnabled = binding.setEnabled;
+  this.existsLink = binding.existsLink;
+  this.addLink = binding.addLink;
 };

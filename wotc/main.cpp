@@ -44,6 +44,17 @@ int main() {
 
     showTable(wot2);
 
+    for (int32_t i = 1; i < nbMembers; i++) {
+        cout << "Link from 0 to " << i << " exists: " << existsLink(0, i, EXPORT_FILE) << endl;
+    }
+    freeWoT(wot2);
+    addLink(10, 0, EXPORT_FILE);
+    addLink(43, 2, EXPORT_FILE);
+    addLink(46, 2, EXPORT_FILE);
+    wot2 = readWoT(EXPORT_FILE);
+
+    showTable(wot2);
+
     // Free
     freeWoT(wot);
     freeWoT(wot2);

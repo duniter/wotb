@@ -9,7 +9,7 @@ namespace libwot {
 
     using namespace std::chrono;
 
-    bool hasCert(Node *node, int32_t number, int32_t sizeOfArray);
+    bool hasCert(Node *node, int32_t number);
 
     void showTable(WebOfTrust *wot);
 
@@ -56,6 +56,16 @@ namespace libwot {
      * Disable a node and return its new enabled state.
      */
     bool setEnabled(bool enabled, int32_t member, string f);
+
+    /**
+     * Check wether a link exists from member 1 to member 2
+     */
+    bool existsLink(int32_t from, int32_t to, string f);
+
+    /**
+     * Add a link to a member and return how many he now has.
+     */
+    int32_t addLink(int32_t from, int32_t to, string f);
 
 }
 

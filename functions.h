@@ -6,3 +6,5 @@ NAN_METHOD(getWoTSize);
 NAN_METHOD(addNode);
 NAN_METHOD(isEnabled);
 NAN_METHOD(setEnabled);
+NAN_METHOD(existsLink);
+NAN_METHOD(addLink);

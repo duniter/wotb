@@ -7,7 +7,7 @@ var fs = require('fs');
 
 const TEST_FILE_PATH = path.join(__dirname, 'wot.bin');
 
-describe('Crypto', function() {
+describe('Basic operations', function() {
 
   before(() => {
     if (fs.existsSync(TEST_FILE_PATH)) {
@@ -48,11 +48,30 @@ describe('Crypto', function() {
     should.equal(addon.setEnabled(true, 1, TEST_FILE_PATH), true);
   });
 
-  it('first 3 nodes should then be disabled', function() {
+  it('nodes 0 and 2 should be disabled', function() {
     should.equal(addon.isEnabled(0, TEST_FILE_PATH), false);
     should.equal(addon.isEnabled(1, TEST_FILE_PATH), true);
     should.equal(addon.isEnabled(2, TEST_FILE_PATH), false);
     should.equal(addon.isEnabled(3, TEST_FILE_PATH), true);
+  });
+
+  it('should not exist a link from 2 to 0', function() {
+    should.equal(addon.existsLink(2, 0, TEST_FILE_PATH), false);
+  });
+
+  it('should be able to add some links', function() {
+    should.equal(addon.addLink(2, 0, TEST_FILE_PATH), 1);
+    should.equal(addon.addLink(4, 0, TEST_FILE_PATH), 2);
+    should.equal(addon.addLink(4, 0, TEST_FILE_PATH), 2);
+    should.equal(addon.addLink(4, 0, TEST_FILE_PATH), 2);
+    should.equal(addon.addLink(5, 0, TEST_FILE_PATH), 3);
+  });
+
+  it('should exist new links', function() {
+    should.equal(addon.existsLink(2, 0, TEST_FILE_PATH), true);
+    should.equal(addon.existsLink(4, 0, TEST_FILE_PATH), true);
+    should.equal(addon.existsLink(5, 0, TEST_FILE_PATH), true);
+    should.equal(addon.existsLink(2, 1, TEST_FILE_PATH), false);
   });
 
   //it('should success on verify', function() {
