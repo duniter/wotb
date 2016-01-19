@@ -5,9 +5,7 @@
       "sources": [
         "wotb.cc",
         "functions.cc",
-        "wot_struct.h",
-        "wot.h",
-        "wot.cpp"],
+        "wotc/wot.cpp"],
       "include_dirs" : [
          "node_modules/nan"
       ]

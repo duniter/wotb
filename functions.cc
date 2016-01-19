@@ -1,6 +1,6 @@
 #include <node.h>
 #include <nan.h>
-#include "wot.h"
+#include "wotc/wot.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <tgmath.h>

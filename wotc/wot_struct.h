@@ -6,8 +6,6 @@ namespace libwot {
 
     using namespace std;
 
-    const bool DISPLAY_DURATIONS = false;
-
     struct Node {
 
         int32_t nbLinks;
