@@ -34,9 +34,26 @@ describe('Crypto', function() {
     should.equal(addon.getWoTSize(TEST_FILE_PATH), 2 + 10);
   });
 
-  //it('should give number 1 if we add a node', function() {
-  //  should.equal(addon.addNode(TEST_FILE_PATH), 1);
-  //});
+  it('first 4 nodes should be enabled', function() {
+    should.equal(addon.isEnabled(0, TEST_FILE_PATH), true);
+    should.equal(addon.isEnabled(1, TEST_FILE_PATH), true);
+    should.equal(addon.isEnabled(2, TEST_FILE_PATH), true);
+    should.equal(addon.isEnabled(3, TEST_FILE_PATH), true);
+  });
+
+  it('should be able to disable some nodes', function() {
+    should.equal(addon.setEnabled(false, 0, TEST_FILE_PATH), false);
+    should.equal(addon.setEnabled(false, 1, TEST_FILE_PATH), false);
+    should.equal(addon.setEnabled(false, 2, TEST_FILE_PATH), false);
+    should.equal(addon.setEnabled(true, 1, TEST_FILE_PATH), true);
+  });
+
+  it('first 3 nodes should then be disabled', function() {
+    should.equal(addon.isEnabled(0, TEST_FILE_PATH), false);
+    should.equal(addon.isEnabled(1, TEST_FILE_PATH), true);
+    should.equal(addon.isEnabled(2, TEST_FILE_PATH), false);
+    should.equal(addon.isEnabled(3, TEST_FILE_PATH), true);
+  });
 
   //it('should success on verify', function() {
   //  let nbMembers = 1000 * 1000; // 1 million
@@ -46,10 +63,10 @@ describe('Crypto', function() {
   //  should.equal(addon.verify(nbMembers, nbCerts, TEST_FILE_PATH), 8);
   //});
 
-  //after(() => {
-  //  if (fs.existsSync(TEST_FILE_PATH)) {
-  //    fs.unlinkSync(TEST_FILE_PATH);
-  //  }
-  //  return Promise.resolve();
-  //});
+  after(() => {
+    if (fs.existsSync(TEST_FILE_PATH)) {
+      fs.unlinkSync(TEST_FILE_PATH);
+    }
+    return Promise.resolve();
+  });
 });

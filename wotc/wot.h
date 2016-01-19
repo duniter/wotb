@@ -37,9 +37,25 @@ namespace libwot {
 
     // =========== FUNCTIONAL ==============
 
+    /**
+     * Get the number of members in the WoT. Look in the file to know it.
+     */
     int32_t getWoTSize(string f);
 
+    /**
+     * Add a new member to the WoT, enabled but without any link.
+     */
     int32_t addNode(string f);
+
+    /**
+     * Check wether a member is enabled or not.
+     */
+    bool isEnabled(int32_t member, string f);
+
+    /**
+     * Disable a node and return its new enabled state.
+     */
+    bool setEnabled(bool enabled, int32_t member, string f);
 
 }
 

@@ -22,10 +22,10 @@ namespace libwot {
 
     void showTable(WebOfTrust *wot) {
         char s[32];
-        cout << "[" << setw(sprintf(s, "%d", wot->nbMembers - 1)) << right << "M" << "] -> " << "Certifications" <<
+        cout << "[" << setw(sprintf(s, "%d", wot->nbMembers - 1)) << right << "M" << "] [E] -> " << "Links" <<
         endl;
         for (int32_t i = 0; i < wot->nbMembers; i++) {
-            cout << "[" << setw(sprintf(s, "%d", wot->nbMembers - 1)) << right << i << "]" << " -> ";
+            cout << "[" << setw(sprintf(s, "%d", wot->nbMembers - 1)) << right << i << "] [" << wot->nodes[i].enabled << "] -> ";
             for (int32_t j = 0; j < wot->nodes[i].nbLinks; j++) {
                 cout << setw(sprintf(s, "%d", wot->nbMembers)) << right << wot->nodes[i].links[j] << " | ";
             }
@@ -100,6 +100,7 @@ namespace libwot {
         wot->nbMembers = nbMembers;
         wot->nodes = new Node[nbMembers];
         for (int32_t i = 0; i < nbMembers; i++) {
+            wot->nodes[i].enabled = true;
             wot->nodes[i].nbLinks = maxCertStock;
             wot->nodes[i].links = new int32_t[maxCertStock];
             for (int32_t j = 0; j < maxCertStock; j++) {
@@ -131,6 +132,7 @@ namespace libwot {
 
     void writeNode(FILE *pFile, Node *node) {
         fwrite(&node->nbLinks, 1, sizeof(int32_t), pFile);
+        fwrite(&node->enabled, 1, sizeof(bool), pFile);
         fwrite(node->links, 1, node->nbLinks * sizeof(int32_t), pFile);
     }
 
@@ -154,6 +156,7 @@ namespace libwot {
         wot2->nodes = new Node[wot2->nbMembers];
         for (int32_t i = 0; i < wot2->nbMembers; i++) {
             myFile.read((char *) &wot2->nodes[i].nbLinks, sizeof(int32_t));
+            myFile.read((char *) &wot2->nodes[i].enabled, sizeof(bool));
             wot2->nodes[i].links = new int32_t[wot2->nodes[i].nbLinks];
             myFile.read((char *) wot2->nodes[i].links, sizeof(int32_t) * wot2->nodes[i].nbLinks);
         }
@@ -225,6 +228,22 @@ namespace libwot {
         // Free memory
         freeNode(node);
         return newWotSize - 1;
+    }
+
+    bool isEnabled(int32_t member, string f) {
+        bool enabled = false;
+        WebOfTrust* wot = readWoT(f);
+        enabled = wot->nodes[member].enabled;
+        freeWoT(wot);
+        return enabled;
+    }
+
+    bool setEnabled(bool enabled, int32_t member, string f) {
+        WebOfTrust* wot = readWoT(f);
+        wot->nodes[member].enabled = enabled;
+        writeWoT(f, wot);
+        freeWoT(wot);
+        return enabled;
     }
 
 }

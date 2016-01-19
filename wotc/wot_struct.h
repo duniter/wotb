@@ -8,6 +8,7 @@ namespace libwot {
 
     struct Node {
 
+        bool enabled;
         int32_t nbLinks;
         int32_t *links;
     };

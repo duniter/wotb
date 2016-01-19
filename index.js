@@ -6,4 +6,6 @@ module.exports = new function() {
   this.verify = binding.verify;
   this.getWoTSize = binding.getWoTSize;
   this.addNode = binding.addNode;
+  this.isEnabled = binding.isEnabled;
+  this.setEnabled = binding.setEnabled;
 };

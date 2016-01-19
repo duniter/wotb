@@ -51,11 +51,29 @@ NAN_METHOD(getWoTSize) {
   info.GetReturnValue().Set(New<Number>(wotSize));
 }
 
-
 NAN_METHOD(addNode) {
   v8::Local<v8::String> fileJSString = Nan::To<v8::String>(info[0]).ToLocalChecked();
   v8::String::Utf8Value fileParam(fileJSString);
   string file = string(*fileParam);
   int32_t wotSize = libwot::addNode(file);
   info.GetReturnValue().Set(New<Number>(wotSize));
+}
+
+NAN_METHOD(isEnabled) {
+  int32_t member = Nan::To<int32_t>(info[0]).FromJust();
+  v8::Local<v8::String> fileJSString = Nan::To<v8::String>(info[1]).ToLocalChecked();
+  v8::String::Utf8Value fileParam(fileJSString);
+  string file = string(*fileParam);
+  bool enabled = libwot::isEnabled(member, file);
+  info.GetReturnValue().Set(New<Boolean>(enabled));
+}
+
+NAN_METHOD(setEnabled) {
+  bool enabled = Nan::To<bool>(info[0]).FromJust();
+  int32_t member = Nan::To<int32_t>(info[1]).FromJust();
+  v8::Local<v8::String> fileJSString = Nan::To<v8::String>(info[2]).ToLocalChecked();
+  v8::String::Utf8Value fileParam(fileJSString);
+  string file = string(*fileParam);
+  enabled = libwot::setEnabled(enabled, member, file);
+  info.GetReturnValue().Set(New<Boolean>(enabled));
 }

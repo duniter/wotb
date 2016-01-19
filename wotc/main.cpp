@@ -28,14 +28,18 @@ int main() {
     //======================
     bool match = wotMatch(0, wot);
 
-//    //======================
-//    // Write WoT
-//    //======================
+    //======================
+    // Write WoT
+    //======================
     writeWoT(EXPORT_FILE, wot);
-//
-//    //======================
-//    // Read WoT
-//    //======================
+
+    setEnabled(false, 0, EXPORT_FILE);
+    setEnabled(true, 1, EXPORT_FILE);
+    setEnabled(false, 2, EXPORT_FILE);
+
+    //======================
+    // Read WoT
+    //======================
     WebOfTrust* wot2 = readWoT(EXPORT_FILE);
 
     showTable(wot2);
