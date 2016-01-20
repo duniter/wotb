@@ -125,14 +125,6 @@ describe('Basic operations', function() {
     should.equal(addon.isOutdistanced(0, FROM_MEMBERS_WITH_AT_LEAST_2_LINKS_ISSUED, MAX_DISTANCE_2, X_PERCENT, TEST_FILE_PATH), false); // OK: 3 --> 2 --> 0
   });
 
-  //it('should success on verify', function() {
-  //  let nbMembers = 1000 * 1000; // 1 million
-  //  let nbCerts = 16; // 16 per member
-  //  let octetsPerCert = 4;
-  //  console.log('Allocate %s MB', octetsPerCert * nbCerts * nbMembers / 1000 / 1000);
-  //  should.equal(addon.verify(nbMembers, nbCerts, TEST_FILE_PATH), 8);
-  //});
-
   after(() => {
     if (fs.existsSync(TEST_FILE_PATH)) {
       fs.unlinkSync(TEST_FILE_PATH);
