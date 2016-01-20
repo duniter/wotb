@@ -85,7 +85,9 @@ namespace libwot {
     void checkMatches(int32_t m1, int32_t distance, int32_t distanceMax, WebOfTrust *wot, bool *wotChecked) {
         // Mark as checked the linking nodes at this level
         for (int32_t j = 0; j < wot->nodes[m1].nbLinks; j++) {
-//            cout << "Match " << wot->nodes[m1].links[j] << " -> " << m1 << endl;
+            if (DISPLAY_DEBUG) {
+                cout << "Match " << wot->nodes[m1].links[j] << " -> " << m1 << endl;
+            }
             wotChecked[wot->nodes[m1].links[j]] = true;
         }
         if (distance < distanceMax) {
@@ -201,13 +203,19 @@ namespace libwot {
             if (sentries[i]) {
                 result.nbSentries++;
                 if (wotMatches[i]) {
-//                    cout << "Sentry " << i << ": OK" << endl;
+                    if (DISPLAY_DEBUG) {
+                        cout << "Sentry " << i << ": OK" << endl;
+                    }
                     result.nbSuccess++;
                 } else {
-//                    cout << "Sentry " << i << ": KO" << endl;
+                    if (DISPLAY_DEBUG) {
+                        cout << "Sentry " << i << ": KO" << endl;
+                    }
                 }
             } else {
-//                cout << "NON-Sentry "  << i << endl;
+                if (DISPLAY_DEBUG) {
+                    cout << "NON-Sentry "  << i << endl;
+                }
             }
         }
         result.isOutdistanced = result.nbSuccess < result.nbSentries;
@@ -343,6 +351,9 @@ namespace libwot {
         WebOfTrust* wot = readWoT(f);
         DistanceResult result = wotMatch(member, d_min, k_max, wot);
         // We override the result with X% rule
+        if (DISPLAY_DEBUG) {
+            cout << "Success = " << result.nbSuccess << " / " << x_percent * result.nbSentries << " (" << x_percent << " x " << result.nbSentries << ")" << endl;
+        }
         result.isOutdistanced = result.nbSuccess < x_percent * result.nbSentries;
         freeWoT(wot);
         return result;

@@ -4,13 +4,25 @@
 using namespace std;
 using namespace libwot;
 
+void showGraphviz(WebOfTrust* wot) {
+    char s[32];
+    cout << "digraph G {" << endl << endl;
+    for (int32_t i = 0; i < wot->nbMembers; i++) {
+        for (int32_t j = 0; j < wot->nodes[i].nbLinks; j++) {
+            cout << "    " << i << " -> " << wot->nodes[i].links[j] << "" << endl;
+        }
+//        cout << endl;
+    }
+    cout << "}" << endl;
+}
+
 int main() {
 
     string EXPORT_FILE = "/home/cgeek/dev/wotb/wotc/wot.bin";
 
     srand(time(NULL));
 
-    int32_t nbMembers = 6*1;
+    int32_t nbMembers = 8*1;
     int32_t maxCertStock = 3;
 
     if (nbMembers < maxCertStock) {
@@ -22,6 +34,7 @@ int main() {
     WebOfTrust* wot = libwot::createRandomWoT(nbMembers, maxCertStock);
 
     showTable(wot);
+    showGraphviz(wot);
 
     //======================
     // WoT match
