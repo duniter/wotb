@@ -10,7 +10,7 @@ int main() {
 
     srand(time(NULL));
 
-    int32_t nbMembers = 5*1;
+    int32_t nbMembers = 6*1;
     int32_t maxCertStock = 3;
 
     if (nbMembers < maxCertStock) {
@@ -26,7 +26,7 @@ int main() {
     //======================
     // WoT match
     //======================
-    bool match = wotMatch(0, wot);
+//    bool match = wotMatch(0, 1, 5, wot).isOutdistanced;
 
     //======================
     // Write WoT
@@ -61,6 +61,10 @@ int main() {
     // Free
     freeWoT(wot);
     freeWoT(wot2);
+
+    for (int j = 0; j < nbMembers; ++j) {
+        cout << "Is outdistanced " << j << " from the WoT = " << isOutdistanced(j, 1, 2, 1.0, EXPORT_FILE).isOutdistanced << endl;
+    }
 
     return 0;
 }

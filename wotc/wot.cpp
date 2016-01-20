@@ -26,10 +26,10 @@ namespace libwot {
 
     void showTable(WebOfTrust *wot) {
         char s[32];
-        cout << "[" << setw(sprintf(s, "%d", wot->nbMembers - 1)) << right << "M" << "] [E] -> " << "Links" <<
+        cout << "[" << setw(sprintf(s, "%d", wot->nbMembers - 1)) << right << "M" << "] [E] [R] [I] -> " << "Links" <<
         endl;
         for (int32_t i = 0; i < wot->nbMembers; i++) {
-            cout << "[" << setw(sprintf(s, "%d", wot->nbMembers - 1)) << right << i << "] [" << wot->nodes[i].enabled << "] [" << wot->nodes[i].nbLinks << "] -> ";
+            cout << "[" << setw(sprintf(s, "%d", wot->nbMembers - 1)) << right << i << "] [" << wot->nodes[i].enabled << "] [" << wot->nodes[i].nbLinks << "] [" << wot->nodes[i].nbIssued << "] -> ";
             for (int32_t j = 0; j < wot->nodes[i].nbLinks; j++) {
                 cout << setw(sprintf(s, "%d", wot->nbMembers)) << right << wot->nodes[i].links[j] << " | ";
             }
@@ -85,6 +85,7 @@ namespace libwot {
     void checkMatches(int32_t m1, int32_t distance, int32_t distanceMax, WebOfTrust *wot, bool *wotChecked) {
         // Mark as checked the linking nodes at this level
         for (int32_t j = 0; j < wot->nodes[m1].nbLinks; j++) {
+//            cout << "Match " << wot->nodes[m1].links[j] << " -> " << m1 << endl;
             wotChecked[wot->nodes[m1].links[j]] = true;
         }
         if (distance < distanceMax) {
@@ -95,8 +96,10 @@ namespace libwot {
         }
     }
 
-    void findMatches(int32_t m1, int32_t distanceMax, WebOfTrust *wot, bool *wotChecked) {
-        return checkMatches(m1, 1, distanceMax, wot, wotChecked);
+    void findMatches(int32_t m1, int32_t k_max, WebOfTrust *wot, bool *wotChecked) {
+        if (k_max >= 1) {
+            checkMatches(m1, 1, k_max, wot, wotChecked);
+        }
     }
 
     WebOfTrust *createRandomWoT(int32_t nbMembers, int32_t maxCertStock) {
@@ -107,17 +110,26 @@ namespace libwot {
             wot->nodes[i].enabled = true;
             wot->nodes[i].nbLinks = maxCertStock;
             wot->nodes[i].links = new int32_t[maxCertStock];
+            // Init to empty value -1
+            for (int32_t j = 0; j < maxCertStock; j++) {
+                wot->nodes[i].links[j] = -1;
+            }
+            // Random valuation
             for (int32_t j = 0; j < maxCertStock; j++) {
                 double r;
                 int32_t randMember;
                 bool isNotValid = false;
                 do {
                     r = ((double) rand() / (RAND_MAX));
-                    randMember = (int32_t) lrint(r * (nbMembers - 1));
-                    isNotValid = randMember == i && hasCert(&wot->nodes[i], randMember);
+                    double randDouble = floor(r * (nbMembers));
+                    randMember = (int32_t) ((int) randDouble);
+                    bool isTheLocalMember = randMember == i;
+                    bool hasTheCert = hasCert(&wot->nodes[i], randMember);
+                    isNotValid = isTheLocalMember || hasTheCert;
                 }
                 while (isNotValid);
                 wot->nodes[i].links[j] = randMember;
+                wot->nodes[randMember].nbIssued++;
             }
         }
         return wot;
@@ -136,6 +148,7 @@ namespace libwot {
 
     void writeNode(FILE *pFile, Node *node) {
         fwrite(&node->nbLinks, 1, sizeof(int32_t), pFile);
+        fwrite(&node->nbIssued, 1, sizeof(int32_t), pFile);
         fwrite(&node->enabled, 1, sizeof(bool), pFile);
         fwrite(node->links, 1, node->nbLinks * sizeof(int32_t), pFile);
     }
@@ -160,6 +173,7 @@ namespace libwot {
         wot2->nodes = new Node[wot2->nbMembers];
         for (int32_t i = 0; i < wot2->nbMembers; i++) {
             myFile.read((char *) &wot2->nodes[i].nbLinks, sizeof(int32_t));
+            myFile.read((char *) &wot2->nodes[i].nbIssued, sizeof(int32_t));
             myFile.read((char *) &wot2->nodes[i].enabled, sizeof(bool));
             wot2->nodes[i].links = new int32_t[wot2->nodes[i].nbLinks];
             myFile.read((char *) wot2->nodes[i].links, sizeof(int32_t) * wot2->nodes[i].nbLinks);
@@ -168,21 +182,38 @@ namespace libwot {
         return wot2;
     }
 
-    int32_t wotMatch(int32_t member, WebOfTrust *wot) {
+    DistanceResult wotMatch(int32_t memberToCheck, int32_t d_min, int32_t k_max, WebOfTrust *wot) {
+        DistanceResult result;
+        result.nbSentries = 0;
         bool *wotMatches = new bool[wot->nbMembers];
+        bool *sentries = new bool[wot->nbMembers];
         for (int32_t i = 0; i < wot->nbMembers; i++) {
+            // We will check only members with at least d_min links (other do not participate the distance rule)
+            sentries[i] = wot->nodes[i].nbIssued >= d_min;
             wotMatches[i] = false;
         }
-        int32_t memberToCheck = 0;
+        // The member to check is not considered a sentry
+        sentries[memberToCheck] = false;
         wotMatches[memberToCheck] = true;
-        int32_t success = 0;
-        findMatches(memberToCheck, 5, wot, wotMatches);
+        result.nbSuccess = 0;
+        findMatches(memberToCheck, k_max, wot, wotMatches);
         for (int32_t i = 0; i < wot->nbMembers; i++) {
-            if (wotMatches[i]) {
-                success++;
+            if (sentries[i]) {
+                result.nbSentries++;
+                if (wotMatches[i]) {
+//                    cout << "Sentry " << i << ": OK" << endl;
+                    result.nbSuccess++;
+                } else {
+//                    cout << "Sentry " << i << ": KO" << endl;
+                }
+            } else {
+//                cout << "NON-Sentry "  << i << endl;
             }
         }
-        return success;
+        result.isOutdistanced = result.nbSuccess < result.nbSentries;
+        delete[] wotMatches;
+        delete[] sentries;
+        return result;
     }
 
     //============== FUNCTIONAL ==================
@@ -212,6 +243,7 @@ namespace libwot {
         // Create a new Node
         Node* node = new Node;
         node->nbLinks = 0;
+        node->nbIssued = 0;
         node->links = new int32_t[0];
 
         // Write new node
@@ -260,8 +292,8 @@ namespace libwot {
     int32_t addLink(int32_t from, int32_t to, string f) {
         WebOfTrust* wot = readWoT(f);
         Node* node = &wot->nodes[to];
-        if (!hasCert(node, from)) {
-            // Add only if not exists already
+        // Add only if not exists already & from node exists
+        if (!hasCert(node, from) && from < wot->nbMembers) {
             int32_t* newCerts = new int32_t[node->nbLinks + 1];
             for (int i = 0; i < node->nbLinks; ++i) {
                 newCerts[i] = node->links[i];
@@ -270,8 +302,10 @@ namespace libwot {
             node->nbLinks++;
             delete[] node->links;
             node->links = newCerts;
+            // Increment issued links number of "from"
+            wot->nodes[from].nbIssued++;
+            writeWoT(f, wot);
         }
-        writeWoT(f, wot);
         int32_t linksCount = node->nbLinks;
         freeWoT(wot);
         return linksCount;
@@ -297,11 +331,21 @@ namespace libwot {
             node->nbLinks--;
             delete[] node->links;
             node->links = newCerts;
+            wot->nodes[from].nbIssued--;
+            writeWoT(f, wot);
         }
-        writeWoT(f, wot);
         int32_t linksCount = node->nbLinks;
         freeWoT(wot);
         return linksCount;
+    }
+
+    DistanceResult isOutdistanced(int32_t member, int32_t d_min, int32_t k_max, double x_percent, string f) {
+        WebOfTrust* wot = readWoT(f);
+        DistanceResult result = wotMatch(member, d_min, k_max, wot);
+        // We override the result with X% rule
+        result.isOutdistanced = result.nbSuccess < x_percent * result.nbSentries;
+        freeWoT(wot);
+        return result;
     }
 
 }

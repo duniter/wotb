@@ -11,4 +11,5 @@ module.exports = new function() {
   this.existsLink = binding.existsLink;
   this.addLink = binding.addLink;
   this.removeLink = binding.removeLink;
+  this.isOutdistanced = binding.isOutdistanced;
 };

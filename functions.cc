@@ -104,3 +104,14 @@ NAN_METHOD(removeLink) {
   string file = string(*fileParam);
   info.GetReturnValue().Set(New<Number>(libwot::removeLink(from, to, file)));
 }
+
+NAN_METHOD(isOutdistanced) {
+  int32_t member = Nan::To<int32_t>(info[0]).FromJust();
+  int32_t d_min = Nan::To<int32_t>(info[1]).FromJust();
+  int32_t k_max = Nan::To<int32_t>(info[2]).FromJust();
+  double x_percent = Nan::To<double>(info[3]).FromJust();
+  v8::Local<v8::String> fileJSString = Nan::To<v8::String>(info[4]).ToLocalChecked();
+  v8::String::Utf8Value fileParam(fileJSString);
+  string file = string(*fileParam);
+  info.GetReturnValue().Set(New<Boolean>((libwot::isOutdistanced(member, d_min, k_max, x_percent, file)).isOutdistanced));
+}

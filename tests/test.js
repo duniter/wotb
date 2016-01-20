@@ -68,6 +68,13 @@ describe('Basic operations', function() {
   });
 
   it('should exist new links', function() {
+    /**
+     * WoT is:
+     *
+     * 2 --> 0
+     * 4 --> 0
+     * 5 --> 0
+     */
     should.equal(addon.existsLink(2, 0, TEST_FILE_PATH), true);
     should.equal(addon.existsLink(4, 0, TEST_FILE_PATH), true);
     should.equal(addon.existsLink(5, 0, TEST_FILE_PATH), true);
@@ -76,6 +83,12 @@ describe('Basic operations', function() {
 
   it('should be able to remove some links', function() {
     should.equal(addon.removeLink(4, 0, TEST_FILE_PATH), 2);
+    /**
+     * WoT is now:
+     *
+     * 2 --> 0
+     * 5 --> 0
+     */
   });
 
   it('should exist less links', function() {
@@ -83,6 +96,33 @@ describe('Basic operations', function() {
     should.equal(addon.existsLink(4, 0, TEST_FILE_PATH), false);
     should.equal(addon.existsLink(5, 0, TEST_FILE_PATH), true);
     should.equal(addon.existsLink(2, 1, TEST_FILE_PATH), false);
+  });
+
+  it('should successfully use distance rule', function() {
+    const X_PERCENT = 1.0;
+    const MAX_DISTANCE_1 = 1;
+    const MAX_DISTANCE_2 = 2;
+    const FROM_MEMBERS_WITH_AT_LEAST_1_LINKS_ISSUED = 1;
+    const FROM_MEMBERS_WITH_AT_LEAST_2_LINKS_ISSUED = 2;
+    const FROM_MEMBERS_WITH_AT_LEAST_3_LINKS_ISSUED = 3;
+    should.equal(addon.isOutdistanced(0, FROM_MEMBERS_WITH_AT_LEAST_1_LINKS_ISSUED, MAX_DISTANCE_1, X_PERCENT, TEST_FILE_PATH), false); // No because 2,4,5 have certified him
+    should.equal(addon.isOutdistanced(0, FROM_MEMBERS_WITH_AT_LEAST_2_LINKS_ISSUED, MAX_DISTANCE_1, X_PERCENT, TEST_FILE_PATH), false); // No because only member 2 has 2 certs, and has certified him
+    should.equal(addon.isOutdistanced(0, FROM_MEMBERS_WITH_AT_LEAST_3_LINKS_ISSUED, MAX_DISTANCE_1, X_PERCENT, TEST_FILE_PATH), false); // No because no member has issued 3 certifications
+    // We add links from member 3
+    should.equal(addon.addLink(3, 1, TEST_FILE_PATH), 1);
+    should.equal(addon.addLink(3, 2, TEST_FILE_PATH), 1);
+    /**
+     * WoT is now:
+     *
+     * 2 --> 0
+     * 5 --> 0
+     * 3 --> 1
+     * 3 --> 2
+     */
+    should.equal(addon.isOutdistanced(0, FROM_MEMBERS_WITH_AT_LEAST_1_LINKS_ISSUED, MAX_DISTANCE_1, X_PERCENT, TEST_FILE_PATH), true); // KO: No path 3 --> 0
+    should.equal(addon.isOutdistanced(0, FROM_MEMBERS_WITH_AT_LEAST_2_LINKS_ISSUED, MAX_DISTANCE_1, X_PERCENT, TEST_FILE_PATH), true); // KO: No path 3 --> 0
+    should.equal(addon.isOutdistanced(0, FROM_MEMBERS_WITH_AT_LEAST_3_LINKS_ISSUED, MAX_DISTANCE_1, X_PERCENT, TEST_FILE_PATH), false); // OK: no sentry with 3 links issued
+    should.equal(addon.isOutdistanced(0, FROM_MEMBERS_WITH_AT_LEAST_2_LINKS_ISSUED, MAX_DISTANCE_2, X_PERCENT, TEST_FILE_PATH), false); // OK: 3 --> 2 --> 0
   });
 
   //it('should success on verify', function() {

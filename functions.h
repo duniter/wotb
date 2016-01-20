@@ -9,3 +9,4 @@ NAN_METHOD(setEnabled);
 NAN_METHOD(existsLink);
 NAN_METHOD(addLink);
 NAN_METHOD(removeLink);
+NAN_METHOD(isOutdistanced);

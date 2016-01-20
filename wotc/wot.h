@@ -33,7 +33,7 @@ namespace libwot {
 
     WebOfTrust *readWoT(string f);
 
-    int32_t wotMatch(int32_t member, WebOfTrust *wot);
+    int32_t wotMatch(int32_t member, int32_t d_min, int32_t k_max, double x_percent, WebOfTrust *wot);
 
     // =========== FUNCTIONAL ==============
 
@@ -71,6 +71,14 @@ namespace libwot {
      * Remove a link of a member and return how many he now has.
      */
     int32_t removeLink(int32_t from, int32_t to, string f);
+
+    /**
+     * Check the distance of a member against the WoT for d_min and k_max parameters.
+     *
+     * * d_min is the minimum number of links a member must have to be checked against the distance rule
+     * * k_max is the maximum distance that can be tested for distance rule
+     */
+    DistanceResult isOutdistanced(int32_t member, int32_t d_min, int32_t k_max, double x_percent, string f);
 
 }
 

@@ -19,6 +19,7 @@ NAN_MODULE_INIT(InitAll) {
   Set(target, New<String>("existsLink").ToLocalChecked(), GetFunction(New<FunctionTemplate>(existsLink)).ToLocalChecked());
   Set(target, New<String>("addLink").ToLocalChecked(), GetFunction(New<FunctionTemplate>(addLink)).ToLocalChecked());
   Set(target, New<String>("removeLink").ToLocalChecked(), GetFunction(New<FunctionTemplate>(removeLink)).ToLocalChecked());
+  Set(target, New<String>("isOutdistanced").ToLocalChecked(), GetFunction(New<FunctionTemplate>(isOutdistanced)).ToLocalChecked());
 }
 
 NODE_MODULE(nacl, InitAll)
