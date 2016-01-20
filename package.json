@@ -2,6 +2,7 @@
   "name": "wotb",
   "version": "0.0.1",
   "description": "C binding for Web of Trust fast tools",
+  "repository": "https://github.com/ucoin-io/wotb",
   "main": "index.js",
   "engines": {
     "node": ">=4.2.0",
@@ -20,5 +21,14 @@
     "mocha": "2.2.5",
     "node-gyp": "1.0.3",
     "should": "8.1.1"
-  }
+  },
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/ucoin-io/wotb.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ucoin-io/wotb/issues",
+    "email": "admin@ucoin.io"
+  },
+  "license": "GPL-3.0"
 }
