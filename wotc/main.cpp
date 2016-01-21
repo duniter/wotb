@@ -46,9 +46,9 @@ int main() {
     //======================
     writeWoT(EXPORT_FILE, wot);
 
-    setEnabled(false, 0, EXPORT_FILE);
-    setEnabled(true, 1, EXPORT_FILE);
-    setEnabled(false, 2, EXPORT_FILE);
+    setEnabled(false, 0, wot);
+    setEnabled(true, 1, wot);
+    setEnabled(false, 2, wot);
 
     //======================
     // Read WoT
@@ -58,26 +58,26 @@ int main() {
     showTable(wot2);
 
     for (int32_t i = 1; i < nbMembers; i++) {
-        cout << "Link from 0 to " << i << " exists: " << existsLink(0, i, EXPORT_FILE) << endl;
+        cout << "Link from 0 to " << i << " exists: " << existsLink(0, i, wot) << endl;
     }
     freeWoT(wot2);
-    addLink(10, 0, EXPORT_FILE);
-    addLink(43, 2, EXPORT_FILE);
-    addLink(46, 2, EXPORT_FILE);
-    removeLink(46, 2, EXPORT_FILE);
-    removeLink(46, 2, EXPORT_FILE);
-    removeLink(43, 2, EXPORT_FILE);
+    addLink(10, 0, wot);
+    addLink(43, 2, wot);
+    addLink(46, 2, wot);
+    removeLink(46, 2, wot);
+    removeLink(46, 2, wot);
+    removeLink(43, 2, wot);
     wot2 = readWoT(EXPORT_FILE);
 
     showTable(wot2);
 
+    for (int j = 0; j < nbMembers; ++j) {
+        cout << "Is outdistanced " << j << " from the WoT = " << isOutdistanced(j, 1, 2, 1.0, wot2).isOutdistanced << endl;
+    }
+
     // Free
     freeWoT(wot);
     freeWoT(wot2);
-
-    for (int j = 0; j < nbMembers; ++j) {
-        cout << "Is outdistanced " << j << " from the WoT = " << isOutdistanced(j, 1, 2, 1.0, EXPORT_FILE).isOutdistanced << endl;
-    }
 
     return 0;
 }

@@ -3,6 +3,9 @@ module.exports = new function() {
 
   var binding = require('bindings')('wotb');
 
+  this.plugOnFile = binding.plugOnFile;
+  this.resetWoT = binding.resetWoT;
+
   this.getWoTSize = binding.getWoTSize;
   this.addNode = binding.addNode;
   this.isEnabled = binding.isEnabled;

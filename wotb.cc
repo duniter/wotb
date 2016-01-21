@@ -11,6 +11,8 @@ using Nan::New;
 using Nan::Set;
 
 NAN_MODULE_INIT(InitAll) {
+  Set(target, New<String>("plugOnFile").ToLocalChecked(), GetFunction(New<FunctionTemplate>(plugOnFile)).ToLocalChecked());
+  Set(target, New<String>("resetWoT").ToLocalChecked(), GetFunction(New<FunctionTemplate>(resetWoT)).ToLocalChecked());
   Set(target, New<String>("getWoTSize").ToLocalChecked(), GetFunction(New<FunctionTemplate>(getWoTSize)).ToLocalChecked());
   Set(target, New<String>("addNode").ToLocalChecked(), GetFunction(New<FunctionTemplate>(addNode)).ToLocalChecked());
   Set(target, New<String>("isEnabled").ToLocalChecked(), GetFunction(New<FunctionTemplate>(isEnabled)).ToLocalChecked());

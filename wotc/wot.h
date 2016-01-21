@@ -37,40 +37,37 @@ namespace libwot {
 
     // =========== FUNCTIONAL ==============
 
-    /**
-     * Get the number of members in the WoT. Look in the file to know it.
-     */
-    int32_t getWoTSize(string f);
+    void createNewWoTIfNotExist(string f);
 
     /**
      * Add a new member to the WoT, enabled but without any link.
      */
-    int32_t addNode(string f);
+    int32_t addNode(WebOfTrust* wot);
 
     /**
      * Check wether a member is enabled or not.
      */
-    bool isEnabled(int32_t member, string f);
+    bool isEnabled(int32_t member, WebOfTrust* wot);
 
     /**
      * Disable a node and return its new enabled state.
      */
-    bool setEnabled(bool enabled, int32_t member, string f);
+    bool setEnabled(bool enabled, int32_t member, WebOfTrust* wot);
 
     /**
      * Check wether a link exists from member 1 to member 2
      */
-    bool existsLink(int32_t from, int32_t to, string f);
+    bool existsLink(int32_t from, int32_t to, WebOfTrust* wot);
 
     /**
      * Add a link to a member and return how many he now has.
      */
-    int32_t addLink(int32_t from, int32_t to, string f);
+    int32_t addLink(int32_t from, int32_t to, WebOfTrust* wot);
 
     /**
      * Remove a link of a member and return how many he now has.
      */
-    int32_t removeLink(int32_t from, int32_t to, string f);
+    int32_t removeLink(int32_t from, int32_t to, WebOfTrust* wot);
 
     /**
      * Check the distance of a member against the WoT for d_min and k_max parameters.
@@ -78,7 +75,7 @@ namespace libwot {
      * * d_min is the minimum number of links a member must have to be checked against the distance rule
      * * k_max is the maximum distance that can be tested for distance rule
      */
-    DistanceResult isOutdistanced(int32_t member, int32_t d_min, int32_t k_max, double x_percent, string f);
+    DistanceResult isOutdistanced(int32_t member, int32_t d_min, int32_t k_max, double x_percent, WebOfTrust* wot);
 
 }
 

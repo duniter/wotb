@@ -226,79 +226,50 @@ namespace libwot {
 
     //============== FUNCTIONAL ==================
 
-    int32_t getWoTSize(string f) {
+    void createNewWoTIfNotExist(string f) {
         ifstream myFile((char *) f.c_str(), ios::in | ios::binary);
-        int32_t wotSize = 0;
         if (myFile) {
-            myFile.read((char *) &wotSize, sizeof(int32_t));
             myFile.close();
-        }
-        return wotSize;
-    }
-
-    int32_t addNode(string f) {
-        ifstream myFile((char *) f.c_str(), ios::in | ios::binary);
-
-        // Create a file with an empty WoT if not exists
-        if (!myFile) {
+        } else {
             WebOfTrust* wot = createRandomWoT(0, 0);
             writeWoT(f, wot);
             freeWoT(wot);
         }
-        // Get current WoT size
-        int32_t newWotSize = getWoTSize(f) + 1;
+    }
 
+    int32_t addNode(WebOfTrust* wot) {
+        // Copy in temp memory array
+        Node* newNodes = new Node[wot->nbMembers + 1];
+        for (int i = 0; i < wot->nbMembers; ++i) {
+            newNodes[i] = wot->nodes[i];
+        }
         // Create a new Node
-        Node* node = new Node;
-        node->nbLinks = 0;
-        node->nbIssued = 0;
-        node->links = new int32_t[0];
-
-        // Write new node
-        FILE *pFile;
-        pFile = fopen((char *) f.c_str(), "a+b");
-        writeNode(pFile, node);
-
-        // Close file
-        fclose(pFile);
-
-        // Increment the number of members
-        pFile = fopen((char *) f.c_str(), "r+b");
-        fwrite(&newWotSize, sizeof(int32_t), 1, pFile);
-
-        // Close file
-        fclose(pFile);
-
-        // Free memory
-        freeNode(node);
-        return newWotSize - 1;
+        Node node;
+        node.nbLinks = 0;
+        node.enabled = true;
+        node.nbIssued = 0;
+        node.links = new int32_t[0];
+        newNodes[wot->nbMembers] = node;
+        delete[] wot->nodes;
+        wot->nodes = newNodes;
+        wot->nbMembers++;
+        return wot->nbMembers - 1;
     }
 
-    bool isEnabled(int32_t member, string f) {
-        bool enabled = false;
-        WebOfTrust* wot = readWoT(f);
-        enabled = wot->nodes[member].enabled;
-        freeWoT(wot);
-        return enabled;
+    bool isEnabled(int32_t member, WebOfTrust* wot) {
+        return wot->nodes[member].enabled;
     }
 
-    bool setEnabled(bool enabled, int32_t member, string f) {
-        WebOfTrust* wot = readWoT(f);
+    bool setEnabled(bool enabled, int32_t member, WebOfTrust* wot) {
         wot->nodes[member].enabled = enabled;
-        writeWoT(f, wot);
-        freeWoT(wot);
         return enabled;
     }
 
-    bool existsLink(int32_t from, int32_t to, string f) {
-        WebOfTrust* wot = readWoT(f);
-        bool exists = hasCert(&wot->nodes[to], from);
-        freeWoT(wot);
-        return exists;
+    bool existsLink(int32_t from, int32_t to, WebOfTrust* wot) {
+        return hasCert(&wot->nodes[to], from);
     }
 
-    int32_t addLink(int32_t from, int32_t to, string f) {
-        WebOfTrust* wot = readWoT(f);
+    int32_t addLink(int32_t from, int32_t to, WebOfTrust* wot) {
         Node* node = &wot->nodes[to];
         // Add only if not exists already & from node exists
         if (!hasCert(node, from) && from < wot->nbMembers) {
@@ -312,15 +283,11 @@ namespace libwot {
             node->links = newCerts;
             // Increment issued links number of "from"
             wot->nodes[from].nbIssued++;
-            writeWoT(f, wot);
         }
-        int32_t linksCount = node->nbLinks;
-        freeWoT(wot);
-        return linksCount;
+        return node->nbLinks;
     }
 
-    int32_t removeLink(int32_t from, int32_t to, string f) {
-        WebOfTrust* wot = readWoT(f);
+    int32_t removeLink(int32_t from, int32_t to, WebOfTrust* wot) {
         Node* node = &wot->nodes[to];
         int32_t* index = pointerOfCert(node, from);
         int32_t* end = node->links + node->nbLinks;
@@ -340,22 +307,17 @@ namespace libwot {
             delete[] node->links;
             node->links = newCerts;
             wot->nodes[from].nbIssued--;
-            writeWoT(f, wot);
         }
-        int32_t linksCount = node->nbLinks;
-        freeWoT(wot);
-        return linksCount;
+        return node->nbLinks;
     }
 
-    DistanceResult isOutdistanced(int32_t member, int32_t d_min, int32_t k_max, double x_percent, string f) {
-        WebOfTrust* wot = readWoT(f);
+    DistanceResult isOutdistanced(int32_t member, int32_t d_min, int32_t k_max, double x_percent, WebOfTrust* wot) {
         DistanceResult result = wotMatch(member, d_min, k_max, wot);
         // We override the result with X% rule
         if (DISPLAY_DEBUG) {
             cout << "Success = " << result.nbSuccess << " / " << x_percent * result.nbSentries << " (" << x_percent << " x " << result.nbSentries << ")" << endl;
         }
         result.isOutdistanced = result.nbSuccess < x_percent * result.nbSentries;
-        freeWoT(wot);
         return result;
     }
 
