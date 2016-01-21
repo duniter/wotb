@@ -45,6 +45,11 @@ namespace libwot {
     int32_t addNode(WebOfTrust* wot);
 
     /**
+     * Remove top Node from the WoT, and return the new last Node number.
+     */
+    int32_t removeNode(WebOfTrust* wot);
+
+    /**
      * Check wether a member is enabled or not.
      */
     bool isEnabled(int32_t member, WebOfTrust* wot);

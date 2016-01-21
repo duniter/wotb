@@ -146,6 +146,18 @@ function testSuite(mode) {
         should.equal(addon.isOutdistanced(0, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_2, X_PERCENT), __OK__); // OK: 3 --> 2 --> 0
       });
 
+      it('should have 12 nodes', function() {
+        should.equal(addon.getWoTSize(), 12);
+      });
+
+      it('delete top node', function() {
+        should.equal(addon.removeNode(), 10);
+      });
+
+      it('should have 11 nodes', function() {
+        should.equal(addon.getWoTSize(), 11);
+      });
+
       after(() => {
         if (fs.existsSync(FILE)) {
           fs.unlinkSync(FILE);

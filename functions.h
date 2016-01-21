@@ -5,6 +5,7 @@ NAN_METHOD(plugOnFile);
 NAN_METHOD(resetWoT);
 NAN_METHOD(getWoTSize);
 NAN_METHOD(addNode);
+NAN_METHOD(removeNode);
 NAN_METHOD(isEnabled);
 NAN_METHOD(setEnabled);
 NAN_METHOD(existsLink);

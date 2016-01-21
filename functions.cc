@@ -122,6 +122,14 @@ NAN_METHOD(addNode) {
   freeMemory(wot);
 }
 
+NAN_METHOD(removeNode) {
+  libwot::WebOfTrust* wot = loadWoT(fileName);
+  int32_t res = libwot::removeNode(wot);
+  info.GetReturnValue().Set(New<Number>(res));
+  writeWoT(fileName, wot);
+  freeMemory(wot);
+}
+
 NAN_METHOD(isEnabled) {
   int32_t member = Nan::To<int32_t>(info[0]).FromJust();
   libwot::WebOfTrust* wot = loadWoT(fileName);

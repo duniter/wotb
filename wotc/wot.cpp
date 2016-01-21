@@ -256,6 +256,19 @@ namespace libwot {
         return wot->nbMembers - 1;
     }
 
+    int32_t removeNode(WebOfTrust* wot) {
+        // Copy in temp memory array
+        Node* newNodes = new Node[wot->nbMembers - 1];
+        // Just omit to copy the last
+        for (int i = 0; i < wot->nbMembers - 1; ++i) {
+            newNodes[i] = wot->nodes[i];
+        }
+        delete[] wot->nodes;
+        wot->nodes = newNodes;
+        wot->nbMembers--;
+        return wot->nbMembers - 1;
+    }
+
     bool isEnabled(int32_t member, WebOfTrust* wot) {
         return wot->nodes[member].enabled;
     }

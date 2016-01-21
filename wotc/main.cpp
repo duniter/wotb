@@ -69,6 +69,7 @@ int main() {
     removeLink(43, 2, wot);
     wot2 = readWoT(EXPORT_FILE);
 
+    removeNode(wot2);
     showTable(wot2);
 
     for (int j = 0; j < nbMembers; ++j) {
