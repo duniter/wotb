@@ -68,6 +68,10 @@ function testSuite(mode) {
         should.equal(addon.isEnabled(3), true);
       });
 
+      it('last node should be enabled', function() {
+        should.equal(addon.isEnabled(11), true);
+      });
+
       it('should be able to disable some nodes', function() {
         should.equal(addon.setEnabled(false, 0), false);
         should.equal(addon.setEnabled(false, 1), false);

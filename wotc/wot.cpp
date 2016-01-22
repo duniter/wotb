@@ -270,7 +270,7 @@ namespace libwot {
     }
 
     bool isEnabled(int32_t member, WebOfTrust* wot) {
-        if (member >= wot->nbMembers - 1) {
+        if (member >= wot->nbMembers) {
             return false;
         }
         return wot->nodes[member].enabled;
