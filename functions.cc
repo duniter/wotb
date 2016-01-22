@@ -27,6 +27,8 @@ class AbstractWoT {
 
 public:
   virtual void reset();
+  virtual void showWoT();
+  virtual void showGraph();
   virtual int32_t getWoTSize();
   virtual int32_t addNode();
   virtual int32_t removeNode();
@@ -51,6 +53,14 @@ public:
   void reset() {
     libwot::freeWoT(wot);
     wot = libwot::createRandomWoT(0,0);
+  }
+
+  void showWoT() {
+    return libwot::showTable(wot);
+  }
+
+  void showGraph() {
+    return libwot::showGraphviz(wot);
   }
 
   int32_t getWoTSize() {
@@ -106,6 +116,18 @@ public:
     remove((char *) filename.c_str());
     // Create file if not exist
     libwot::createNewWoTIfNotExist(filename);
+  }
+
+  void showWoT() {
+    libwot::WebOfTrust* wot = libwot::readWoT(filename);
+    libwot::showTable(wot);
+    libwot::freeWoT(wot);
+  }
+
+  void showGraph() {
+    libwot::WebOfTrust* wot = libwot::readWoT(filename);
+    libwot::showGraphviz(wot);
+    libwot::freeWoT(wot);
   }
 
   int32_t getWoTSize() {
@@ -208,6 +230,18 @@ NAN_METHOD(resetWoT) {
   int wotID = Nan::To<int>(info[0]).FromJust();
   AbstractWoT* wot = wots[wotID];
   wot->reset();
+}
+
+NAN_METHOD(showWoT) {
+  int wotID = Nan::To<int>(info[0]).FromJust();
+  AbstractWoT* wot = wots[wotID];
+  wot->showWoT();
+}
+
+NAN_METHOD(showGraph) {
+  int wotID = Nan::To<int>(info[0]).FromJust();
+  AbstractWoT* wot = wots[wotID];
+  wot->showGraph();
 }
 
 NAN_METHOD(getWoTSize) {

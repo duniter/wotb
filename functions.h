@@ -3,6 +3,8 @@
 
 NAN_METHOD(newFileInstance);
 NAN_METHOD(newMemoryInstance);
+NAN_METHOD(showWoT);
+NAN_METHOD(showGraph);
 NAN_METHOD(resetWoT);
 NAN_METHOD(getWoTSize);
 NAN_METHOD(addNode);

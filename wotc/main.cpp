@@ -4,18 +4,6 @@
 using namespace std;
 using namespace libwot;
 
-void showGraphviz(WebOfTrust* wot) {
-    char s[32];
-    cout << "digraph G {" << endl << endl;
-    for (int32_t i = 0; i < wot->nbMembers; i++) {
-        for (int32_t j = 0; j < wot->nodes[i].nbLinks; j++) {
-            cout << "    " << i << " -> " << wot->nodes[i].links[j] << "" << endl;
-        }
-//        cout << endl;
-    }
-    cout << "}" << endl;
-}
-
 int main() {
 
     string EXPORT_FILE = "/home/cgeek/dev/wotb/wotc/wot.bin";

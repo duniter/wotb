@@ -13,6 +13,8 @@ namespace libwot {
 
     void showTable(WebOfTrust *wot);
 
+    void showGraphviz(WebOfTrust *wot);
+
     void showDurationMS(high_resolution_clock::time_point t1);
 
     void showDuration(high_resolution_clock::time_point t1);

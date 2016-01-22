@@ -13,6 +13,14 @@ module.exports = {
 
 function WotB(instanceID) {
 
+  this.showWoT = () => {
+    return binding.showWoT(instanceID);
+  };
+
+  this.showGraph = () => {
+    return binding.showGraph(instanceID);
+  };
+
   this.resetWoT = () => {
     return binding.resetWoT(instanceID);
   };

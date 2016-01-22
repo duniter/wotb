@@ -37,6 +37,16 @@ namespace libwot {
         }
     }
 
+    void showGraphviz(WebOfTrust* wot) {
+        cout << "digraph G {" << endl << endl;
+        for (int32_t i = 0; i < wot->nbMembers; i++) {
+            for (int32_t j = 0; j < wot->nodes[i].nbLinks; j++) {
+                cout << "    " << i << " -> " << wot->nodes[i].links[j] << "" << endl;
+            }
+        }
+        cout << "}" << endl;
+    }
+
     void showLinks(int32_t member, int32_t distance, int32_t distanceMax, int32_t maxCertStock, int32_t **wot) {
         if (distance > distanceMax) {
             return;
