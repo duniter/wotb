@@ -70,10 +70,16 @@ int main() {
     wot2 = readWoT(EXPORT_FILE);
 
     removeNode(wot2);
+    removeNode(wot2);
+    removeNode(wot2);
     showTable(wot2);
 
     for (int j = 0; j < nbMembers; ++j) {
         cout << "Is outdistanced " << j << " from the WoT = " << isOutdistanced(j, 1, 2, 1.0, wot2).isOutdistanced << endl;
+    }
+
+    for (int j = 0; j < nbMembers; ++j) {
+        cout << "Is enabled " << j << " = " << isEnabled(j, wot2) << endl;
     }
 
     // Free
