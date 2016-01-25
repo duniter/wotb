@@ -3,6 +3,7 @@
 
 NAN_METHOD(newFileInstance);
 NAN_METHOD(newMemoryInstance);
+NAN_METHOD(setVerbose);
 NAN_METHOD(showWoT);
 NAN_METHOD(showGraph);
 NAN_METHOD(resetWoT);

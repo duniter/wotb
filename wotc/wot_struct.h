@@ -6,8 +6,6 @@ namespace libwot {
 
     using namespace std;
 
-    const bool DISPLAY_DEBUG = false;
-
     struct DistanceResult {
 
         int32_t nbSentries;

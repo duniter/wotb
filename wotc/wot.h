@@ -39,6 +39,11 @@ namespace libwot {
 
     // =========== FUNCTIONAL ==============
 
+    /**
+     * Display additional informations when calling making some computations.
+     */
+    void setVerbose(bool verbose);
+
     void createNewWoTIfNotExist(string f);
 
     /**

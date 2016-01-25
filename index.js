@@ -8,7 +8,9 @@ module.exports = {
     new WotB(binding.newFileInstance(filePath)),
 
   newMemoryInstance: () =>
-    new WotB(binding.newMemoryInstance())
+    new WotB(binding.newMemoryInstance()),
+
+  setVerbose: (verbose) => binding.setVerbose(verbose)
 };
 
 function WotB(instanceID) {

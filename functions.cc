@@ -212,6 +212,11 @@ std::vector<AbstractWoT*> wots;
 * PUBLIC METHODS
 ************************************/
 
+NAN_METHOD(setVerbose) {
+  bool verbose = Nan::To<bool>(info[0]).FromJust();
+  libwot::setVerbose(verbose);
+}
+
 NAN_METHOD(newFileInstance) {
   v8::Local<v8::String> fileJSString = Nan::To<v8::String>(info[0]).ToLocalChecked();
   v8::String::Utf8Value fileParam(fileJSString);

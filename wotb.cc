@@ -13,6 +13,7 @@ using Nan::Set;
 NAN_MODULE_INIT(InitAll) {
   Set(target, New<String>("newFileInstance").ToLocalChecked(), GetFunction(New<FunctionTemplate>(newFileInstance)).ToLocalChecked());
   Set(target, New<String>("newMemoryInstance").ToLocalChecked(), GetFunction(New<FunctionTemplate>(newMemoryInstance)).ToLocalChecked());
+  Set(target, New<String>("setVerbose").ToLocalChecked(), GetFunction(New<FunctionTemplate>(setVerbose)).ToLocalChecked());
   Set(target, New<String>("showWoT").ToLocalChecked(), GetFunction(New<FunctionTemplate>(showWoT)).ToLocalChecked());
   Set(target, New<String>("showGraph").ToLocalChecked(), GetFunction(New<FunctionTemplate>(showGraph)).ToLocalChecked());
   Set(target, New<String>("resetWoT").ToLocalChecked(), GetFunction(New<FunctionTemplate>(resetWoT)).ToLocalChecked());

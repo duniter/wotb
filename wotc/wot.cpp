@@ -13,6 +13,8 @@ namespace libwot {
     using namespace std::chrono;
     using namespace libwot;
 
+    bool DISPLAY_DEBUG = false;
+
     int32_t* pointerOfCert(Node *node, int32_t number) {
         int32_t* end = node->links + node->nbLinks;
         return find(node->links, end, number);
@@ -235,6 +237,10 @@ namespace libwot {
     }
 
     //============== FUNCTIONAL ==================
+
+    void setVerbose(bool verbose) {
+        DISPLAY_DEBUG = verbose;
+    }
 
     void createNewWoTIfNotExist(string f) {
         ifstream myFile((char *) f.c_str(), ios::in | ios::binary);
