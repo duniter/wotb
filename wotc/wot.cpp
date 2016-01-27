@@ -286,22 +286,35 @@ namespace libwot {
     }
 
     bool isEnabled(int32_t member, WebOfTrust* wot) {
-        if (member >= wot->nbMembers) {
+        if (wot->nbMembers < member + 1) {
+            // The member won't exist
             return false;
         }
         return wot->nodes[member].enabled;
     }
 
     bool setEnabled(bool enabled, int32_t member, WebOfTrust* wot) {
+        if (wot->nbMembers < member + 1) {
+            // The member won't exist
+            return false;
+        }
         wot->nodes[member].enabled = enabled;
         return enabled;
     }
 
     bool existsLink(int32_t from, int32_t to, WebOfTrust* wot) {
+        if (wot->nbMembers < to + 1) {
+            // The "to" node won't exist
+            return false;
+        }
         return hasCert(&wot->nodes[to], from);
     }
 
     int32_t addLink(int32_t from, int32_t to, WebOfTrust* wot) {
+        if (wot->nbMembers < to + 1) {
+            // The "to" won't exist
+            return 0;
+        }
         Node* node = &wot->nodes[to];
         // Add only if not exists already & from node exists
         if (!hasCert(node, from) && from < wot->nbMembers) {
@@ -320,6 +333,10 @@ namespace libwot {
     }
 
     int32_t removeLink(int32_t from, int32_t to, WebOfTrust* wot) {
+        if (wot->nbMembers < to + 1) {
+            // The "to" won't exist
+            return 0;
+        }
         Node* node = &wot->nodes[to];
         int32_t* index = pointerOfCert(node, from);
         int32_t* end = node->links + node->nbLinks;
