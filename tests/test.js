@@ -89,6 +89,11 @@ function testSuite(title, mode) {
         should.equal(wotb.isEnabled(1), true);
         should.equal(wotb.isEnabled(2), false);
         should.equal(wotb.isEnabled(3), true);
+        // Set enabled again
+        should.equal(wotb.setEnabled(true, 0), true);
+        should.equal(wotb.setEnabled(true, 1), true);
+        should.equal(wotb.setEnabled(true, 2), true);
+        should.equal(wotb.setEnabled(true, 1), true);
       });
 
       it('should not exist a link from 2 to 0', function() {
@@ -165,6 +170,12 @@ function testSuite(title, mode) {
 
       it('should have 11 nodes', function() {
         should.equal(wotb.getWoTSize(), 11);
+      });
+
+      it('should work with member 3 disabled', function() {
+        // With member 3 disabled (non-member)
+        should.equal(wotb.setEnabled(false, 3), false);
+        should.equal(wotb.isOutdistanced(0, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_1, X_PERCENT), __OK__); // OK: No path 3 --> 0, but is disabled
       });
 
       after(cleanInstance);

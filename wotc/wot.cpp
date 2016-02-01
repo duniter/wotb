@@ -203,7 +203,7 @@ namespace libwot {
         bool *sentries = new bool[wot->nbMembers];
         for (int32_t i = 0; i < wot->nbMembers; i++) {
             // We will check only members with at least d_min links (other do not participate the distance rule)
-            sentries[i] = wot->nodes[i].nbIssued >= d_min;
+            sentries[i] = wot->nodes[i].enabled && wot->nodes[i].nbIssued >= d_min;
             wotMatches[i] = false;
         }
         // The member to check is not considered a sentry
