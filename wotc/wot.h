@@ -15,6 +15,8 @@ namespace libwot {
 
     void showGraphviz(WebOfTrust *wot);
 
+    void showLinks(int32_t member, int32_t distance, int32_t distanceMax, int32_t maxCertStock, int32_t **wot);
+
     void showDurationMS(high_resolution_clock::time_point t1);
 
     void showDuration(high_resolution_clock::time_point t1);
