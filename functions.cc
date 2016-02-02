@@ -1,6 +1,7 @@
 #include <node.h>
 #include <nan.h>
-#include "wotc/wot.h"
+#include "wotcpp/include/webOfTrust.h"
+#include "wotcpp/include/log.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <tgmath.h>
@@ -22,6 +23,7 @@ using Nan::New;
 using Nan::Set;
 
 using namespace std;
+using namespace libwot;
 
 class AbstractWoT {
 
@@ -29,182 +31,206 @@ public:
   virtual void reset();
   virtual void showWoT();
   virtual void showGraph();
-  virtual int32_t getWoTSize();
-  virtual int32_t addNode();
-  virtual int32_t removeNode();
-  virtual bool isEnabled(int32_t node);
-  virtual bool setEnabled(bool enabled, int32_t node);
-  virtual bool existsLink(int32_t from, int32_t to);
-  virtual int32_t addLink(int32_t from, int32_t to);
-  virtual int32_t removeLink(int32_t from, int32_t to);
-  virtual bool isOutdistanced(int32_t member, int32_t d_min, int32_t k_max, double x_percent);
+  virtual uint32_t getWoTSize();
+  virtual uint32_t addNode();
+  virtual uint32_t removeNode();
+  virtual bool isEnabled(uint32_t nodeIndex);
+  virtual bool setEnabled(bool enabled, uint32_t nodeIndex);
+  virtual bool existsLink(uint32_t from, uint32_t to);
+  virtual uint32_t addLink(uint32_t from, uint32_t to);
+  virtual uint32_t removeLink(uint32_t from, uint32_t to);
+  virtual bool isOutdistanced(uint32_t member, uint32_t d_min, uint32_t k_max, double x_percent);
 };
 
 class MemoryWoT : public AbstractWoT {
 
-public:
+  public:
+
   MemoryWoT() {
-    wot = libwot::createRandomWoT(0,0);
+    wot = new WebOfTrust(3);
   }
+
   ~MemoryWoT() {
-    libwot::freeWoT(wot);
+    delete wot;
   }
 
   void reset() {
-    libwot::freeWoT(wot);
-    wot = libwot::createRandomWoT(0,0);
+    wot->reset();
   }
 
   void showWoT() {
-    return libwot::showTable(wot);
+    wot->showTable();
   }
 
   void showGraph() {
-    return libwot::showGraphviz(wot);
+    wot->showTable(); 
   }
 
-  int32_t getWoTSize() {
-    return wot->nbMembers;
+  uint32_t getWoTSize() {
+    return wot->getSize();
   }
 
-  int32_t addNode() {
-    return libwot::addNode(wot);
+  uint32_t addNode() {
+    wot->addNode();
+    return wot->getSize() - 1;
   }
 
-  int32_t removeNode() {
-    return libwot::removeNode(wot);
+  uint32_t removeNode() {
+    wot->removeNode();
+    return wot->getSize() - 1;
   }
 
-  bool isEnabled(int32_t node) {
-    return libwot::isEnabled(node, wot);
+  bool isEnabled(uint32_t nodeIndex) {
+    return wot->getNodeAt(nodeIndex)->isEnabled();
   }
 
-  bool setEnabled(bool enabled, int32_t node) {
-    return libwot::setEnabled(enabled, node, wot);
+  bool setEnabled(bool enabled, uint32_t nodeIndex) {
+    return wot->getNodeAt(nodeIndex)->setEnabled(enabled)->isEnabled();
   }
 
-  bool existsLink(int32_t from, int32_t to) {
-    return libwot::existsLink(from, to, wot);
+  bool existsLink(uint32_t from, uint32_t to) {
+    return wot->getNodeAt(from)->hasLinkTo(to);
   }
 
-  int32_t addLink(int32_t from, int32_t to) {
-    return libwot::addLink(from, to, wot);
+  uint32_t addLink(uint32_t from, uint32_t to) {
+    wot->getNodeAt(from)->addLinkTo(to);
+    return wot->getNodeAt(to)->getNbLinks();
   }
 
-  int32_t removeLink(int32_t from, int32_t to) {
-    return libwot::removeLink(from, to, wot);
+  uint32_t removeLink(uint32_t from, uint32_t to) {
+    wot->getNodeAt(from)->removeLinkTo(to);
+    return wot->getNodeAt(to)->getNbLinks();
   }
 
-  bool isOutdistanced(int32_t member, int32_t d_min, int32_t k_max, double x_percent) {
-    return libwot::isOutdistanced(member, d_min, k_max, x_percent, wot).isOutdistanced;
+  bool isOutdistanced(uint32_t member, uint32_t d_min, uint32_t k_max, double x_percent) {
+    DistanceResult result = wot->computeDistance(member, d_min, k_max, x_percent);
+    return result.isOutdistanced;
   }
 
-private:
-  libwot::WebOfTrust* wot;
+  private:
+
+    libwot::WebOfTrust* wot;
 };
+
+
 
 class FileWoT : public AbstractWoT {
 
-public:
-  FileWoT(std::string f) : filename(f) {
-    // Create file if not exist
-    libwot::createNewWoTIfNotExist(filename);
-  }
-  ~FileWoT() {}
+  public:
 
-  void reset() {
-    remove((char *) filename.c_str());
-    // Create file if not exist
-    libwot::createNewWoTIfNotExist(filename);
-  }
+    FileWoT(std::string f) : filename(f) {
+      WebOfTrust *wot = WebOfTrust::readFromDisk(f);
+      if (wot == NULL) {
+        wot = new WebOfTrust(3);		
+        wot->writeToDisk(f);
+      }
 
-  void showWoT() {
-    libwot::WebOfTrust* wot = libwot::readWoT(filename);
-    libwot::showTable(wot);
-    libwot::freeWoT(wot);
-  }
+      delete wot;
+    }
 
-  void showGraph() {
-    libwot::WebOfTrust* wot = libwot::readWoT(filename);
-    libwot::showGraphviz(wot);
-    libwot::freeWoT(wot);
-  }
+    ~FileWoT() {
+    }
 
-  int32_t getWoTSize() {
-    libwot::WebOfTrust* wot = libwot::readWoT(filename);
-    int32_t result = wot->nbMembers;
-    libwot::writeWoT(filename, wot);
-    libwot::freeWoT(wot);
-    return result;
-  }
+    void reset() {
+      WebOfTrust* wot = WebOfTrust::readFromDisk(filename);
+      wot->reset();
+      wot->writeToDisk(filename);
+      delete wot;
+    }
 
-  int32_t addNode() {
-    libwot::WebOfTrust* wot = libwot::readWoT(filename);
-    int32_t result = libwot::addNode(wot);
-    libwot::writeWoT(filename, wot);
-    libwot::freeWoT(wot);
-    return result;
-  }
+    void showWoT() {
+      WebOfTrust* wot = WebOfTrust::readFromDisk(filename);
+      wot->showTable();
+      delete wot;
+    }
 
-  int32_t removeNode() {
-    libwot::WebOfTrust* wot = libwot::readWoT(filename);
-    int32_t result = libwot::removeNode(wot);
-    libwot::writeWoT(filename, wot);
-    libwot::freeWoT(wot);
-    return result;
-  }
+    void showGraph() {
+      WebOfTrust* wot = WebOfTrust::readFromDisk(filename);
+      wot->showTable(); 
+      delete wot;
+    }
 
-  bool isEnabled(int32_t node) {
-    libwot::WebOfTrust* wot = libwot::readWoT(filename);
-    bool result = libwot::isEnabled(node, wot);
-    libwot::writeWoT(filename, wot);
-    libwot::freeWoT(wot);
-    return result;
-  }
+    uint32_t getWoTSize() {
+      WebOfTrust* wot = WebOfTrust::readFromDisk(filename);
+      uint32_t size = wot->getSize();
+      delete wot;
+      return size;
+    }
 
-  bool setEnabled(bool enabled, int32_t node) {
-    libwot::WebOfTrust* wot = libwot::readWoT(filename);
-    bool result = libwot::setEnabled(enabled, node, wot);
-    libwot::writeWoT(filename, wot);
-    libwot::freeWoT(wot);
-    return result;
-  }
+    uint32_t addNode() {
+      WebOfTrust* wot = WebOfTrust::readFromDisk(filename);
+      wot->addNode();
+      uint32_t size = wot->getSize() - 1;
+      wot->writeToDisk(filename);
+      delete wot;
+      return size;
+    }
 
-  bool existsLink(int32_t from, int32_t to) {
-    libwot::WebOfTrust* wot = libwot::readWoT(filename);
-    bool result = libwot::existsLink(from, to, wot);
-    libwot::writeWoT(filename, wot);
-    libwot::freeWoT(wot);
-    return result;
-  }
+    uint32_t removeNode() {
+      WebOfTrust* wot = WebOfTrust::readFromDisk(filename);
+      wot->removeNode();
+      uint32_t size = wot->getSize() - 1;
+      wot->writeToDisk(filename);
+      delete wot;
+      return size;
+    }
 
-  int32_t addLink(int32_t from, int32_t to) {
-    libwot::WebOfTrust* wot = libwot::readWoT(filename);
-    int32_t result = libwot::addLink(from, to, wot);
-    libwot::writeWoT(filename, wot);
-    libwot::freeWoT(wot);
-    return result;
-  }
+    bool isEnabled(uint32_t nodeIndex) {
+      WebOfTrust* wot = WebOfTrust::readFromDisk(filename);
+      bool enabled = wot->getNodeAt(nodeIndex)->isEnabled();
+      delete wot;
+      return enabled;
+    }
 
-  int32_t removeLink(int32_t from, int32_t to) {
-    libwot::WebOfTrust* wot = libwot::readWoT(filename);
-    int32_t result = libwot::removeLink(from, to, wot);
-    libwot::writeWoT(filename, wot);
-    libwot::freeWoT(wot);
-    return result;
-  }
+    bool setEnabled(bool enabled, uint32_t nodeIndex) {
+      WebOfTrust* wot = WebOfTrust::readFromDisk(filename);
+      Node* node = wot->getNodeAt(nodeIndex);
+      node->setEnabled(enabled);
+      bool isEnabled = node->isEnabled();
+      wot->writeToDisk(filename);
+      delete wot;
+      return isEnabled;
+    }
 
-  bool isOutdistanced(int32_t member, int32_t d_min, int32_t k_max, double x_percent) {
-    libwot::WebOfTrust* wot = libwot::readWoT(filename);
-    bool result = libwot::isOutdistanced(member, d_min, k_max, x_percent, wot).isOutdistanced;
-    libwot::writeWoT(filename, wot);
-    libwot::freeWoT(wot);
-    return result;
-  }
+    bool existsLink(uint32_t from, uint32_t to) {
+      WebOfTrust* wot = WebOfTrust::readFromDisk(filename);
+      bool exists = wot->getNodeAt(from)->hasLinkTo(to);
+      delete wot;
+      return exists;
+    }
 
-private:
-  std::string filename;
+    uint32_t addLink(uint32_t from, uint32_t to) {
+      WebOfTrust* wot = WebOfTrust::readFromDisk(filename);
+      Node* node = wot->getNodeAt(from);
+      node->addLinkTo(to);
+      uint32_t nbLinks = wot->getNodeAt(to)->getNbLinks();
+      wot->writeToDisk(filename);
+      delete wot;
+      return nbLinks;
+    }
+
+    uint32_t removeLink(uint32_t from, uint32_t to) {
+      WebOfTrust* wot = WebOfTrust::readFromDisk(filename);
+      Node* node = wot->getNodeAt(from);
+      node->removeLinkTo(to);
+      uint32_t nbLinks = wot->getNodeAt(to)->getNbLinks();
+      wot->writeToDisk(filename);
+      delete wot;
+      return nbLinks;
+    }
+
+    bool isOutdistanced(uint32_t member, uint32_t d_min, uint32_t k_max, double x_percent) {
+      WebOfTrust* wot = WebOfTrust::readFromDisk(filename);
+      DistanceResult result = wot->computeDistance(member, d_min, k_max, x_percent);
+      delete wot;
+      return result.isOutdistanced;
+    }
+
+  private:
+
+    string filename;
 };
+
 
 std::vector<AbstractWoT*> wots;
 
@@ -214,7 +240,7 @@ std::vector<AbstractWoT*> wots;
 
 NAN_METHOD(setVerbose) {
   bool verbose = Nan::To<bool>(info[0]).FromJust();
-  libwot::setVerbose(verbose);
+  Log::setEnabled(verbose);
 }
 
 NAN_METHOD(newFileInstance) {
