@@ -1,0 +1,32 @@
+environment:
+  node_pre_gyp_accessKeyId:
+    secure: p2BcCi3HR3SnrUwqzFHbJK3slT4FGBc+F9iRy7a6Los=
+  node_pre_gyp_secretAccessKey:
+    secure: 6C95HM2rlmtHtyp0FwOH/cjxViVNA3RuAJMh9S/xOyREiBfo8TPFrTTFM1+BmW2l
+  node_pre_gyp_region: eu-central-1
+  matrix:
+    - nodejs_version: "5.8.0"
+
+platform:
+  - x86
+  - x64
+
+install:
+  - ps: Install-Product node $env:nodejs_version $env:platform
+  - node -v
+  - npm install -g npm
+  - npm install
+  - node node_modules\node-pre-gyp\bin\node-pre-gyp info
+
+   # Check if new tag released and publish binary in this case.
+  - SET PUBLISH_BINARY=%APPVEYOR_REPO_TAG%
+
+test_script:
+  - npm test
+
+build: off
+deploy: off
+
+on_success:
+  - IF %PUBLISH_BINARY% == true (node node_modules\node-pre-gyp\bin\node-pre-gyp package)
+  - IF %PUBLISH_BINARY% == true (node node_modules\node-pre-gyp\bin\node-pre-gyp publish)
