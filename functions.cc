@@ -49,52 +49,52 @@ public:
     libwot::freeWoT(wot);
   }
 
-  void reset() {
+  virtual void reset() {
     libwot::freeWoT(wot);
     wot = libwot::createRandomWoT(0,0);
   }
 
-  void showWoT() {
+  virtual void showWoT() {
     return libwot::showTable(wot);
   }
 
-  void showGraph() {
+  virtual void showGraph() {
     return libwot::showGraphviz(wot);
   }
 
-  int32_t getWoTSize() {
+  virtual int32_t getWoTSize() {
     return wot->nbMembers;
   }
 
-  int32_t addNode() {
+  virtual int32_t addNode() {
     return libwot::addNode(wot);
   }
 
-  int32_t removeNode() {
+  virtual int32_t removeNode() {
     return libwot::removeNode(wot);
   }
 
-  bool isEnabled(int32_t node) {
+  virtual bool isEnabled(int32_t node) {
     return libwot::isEnabled(node, wot);
   }
 
-  bool setEnabled(bool enabled, int32_t node) {
+  virtual bool setEnabled(bool enabled, int32_t node) {
     return libwot::setEnabled(enabled, node, wot);
   }
 
-  bool existsLink(int32_t from, int32_t to) {
+  virtual bool existsLink(int32_t from, int32_t to) {
     return libwot::existsLink(from, to, wot);
   }
 
-  int32_t addLink(int32_t from, int32_t to) {
+  virtual int32_t addLink(int32_t from, int32_t to) {
     return libwot::addLink(from, to, wot);
   }
 
-  int32_t removeLink(int32_t from, int32_t to) {
+  virtual int32_t removeLink(int32_t from, int32_t to) {
     return libwot::removeLink(from, to, wot);
   }
 
-  bool isOutdistanced(int32_t member, int32_t d_min, int32_t k_max, double x_percent) {
+  virtual bool isOutdistanced(int32_t member, int32_t d_min, int32_t k_max, double x_percent) {
     return libwot::isOutdistanced(member, d_min, k_max, x_percent, wot).isOutdistanced;
   }
 
