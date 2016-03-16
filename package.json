@@ -8,7 +8,7 @@
     "npm": ">=2.11"
   },
   "scripts": {
-    "test": "node_modules/mocha/bin/mocha tests/",
+    "test": "node \"node_modules/mocha/bin/mocha\" tests/",
     "install": "node-pre-gyp install --fallback-to-build"
   },
   "dependencies": {
