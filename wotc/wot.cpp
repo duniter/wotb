@@ -1,7 +1,6 @@
 #include <iostream>
 #include <iomanip>
 #include <cstdio>
-#include <tgmath.h>
 #include <algorithm>
 #include <chrono>
 #include <fstream>
