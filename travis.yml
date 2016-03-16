@@ -1,0 +1,24 @@
+language: node_js
+node_js:
+- 5.8.0
+env:
+  global:
+  - CXX=g++-4.8
+  - secure: "k1sDFTHwLhfaNYUbW54FG23P8hbaR3NgtFZWsf6aEpJpBvxAnKkga8QncJghxPlsDSEsDx0Oe/0YeV4UeLs/1rZXg65HUyhPp/Ek1+k2OPadP4KsGf8p93a0r+L84LgpH6ZXASC6mX+76Gf2RmaS3FMC1S1HO57l7Zp3zAJigpg="
+  - secure: "bqJMPJj7tQCEoVppDm4pbAz/jmZ1nlQPX0wzcEYTm0mtJoYXMIcVcfBpCE2DFe2OyvD7OpEI/ItMGle6tpSZnCmAYDxSuhpYlrWiG4UiCDoKXyIU8x7OpF6jfFa8vUBRDD5QPIvIGFn9vf8knNxc+5/YmyxLiVqSwgcYi4kQv7U="
+  - secure: "Z/CKWCx+12YzvK/F4rHevTEqEWmtTE8Kz7gLVHr3HZpg3Awi30veQOFWG0PEuqaovY3NYz7eYr1oKGbj3PnvkydiAlCiloVGTmi93qZI9c5siGaGECSNY5sUUyFJMx/kQ91QJ7I3f53hRLoJ6tm2x7KLlQEmcSu9EZAQuF6ej9o="
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - g++-4.8
+sudo: false
+install:
+- npm install
+
+
+script: npm test
+
+after_success:
+- if [[ $TRAVIS_TAG =~ ^.+$ ]]; then node node_modules/node-pre-gyp/bin/node-pre-gyp package publish; fi
