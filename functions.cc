@@ -4,7 +4,6 @@
 #include "wotcpp/include/log.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <tgmath.h>
 #include <iostream>
 #include <vector>
 

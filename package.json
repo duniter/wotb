@@ -17,6 +17,7 @@
     "node-pre-gyp": "0.6.23"
   },
   "devDependencies": {
+    "aws-sdk": "2.2.43",
     "mocha": "2.2.5",
     "should": "8.1.1"
   },
