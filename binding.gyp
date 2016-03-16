@@ -5,6 +5,8 @@
       "sources": [
         "wotb.cc",
         "functions.cc",
+        "wotcpp/FileWoT.cpp",
+        "wotcpp/MemoryWoT.cpp",
         "wotcpp/webOfTrust.cpp",
         "wotcpp/node.cpp",
         "wotcpp/misc.cpp",
