@@ -13,18 +13,18 @@ namespace libwot {
   class AbstractWoT {
 
     public:
-      virtual void reset();
-      virtual void showWoT();
-      virtual void showGraph();
-      virtual uint32_t getWoTSize();
-      virtual uint32_t addNode();
-      virtual uint32_t removeNode();
-      virtual bool isEnabled(uint32_t nodeIndex);
-      virtual bool setEnabled(bool enabled, uint32_t nodeIndex);
-      virtual bool existsLink(uint32_t from, uint32_t to);
-      virtual uint32_t addLink(uint32_t from, uint32_t to);
-      virtual uint32_t removeLink(uint32_t from, uint32_t to);
-      virtual bool isOutdistanced(uint32_t member, uint32_t d_min, uint32_t k_max, double x_percent);
+      virtual void reset() = 0;
+      virtual void showWoT() = 0;
+      virtual void showGraph() = 0;
+      virtual uint32_t getWoTSize() = 0;
+      virtual uint32_t addNode() = 0;
+      virtual uint32_t removeNode() = 0;
+      virtual bool isEnabled(uint32_t nodeIndex) = 0;
+      virtual bool setEnabled(bool enabled, uint32_t nodeIndex) = 0;
+      virtual bool existsLink(uint32_t from, uint32_t to) = 0;
+      virtual uint32_t addLink(uint32_t from, uint32_t to) = 0;
+      virtual uint32_t removeLink(uint32_t from, uint32_t to) = 0;
+      virtual bool isOutdistanced(uint32_t member, uint32_t d_min, uint32_t k_max, double x_percent) = 0;
   };
 }
 

@@ -15,18 +15,18 @@ namespace libwot {
     public:
       MemoryWoT();
       ~MemoryWoT();
-      virtual void reset();
-      virtual void showWoT();
-      virtual void showGraph();
-      virtual uint32_t getWoTSize();
-      virtual uint32_t addNode();
-      virtual uint32_t removeNode();
-      virtual bool isEnabled(uint32_t nodeIndex);
-      virtual bool setEnabled(bool enabled, uint32_t nodeIndex);
-      virtual bool existsLink(uint32_t from, uint32_t to);
-      virtual uint32_t addLink(uint32_t from, uint32_t to);
-      virtual uint32_t removeLink(uint32_t from, uint32_t to);
-      virtual bool isOutdistanced(uint32_t member, uint32_t d_min, uint32_t k_max, double x_percent);
+      void reset();
+      void showWoT();
+      void showGraph();
+      uint32_t getWoTSize();
+      uint32_t addNode();
+      uint32_t removeNode();
+      bool isEnabled(uint32_t nodeIndex);
+      bool setEnabled(bool enabled, uint32_t nodeIndex);
+      bool existsLink(uint32_t from, uint32_t to);
+      uint32_t addLink(uint32_t from, uint32_t to);
+      uint32_t removeLink(uint32_t from, uint32_t to);
+      bool isOutdistanced(uint32_t member, uint32_t d_min, uint32_t k_max, double x_percent);
 
     private:
       WebOfTrust* wot;
