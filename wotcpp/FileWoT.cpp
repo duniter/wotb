@@ -72,6 +72,7 @@ namespace libwot {
 
   bool FileWoT::isEnabled(uint32_t nodeIndex) {
     WebOfTrust* wot = WebOfTrust::readFromDisk(filename);
+    if (nodeIndex >= wot->getSize()) return false;
     bool enabled = wot->getNodeAt(nodeIndex)->isEnabled();
     delete wot;
     return enabled;
@@ -89,6 +90,8 @@ namespace libwot {
 
   bool FileWoT::existsLink(uint32_t from, uint32_t to) {
     WebOfTrust* wot = WebOfTrust::readFromDisk(filename);
+    if (from >= wot->getSize()) return false;
+    if (to >= wot->getSize()) return false;
     bool exists = wot->getNodeAt(from)->hasLinkTo(to);
     delete wot;
     return exists;

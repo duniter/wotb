@@ -48,6 +48,7 @@ namespace libwot {
   }
 
   bool MemoryWoT::isEnabled(uint32_t nodeIndex) {
+    if (nodeIndex >= wot->getSize()) return false;
     return wot->getNodeAt(nodeIndex)->isEnabled();
   }
 
@@ -56,6 +57,8 @@ namespace libwot {
   }
 
   bool MemoryWoT::existsLink(uint32_t from, uint32_t to) {
+    if (from >= wot->getSize()) return false;
+    if (to >= wot->getSize()) return false;
     return wot->getNodeAt(from)->hasLinkTo(to);
   }
 

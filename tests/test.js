@@ -52,6 +52,11 @@ function testSuite(title, mode) {
         should.equal(wotb.getWoTSize(), 0);
       });
 
+      it.only('should not throw if testing isEnabled() with out-of-bounds node', function() {
+        should.equal(wotb.isEnabled(0), false);
+        should.equal(wotb.isEnabled(23), false);
+      });
+
       it('should give number 0 if we add a node', function() {
         // Add a node
         should.equal(wotb.addNode(), 0);
@@ -64,6 +69,18 @@ function testSuite(title, mode) {
           should.equal(wotb.addNode(), i + 2);
         }
         should.equal(wotb.getWoTSize(), 2 + 10);
+      });
+
+      it('should not throw if testing existsLink() with inbounds link', function() {
+        should.equal(wotb.existsLink(4, 6), false);
+      });
+
+      it('should not throw if testing existsLink() with out-of-bounds source', function() {
+        should.equal(wotb.existsLink(23, 0), false);
+      });
+
+      it('should not throw if testing existsLink() with out-of-bounds target', function() {
+        should.equal(wotb.existsLink(2, 53), false);
       });
 
       it('first 4 nodes should be enabled', function() {

@@ -48,6 +48,7 @@ namespace libwot {
 
 
   bool Node::hasLinkTo(uint32_t to) {
+    if (to >= mWot->getSize()) return false;
     Node *node = mWot->getNodeAt(to);
     return hasLinkTo(node);
   }
@@ -68,7 +69,6 @@ namespace libwot {
     if(find(mCert.begin(), mCert.end(), from) == mCert.end()) {
       return false;
     }
-
     return true;
   }
 
