@@ -52,7 +52,7 @@ function testSuite(title, mode) {
         should.equal(wotb.getWoTSize(), 0);
       });
 
-      it.only('should not throw if testing isEnabled() with out-of-bounds node', function() {
+      it('should not throw if testing isEnabled() with out-of-bounds node', function() {
         should.equal(wotb.isEnabled(0), false);
         should.equal(wotb.isEnabled(23), false);
       });
