@@ -19,6 +19,3 @@ install:
 
 
 script: npm test
-
-after_success:
-- if [[ $TRAVIS_TAG =~ ^.+$ ]]; then node node_modules/node-pre-gyp/bin/node-pre-gyp package publish; fi
