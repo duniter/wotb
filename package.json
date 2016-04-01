@@ -9,7 +9,7 @@
   },
   "scripts": {
     "test": "node \"node_modules/mocha/bin/mocha\" tests/",
-    "install": "node \"node_modules/node-pre-gyp/bin/node-pre-gyp\" install --fallback-to-build"
+    "install": "node-pre-gyp install --fallback-to-build"
   },
   "dependencies": {
     "bindings": "1.2.1",
