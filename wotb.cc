@@ -21,6 +21,7 @@ NAN_MODULE_INIT(InitAll) {
   Set(target, New<String>("addNode").ToLocalChecked(), GetFunction(New<FunctionTemplate>(addNode)).ToLocalChecked());
   Set(target, New<String>("removeNode").ToLocalChecked(), GetFunction(New<FunctionTemplate>(removeNode)).ToLocalChecked());
   Set(target, New<String>("setMaxCert").ToLocalChecked(), GetFunction(New<FunctionTemplate>(setMaxCert)).ToLocalChecked());
+  Set(target, New<String>("getMaxCert").ToLocalChecked(), GetFunction(New<FunctionTemplate>(getMaxCert)).ToLocalChecked());
   Set(target, New<String>("isEnabled").ToLocalChecked(), GetFunction(New<FunctionTemplate>(isEnabled)).ToLocalChecked());
   Set(target, New<String>("setEnabled").ToLocalChecked(), GetFunction(New<FunctionTemplate>(setEnabled)).ToLocalChecked());
   Set(target, New<String>("existsLink").ToLocalChecked(), GetFunction(New<FunctionTemplate>(existsLink)).ToLocalChecked());

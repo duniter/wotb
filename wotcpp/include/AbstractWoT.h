@@ -20,6 +20,7 @@ namespace libwot {
       virtual uint32_t addNode() = 0;
       virtual uint32_t removeNode() = 0;
       virtual void setMaxCert(uint32_t maxCert) = 0;
+      virtual uint32_t getMaxCert() = 0;
       virtual bool isEnabled(uint32_t nodeIndex) = 0;
       virtual bool setEnabled(bool enabled, uint32_t nodeIndex) = 0;
       virtual bool existsLink(uint32_t from, uint32_t to) = 0;

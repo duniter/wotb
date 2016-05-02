@@ -46,6 +46,10 @@ function WotB(instanceID) {
     return binding.setMaxCert(instanceID, max);
   };
 
+  this.getMaxCert = () => {
+    return binding.getMaxCert(instanceID);
+  };
+
   this.isEnabled = (node) => {
     return binding.isEnabled(instanceID, node);
   };

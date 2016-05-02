@@ -21,6 +21,7 @@ namespace libwot {
       uint32_t addNode();
       uint32_t removeNode();
       void setMaxCert(uint32_t maxCert);
+      uint32_t getMaxCert();
       bool isEnabled(uint32_t nodeIndex);
       bool setEnabled(bool enabled, uint32_t nodeIndex);
       bool existsLink(uint32_t from, uint32_t to);

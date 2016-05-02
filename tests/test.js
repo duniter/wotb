@@ -79,11 +79,13 @@ function testSuite(title, mode) {
         wotb.addLink(0, 2);
         wotb.addLink(0, 3);
         wotb.addLink(0, 4);
+        should.equal(wotb.getMaxCert(), 3);
         should.equal(wotb.existsLink(0, 1), true);
         should.equal(wotb.existsLink(0, 2), true);
         should.equal(wotb.existsLink(0, 3), true);
         should.equal(wotb.existsLink(0, 4), false);
         wotb.setMaxCert(4);
+        should.equal(wotb.getMaxCert(), 4);
         should.equal(wotb.existsLink(0, 4), false);
         wotb.addLink(0, 4);
         should.equal(wotb.existsLink(0, 4), true);

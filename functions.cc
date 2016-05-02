@@ -95,6 +95,12 @@ NAN_METHOD(setMaxCert) {
   wot->setMaxCert(maxCerts);
 }
 
+NAN_METHOD(getMaxCert) {
+  int wotID = Nan::To<int>(info[0]).FromJust();
+  AbstractWoT* wot = wots[wotID];
+  info.GetReturnValue().Set(New<Number>(wot->getMaxCert()));
+}
+
 NAN_METHOD(isEnabled) {
   int wotID = Nan::To<int>(info[0]).FromJust();
   AbstractWoT* wot = wots[wotID];
