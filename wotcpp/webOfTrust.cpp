@@ -170,7 +170,7 @@ namespace libwot {
   WebOfTrust* WebOfTrust::showTable() {
     int fieldWidth = (mNodes.size() >= 1) ? countDigits(mNodes.size() - 1) : 1;
     int i = 0;
-    cout << "[" << setw(fieldWidth) << right << "M" << "] [E] [R] [" << setw(fieldWidth) << right << "I" << "] -> " << "Links" << endl;
+    cout << "[" << setw(fieldWidth) << right << "M" << "] [E] [R] [" << setw(fieldWidth) << right << "I" << "] -> " << "Links[maxCert = " << mMaxCert << "]" << endl;
     for (vector<Node*>::iterator itNode = mNodes.begin(); itNode != mNodes.end(); itNode++) {
       Node* node = (Node*)*itNode;
       cout << "[" << setw(fieldWidth) << right << i++ << "] [" << node->isEnabled() << "] [" << node->getNbLinks() << "] [" << setw(fieldWidth) << right << node->getNbIssued() << "] -> ";
