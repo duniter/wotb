@@ -70,6 +70,13 @@ namespace libwot {
     return size;
   }
 
+  void FileWoT::setMaxCert(uint32_t maxCert) {
+    WebOfTrust* wot = WebOfTrust::readFromDisk(filename);
+    wot->setMaxCert(maxCert);
+    wot->writeToDisk(filename);
+    delete wot;
+  }
+
   bool FileWoT::isEnabled(uint32_t nodeIndex) {
     WebOfTrust* wot = WebOfTrust::readFromDisk(filename);
     if (nodeIndex >= wot->getSize()) return false;

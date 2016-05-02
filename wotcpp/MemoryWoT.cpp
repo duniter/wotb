@@ -47,6 +47,10 @@ namespace libwot {
     return wot->getSize() - 1;
   }
 
+  void MemoryWoT::setMaxCert(uint32_t maxCert) {
+    wot->setMaxCert(maxCert);
+  }
+
   bool MemoryWoT::isEnabled(uint32_t nodeIndex) {
     if (nodeIndex >= wot->getSize()) return false;
     return wot->getNodeAt(nodeIndex)->isEnabled();

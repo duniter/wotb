@@ -20,6 +20,7 @@ namespace libwot {
       WebOfTrust(uint32_t maxCert);
       ~WebOfTrust();
 
+      void setMaxCert(uint32_t maxCert) { mMaxCert = maxCert; };
       uint32_t getMaxCert() {return mMaxCert;};
       uint32_t getNodeIndex(Node* node);
       uint32_t getSize() { return mNodes.size();};

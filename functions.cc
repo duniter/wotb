@@ -88,6 +88,13 @@ NAN_METHOD(removeNode) {
   info.GetReturnValue().Set(New<Number>(wot->removeNode()));
 }
 
+NAN_METHOD(setMaxCert) {
+  int wotID = Nan::To<int>(info[0]).FromJust();
+  int32_t maxCerts = Nan::To<int32_t>(info[1]).FromJust();
+  AbstractWoT* wot = wots[wotID];
+  wot->setMaxCert(maxCerts);
+}
+
 NAN_METHOD(isEnabled) {
   int wotID = Nan::To<int>(info[0]).FromJust();
   AbstractWoT* wot = wots[wotID];

@@ -34,7 +34,10 @@ function testSuite(title, mode) {
     return () => {
       if (mode == FILE_MODE) {
         let wotb = addon.newFileInstance(FILE);
-        launchTests(wotb, () => wotb.resetWoT());
+        launchTests(wotb, () => {
+          wotb.resetWoT();
+          wotb.setMaxCert(3);
+        });
       } else {
         launchTests(addon.newMemoryInstance(), () => null);
       }
@@ -64,11 +67,30 @@ function testSuite(title, mode) {
         // Add another
         should.equal(wotb.addNode(), 1);
         should.equal(wotb.getWoTSize(), 2);
-        // Add 100 nodes
+        // Add 10 nodes
         for (let i = 0; i < 10; i++) {
           should.equal(wotb.addNode(), i + 2);
         }
         should.equal(wotb.getWoTSize(), 2 + 10);
+      });
+
+      it('should add certs only in the boundaries of maxCert', () => {
+        wotb.addLink(0, 1);
+        wotb.addLink(0, 2);
+        wotb.addLink(0, 3);
+        wotb.addLink(0, 4);
+        should.equal(wotb.existsLink(0, 1), true);
+        should.equal(wotb.existsLink(0, 2), true);
+        should.equal(wotb.existsLink(0, 3), true);
+        should.equal(wotb.existsLink(0, 4), false);
+        wotb.setMaxCert(4);
+        should.equal(wotb.existsLink(0, 4), false);
+        wotb.addLink(0, 4);
+        should.equal(wotb.existsLink(0, 4), true);
+        wotb.removeLink(0,1);
+        wotb.removeLink(0,2);
+        wotb.removeLink(0,3);
+        wotb.removeLink(0,4);
       });
 
       it('should not throw if testing existsLink() with inbounds link', function() {
