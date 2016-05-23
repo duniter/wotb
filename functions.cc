@@ -46,6 +46,17 @@ NAN_METHOD(newFileInstance) {
   info.GetReturnValue().Set(New<Number>(wots.size() - 1));
 }
 
+NAN_METHOD(newFileInstanceWin32) {
+  v8::Local<v8::Object> path_to_file = Nan::To<v8::Object>(info[0]).ToLocalChecked();
+  int path_length = Nan::To<int>(info[1]).FromJust();
+  const char* buf = node::Buffer::Data(path_to_file);
+  std::string path_ascii;
+  path_ascii.assign(buf, path_length);
+  AbstractWoT* wot = new FileWoT(path_ascii);
+  wots.push_back(wot);
+  info.GetReturnValue().Set(New<Number>(wots.size() - 1));
+}
+
 NAN_METHOD(newMemoryInstance) {
   AbstractWoT* wot = new MemoryWoT();
   wots.push_back(wot);

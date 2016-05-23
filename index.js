@@ -7,8 +7,14 @@ var binding = require(binding_path);
 
 module.exports = {
 
-  newFileInstance: (filePath) =>
-    new WotB(binding.newFileInstance(filePath)),
+  newFileInstance: (filePath) => {
+    if (process.platform == 'win32') {
+      let bufferedPath = new Buffer(filePath,'ascii');
+      return new WotB(binding.newFileInstanceWin32(bufferedPath, bufferedPath.length));
+    } else {
+      return new WotB(binding.newFileInstance(filePath));
+    }
+  },
 
   newMemoryInstance: () =>
     new WotB(binding.newMemoryInstance()),

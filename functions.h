@@ -2,6 +2,7 @@
 #include <nan.h>
 
 NAN_METHOD(newFileInstance);
+NAN_METHOD(newFileInstanceWin32);
 NAN_METHOD(newMemoryInstance);
 NAN_METHOD(setVerbose);
 NAN_METHOD(showWoT);

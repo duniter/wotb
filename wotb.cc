@@ -12,6 +12,7 @@ using Nan::Set;
 
 NAN_MODULE_INIT(InitAll) {
   Set(target, New<String>("newFileInstance").ToLocalChecked(), GetFunction(New<FunctionTemplate>(newFileInstance)).ToLocalChecked());
+  Set(target, New<String>("newFileInstanceWin32").ToLocalChecked(), GetFunction(New<FunctionTemplate>(newFileInstanceWin32)).ToLocalChecked());
   Set(target, New<String>("newMemoryInstance").ToLocalChecked(), GetFunction(New<FunctionTemplate>(newMemoryInstance)).ToLocalChecked());
   Set(target, New<String>("setVerbose").ToLocalChecked(), GetFunction(New<FunctionTemplate>(setVerbose)).ToLocalChecked());
   Set(target, New<String>("showWoT").ToLocalChecked(), GetFunction(New<FunctionTemplate>(showWoT)).ToLocalChecked());
