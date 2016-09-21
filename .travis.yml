@@ -17,6 +17,9 @@ addons:
     packages:
     - g++-4.8
 sudo: false
+
+before_install:
+- ci/travis/before_install.sh
 install:
 - npm install
 
