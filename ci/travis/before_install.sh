@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-if [[ ${TRAVIS_OS_NAME} = osx ]]; then
+echo "OS Name = $TRAVIS_OS_NAME"
+if [ $TRAVIS_OS_NAME == "osx" ]
+then
     # Since default gcc on osx is just a front-end for LLVM
     if [[ ${CC} = gcc ]]; then
         export CXX=g++-4.8
