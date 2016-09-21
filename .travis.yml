@@ -1,6 +1,7 @@
 language: node_js
 os:
 - linux
+- macos
 node_js:
 - 5.8.0
 env:
