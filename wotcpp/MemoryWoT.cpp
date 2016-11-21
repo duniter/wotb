@@ -84,4 +84,12 @@ namespace libwot {
     DistanceResult result = wot->computeDistance(member, d_min, k_max, x_percent);
     return result.isOutdistanced;
   }
+
+  WoTSet MemoryWoT::getSentries(int d_min) {
+    return wot->getSentries(d_min);
+  }
+
+  WoTSet MemoryWoT::getNonSentries(int d_min) {
+    return wot->getNonSentries(d_min);
+  }
 }

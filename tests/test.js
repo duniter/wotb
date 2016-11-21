@@ -195,6 +195,17 @@ function testSuite(title, mode) {
          * 3 --> 1
          * 3 --> 2
          */
+        should.equal(wotb.getWoTSize(), 12);
+        should.equal(wotb.getSentries(FROM_1_LINK_SENTRIES).length, 3);
+        should.equal(wotb.getSentries(FROM_1_LINK_SENTRIES)[0], 2);
+        should.equal(wotb.getSentries(FROM_1_LINK_SENTRIES)[1], 3);
+        should.equal(wotb.getSentries(FROM_1_LINK_SENTRIES)[2], 5);
+        should.equal(wotb.getSentries(FROM_2_LINKS_SENTRIES).length, 1);
+        should.equal(wotb.getSentries(FROM_2_LINKS_SENTRIES)[0], 3);
+        should.equal(wotb.getSentries(FROM_3_LINKS_SENTRIES).length, 0);
+        should.equal(wotb.getNonSentries(FROM_1_LINK_SENTRIES).length, 9); // 12 - 3 = 9
+        should.equal(wotb.getNonSentries(FROM_2_LINKS_SENTRIES).length, 11); // 12 - 1 = 11
+        should.equal(wotb.getNonSentries(FROM_3_LINKS_SENTRIES).length, 12); // 12 - 0 = 12
         should.equal(wotb.isOutdistanced(0, FROM_1_LINK_SENTRIES, MAX_DISTANCE_1, X_PERCENT), __OUTDISTANCED__); // KO: No path 3 --> 0
         should.equal(wotb.isOutdistanced(0, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_1, X_PERCENT), __OUTDISTANCED__); // KO: No path 3 --> 0
         should.equal(wotb.isOutdistanced(0, FROM_3_LINKS_SENTRIES, MAX_DISTANCE_1, X_PERCENT), __OK__); // OK: no sentry with 3 links issued

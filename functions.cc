@@ -160,3 +160,31 @@ NAN_METHOD(isOutdistanced) {
   double x_percent = Nan::To<double>(info[4]).FromJust();
   info.GetReturnValue().Set(New<Boolean>((wot->isOutdistanced(member, d_min, k_max, x_percent))));
 }
+
+NAN_METHOD(getSentries) {
+  int wotID = Nan::To<int>(info[0]).FromJust();
+  AbstractWoT* wot = wots[wotID];
+  int32_t d_min = Nan::To<int32_t>(info[1]).FromJust();
+  Local<Array> result_list = New<Array>();
+  WoTSet sentries = wot->getSentries(d_min);
+  for (unsigned int i = 0; i < sentries.nbNodes; i++ ) {
+    Local<Number> sentry = New<Number>(sentries.nodes[i]);
+    result_list->Set(i, sentry);
+  }
+  delete[] sentries.nodes;
+  info.GetReturnValue().Set(result_list);
+}
+
+NAN_METHOD(getNonSentries) {
+  int wotID = Nan::To<int>(info[0]).FromJust();
+  AbstractWoT* wot = wots[wotID];
+  int32_t d_min = Nan::To<int32_t>(info[1]).FromJust();
+  Local<Array> result_list = New<Array>();
+  WoTSet nonSentries = wot->getNonSentries(d_min);
+  for (unsigned int i = 0; i < nonSentries.nbNodes; i++ ) {
+    Local<Number> nonSentry = New<Number>(nonSentries.nodes[i]);
+    result_list->Set(i, nonSentry);
+  }
+  delete[] nonSentries.nodes;
+  info.GetReturnValue().Set(result_list);
+}

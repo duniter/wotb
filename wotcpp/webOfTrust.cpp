@@ -207,7 +207,9 @@ namespace libwot {
   DistanceResult WebOfTrust::computeDistance(uint32_t member, uint32_t d_min, uint32_t k_max, double x_percent) {
     DistanceResult result;
     result.nbSentries = 0;
+    // An array of members reached by `member`
     bool *wotMatches = new bool[mNodes.size()];
+    // An array of members that are sentries
     bool *sentries = new bool[mNodes.size()];
     for (uint32_t i = 0; i < mNodes.size(); i++) {
       // We will check only members with at least d_min links (other do not participate the distance rule)
@@ -243,13 +245,11 @@ namespace libwot {
     return result;
   }
 
-
   void WebOfTrust::findMatches(uint32_t m1, uint32_t k_max, bool *wotChecked) {
     if (k_max >= 1) {
       checkMatches(m1, 1, k_max, wotChecked);
     }
   }
-
 
   void WebOfTrust::checkMatches(uint32_t m1, uint32_t distance, uint32_t distanceMax, bool *wotChecked) {
     // Mark as checked the linking nodes at this level
@@ -263,6 +263,48 @@ namespace libwot {
         checkMatches(getNodeIndex(mNodes.at(m1)->getLinkAt(j)), distance + 1, distanceMax, wotChecked);
       }
     }
+  }
+
+  WoTSet WebOfTrust::getSentries(int d_min) {
+    WoTSet set;
+    set.nbNodes = 0;
+    for (uint32_t i = 0; i < mNodes.size(); i++) {
+      Node *node = mNodes.at(i);
+      if (node->isEnabled() && node->getNbIssued() >= d_min) {
+        set.nbNodes++;
+      }
+    }
+    set.nodes = new uint32_t[set.nbNodes];
+    int j = 0;
+    for (uint32_t i = 0; i < mNodes.size(); i++) {
+      Node *node = mNodes.at(i);
+      if (node->isEnabled() && node->getNbIssued() >= d_min) {
+        set.nodes[j] = i;
+        j++;
+      }
+    }
+    return set;
+  }
+
+  WoTSet WebOfTrust::getNonSentries(int d_min) {
+    WoTSet set;
+    set.nbNodes = 0;
+    for (uint32_t i = 0; i < mNodes.size(); i++) {
+      Node *node = mNodes.at(i);
+      if (node->isEnabled() && node->getNbIssued() < d_min) {
+        set.nbNodes++;
+      }
+    }
+    set.nodes = new uint32_t[set.nbNodes];
+    int j = 0;
+    for (uint32_t i = 0; i < mNodes.size(); i++) {
+      Node *node = mNodes.at(i);
+      if (node->isEnabled() && node->getNbIssued() < d_min) {
+        set.nodes[j] = i;
+        j++;
+      }
+    }
+    return set;
   }
 
 }

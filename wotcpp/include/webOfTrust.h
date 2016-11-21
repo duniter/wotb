@@ -7,6 +7,7 @@
 
 #include "node.h"
 #include "distanceResult.h"
+#include "wotSet.h"
 
 
 namespace libwot {
@@ -41,6 +42,9 @@ namespace libwot {
       void findMatches(uint32_t m1, uint32_t k_max, bool *wotChecked);
       void checkMatches(uint32_t m1, uint32_t distance, uint32_t distanceMax, bool *wotChecked);
 
+      // Data extraction
+      WoTSet getSentries(int d_min);
+      WoTSet getNonSentries(int d_min);
 
     private :
 

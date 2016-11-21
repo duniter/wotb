@@ -138,4 +138,18 @@ namespace libwot {
     return result.isOutdistanced;
   }
 
+  WoTSet FileWoT::getSentries(int d_min) {
+    WebOfTrust* wot = WebOfTrust::readFromDisk(filename);
+    WoTSet result = wot->getSentries(d_min);
+    delete wot;
+    return result;
+  }
+
+  WoTSet FileWoT::getNonSentries(int d_min) {
+    WebOfTrust* wot = WebOfTrust::readFromDisk(filename);
+    WoTSet result = wot->getNonSentries(d_min);
+    delete wot;
+    return result;
+  }
+
 }

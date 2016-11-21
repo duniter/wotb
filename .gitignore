@@ -2,3 +2,5 @@ build/
 node_modules/
 **/.idea
 **/wot.bin
+npm-debug.log
+wotb.node

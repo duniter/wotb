@@ -79,4 +79,12 @@ function WotB(instanceID) {
   this.isOutdistanced = (node, d_min, k_max, x_percent) => {
     return binding.isOutdistanced(instanceID, node, d_min, k_max, x_percent);
   };
+
+  this.getSentries = (d_min) => {
+    return binding.getSentries(instanceID, d_min);
+  };
+
+  this.getNonSentries = (d_min) => {
+    return binding.getNonSentries(instanceID, d_min);
+  };
 }

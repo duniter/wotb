@@ -29,6 +29,9 @@ namespace libwot {
       uint32_t addLink(uint32_t from, uint32_t to);
       uint32_t removeLink(uint32_t from, uint32_t to);
       bool isOutdistanced(uint32_t member, uint32_t d_min, uint32_t k_max, double x_percent);
+      // Data extraction
+      WoTSet getSentries(int d_min);
+      WoTSet getNonSentries(int d_min);
 
     private:
       WebOfTrust* wot;

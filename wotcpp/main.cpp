@@ -39,6 +39,8 @@ int main(int argc, char **argv) {
 
   wot->showTable();
   wot->showGraphviz();
+  Log() << "Sentries count = " << wot->getSentries(1).nbNodes;
+  Log() << "Non-Sentries count = " << wot->getNonSentries(1).nbNodes;
 
   delete wot;
 }
