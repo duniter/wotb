@@ -32,6 +32,7 @@ NAN_MODULE_INIT(InitAll) {
   // Extract data
   Set(target, New<String>("getSentries").ToLocalChecked(), GetFunction(New<FunctionTemplate>(getSentries)).ToLocalChecked());
   Set(target, New<String>("getNonSentries").ToLocalChecked(), GetFunction(New<FunctionTemplate>(getNonSentries)).ToLocalChecked());
+  Set(target, New<String>("getPaths").ToLocalChecked(), GetFunction(New<FunctionTemplate>(getPaths)).ToLocalChecked());
 }
 
 NODE_MODULE(nacl, InitAll)

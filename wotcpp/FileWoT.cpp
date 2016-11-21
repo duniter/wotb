@@ -152,4 +152,11 @@ namespace libwot {
     return result;
   }
 
+  std::vector<std::vector<uint32_t>> FileWoT::getPaths(uint32_t from, uint32_t to, uint32_t k_max) {
+    WebOfTrust* wot = WebOfTrust::readFromDisk(filename);
+    std::vector<std::vector<uint32_t>> result = wot->getPaths(from, to, k_max);
+    delete wot;
+    return result;
+  }
+
 }

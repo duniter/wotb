@@ -92,4 +92,8 @@ namespace libwot {
   WoTSet MemoryWoT::getNonSentries(int d_min) {
     return wot->getNonSentries(d_min);
   }
+
+  std::vector<std::vector<uint32_t>> MemoryWoT::getPaths(uint32_t from, uint32_t to, uint32_t k_max) {
+    return wot->getPaths(from, to, k_max);
+  }
 }

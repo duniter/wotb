@@ -87,4 +87,8 @@ function WotB(instanceID) {
   this.getNonSentries = (d_min) => {
     return binding.getNonSentries(instanceID, d_min);
   };
+
+  this.getPaths = (from, to, k_max) => {
+    return binding.getPaths(instanceID, from, to, k_max);
+  };
 }

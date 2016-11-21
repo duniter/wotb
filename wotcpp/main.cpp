@@ -33,6 +33,13 @@ int main(int argc, char **argv) {
   wot->getNodeAt(3)->addLinkTo((uint32_t)0);
   wot->getNodeAt(4)->addLinkTo((uint32_t)0);
   wot->getNodeAt(5)->addLinkTo((uint32_t)0);
+  // Add a path from 0 to 1
+  wot->getNodeAt(0)->addLinkTo((uint32_t)2);
+  wot->getNodeAt(2)->addLinkTo((uint32_t)3);
+  wot->getNodeAt(3)->addLinkTo((uint32_t)1);
+  // Add a path from 0 to 1
+  wot->getNodeAt(0)->addLinkTo((uint32_t)4);
+  wot->getNodeAt(4)->addLinkTo((uint32_t)1);
 
   Log::setEnabled(true);
 
@@ -41,6 +48,25 @@ int main(int argc, char **argv) {
   wot->showGraphviz();
   Log() << "Sentries count = " << wot->getSentries(1).nbNodes;
   Log() << "Non-Sentries count = " << wot->getNonSentries(1).nbNodes;
+
+  uint32_t by = 0;
+  uint32_t target = 1;
+  uint32_t k_max = 3;
+  std::vector<std::vector<uint32_t>> steps = wot->getPaths(by, target, k_max);
+  if (steps.size() == 0) {
+    Log() << target << " is NOT reachable by " << by;
+  } else {
+    for (int i = 0; i < steps.size(); i++) {
+      cout << target << " is reached by " << by << " through: ";
+      for (int j = 0; j < steps[i].size(); j++) {
+        if (j > 0) {
+          cout << " -> ";
+        }
+        cout << steps[i][j];
+      }
+      cout << endl;
+    }
+  }
 
   delete wot;
 }

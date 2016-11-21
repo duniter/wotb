@@ -307,4 +307,65 @@ namespace libwot {
     return set;
   }
 
+  std::vector<std::vector<uint32_t>> WebOfTrust::getPaths(uint32_t from, uint32_t to, uint32_t k_max) {
+    std::vector<WotStep*> paths;
+    std::vector<WotStep*> matchingPaths;
+    std::vector<std::vector<uint32_t>> result;
+    bool *wotMatches = new bool[mNodes.size()];
+    for (uint32_t i = 0; i < mNodes.size(); i++) {
+      // A map to remember the fact we checked a node
+      wotMatches[i] = false;
+    }
+    wotMatches[to] = true;
+    WotStep* root = new WotStep();
+    root->distance = 0;
+    root->member = to;
+    root->previous = NULL;
+    paths.push_back(root);
+    lookup(from, to, 0, k_max, root, &paths, &matchingPaths, wotMatches);
+    // Formatting as vectors
+    for (int i = 0; i < matchingPaths.size(); i++) {
+      std::vector<uint32_t> thePath;
+      WotStep* step = matchingPaths[i];
+      while (step != NULL) {
+        thePath.push_back(step->member);
+        step = step->previous;
+      }
+      result.push_back(thePath);
+    }
+    // Clean memory
+    for (int i = 0; i < paths.size(); i++) {
+      delete paths[i];
+    }
+    // Result
+    return result;
+  }
+
+  void WebOfTrust::lookup(uint32_t source, uint32_t target, uint32_t distance, uint32_t distanceMax, WotStep* previous, std::vector<WotStep*>* paths, std::vector<WotStep*>* matchingPaths, bool* wotChecked) {
+    if (source != target && distance < distanceMax) {
+      std::vector<WotStep*> local_paths;
+      // Mark as checked the linking nodes at this level
+      for (uint32_t j = 0; j < mNodes.at(target)->getNbLinks(); j++) {
+        uint32_t by = getNodeIndex(mNodes.at(target)->getLinkAt(j));
+//        Log() << "Link by " << by << " -> " << target;
+        wotChecked[by] = true;
+        WotStep* step = new WotStep();
+        step->distance = distance;
+        step->member = by;
+        step->previous = previous;
+        paths->push_back(step);
+        local_paths.push_back(step);
+        // WIN
+        if (by == source) {
+          matchingPaths->push_back(step);
+        }
+      }
+      if (distance < distanceMax) {
+        // Look one level deeper
+        for (uint32_t j = 0; j < mNodes.at(target)->getNbLinks(); j++) {
+          lookup(source, local_paths[j]->member, distance + 1, distanceMax, local_paths[j], paths, matchingPaths, wotChecked);
+        }
+      }
+    }
+  }
 }

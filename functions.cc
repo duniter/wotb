@@ -188,3 +188,21 @@ NAN_METHOD(getNonSentries) {
   delete[] nonSentries.nodes;
   info.GetReturnValue().Set(result_list);
 }
+
+NAN_METHOD(getPaths) {
+  int wotID = Nan::To<int>(info[0]).FromJust();
+  AbstractWoT* wot = wots[wotID];
+  int32_t from = Nan::To<int32_t>(info[1]).FromJust();
+  int32_t to = Nan::To<int32_t>(info[2]).FromJust();
+  int32_t k_max = Nan::To<int32_t>(info[3]).FromJust();
+  Local<Array> result_list = New<Array>();
+  std::vector<std::vector<uint32_t>> paths = wot->getPaths(from, to, k_max);
+  for (unsigned int i = 0; i < paths.size(); i++ ) {
+    Local<Array> path = New<Array>();
+    for (int j = 0; j < paths[i].size(); j++) {
+      path->Set(j, New<Number>(paths[i][j]));
+    }
+    result_list->Set(i, path);
+  }
+  info.GetReturnValue().Set(result_list);
+}

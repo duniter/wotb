@@ -32,6 +32,7 @@ namespace libwot {
       // Data extraction
       WoTSet getSentries(int d_min);
       WoTSet getNonSentries(int d_min);
+      std::vector<std::vector<uint32_t>> getPaths(uint32_t from, uint32_t to, uint32_t k_max);
 
     private:
       WebOfTrust* wot;
