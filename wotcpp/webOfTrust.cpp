@@ -349,22 +349,24 @@ namespace libwot {
       // Mark as checked the linking nodes at this level
       for (uint32_t j = 0; j < mNodes.at(target)->getNbLinks(); j++) {
         uint32_t by = getNodeIndex(mNodes.at(target)->getLinkAt(j));
-//        Log() << "Link by " << by << " -> " << target;
-        wotChecked[by] = true;
-        WotStep* step = new WotStep();
-        step->distance = distance;
-        step->member = by;
-        step->previous = previous;
-        paths->push_back(step);
-        local_paths.push_back(step);
-        // WIN
-        if (by == source) {
-          matchingPaths->push_back(step);
+        // Do not compute a same path twice
+        if (!wotChecked[by]) {
+          wotChecked[by] = true;
+          WotStep* step = new WotStep();
+          step->distance = distance;
+          step->member = by;
+          step->previous = previous;
+          paths->push_back(step);
+          local_paths.push_back(step);
+          // WIN
+          if (by == source) {
+            matchingPaths->push_back(step);
+          }
         }
       }
       if (distance < distanceMax) {
         // Look one level deeper
-        for (uint32_t j = 0; j < mNodes.at(target)->getNbLinks(); j++) {
+        for (uint32_t j = 0; j < local_paths.size(); j++) {
           lookup(source, local_paths[j]->member, distance + 1, distanceMax, local_paths[j], paths, matchingPaths, wotChecked);
         }
       }
