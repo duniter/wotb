@@ -313,18 +313,18 @@ namespace libwot {
     std::vector<WotStep*> paths;
     std::vector<WotStep*> matchingPaths;
     std::vector<std::vector<uint32_t>> result;
-    bool *wotMatches = new bool[mNodes.size()];
+    uint32_t* wotDistance = new uint32_t[mNodes.size()];
     for (uint32_t i = 0; i < mNodes.size(); i++) {
       // A map to remember the fact we checked a node
-      wotMatches[i] = false;
+      wotDistance[i] = k_max + 1;
     }
-    wotMatches[to] = true;
+    wotDistance[to] = 0;
     WotStep* root = new WotStep();
     root->distance = 0;
     root->member = to;
     root->previous = NULL;
     paths.push_back(root);
-    lookup(from, to, 0, k_max, root, &paths, &matchingPaths, wotMatches);
+    lookup(from, to, 1, k_max, root, &paths, &matchingPaths, wotDistance);
     // Formatting as vectors
     for (int i = 0; i < matchingPaths.size(); i++) {
       std::vector<uint32_t> thePath;
@@ -343,15 +343,15 @@ namespace libwot {
     return result;
   }
 
-  void WebOfTrust::lookup(uint32_t source, uint32_t target, uint32_t distance, uint32_t distanceMax, WotStep* previous, std::vector<WotStep*>* paths, std::vector<WotStep*>* matchingPaths, bool* wotChecked) {
-    if (source != target && distance < distanceMax) {
+  void WebOfTrust::lookup(uint32_t source, uint32_t target, uint32_t distance, uint32_t distanceMax, WotStep* previous, std::vector<WotStep*>* paths, std::vector<WotStep*>* matchingPaths, uint32_t* wotDistance) {
+    if (source != target && distance <= distanceMax) {
       std::vector<WotStep*> local_paths;
       // Mark as checked the linking nodes at this level
       for (uint32_t j = 0; j < mNodes.at(target)->getNbLinks(); j++) {
         uint32_t by = getNodeIndex(mNodes.at(target)->getLinkAt(j));
-        // Do not compute a same path twice
-        if (!wotChecked[by]) {
-          wotChecked[by] = true;
+        // Do not compute a same path twice if the distance is not shorter
+        if (distance < wotDistance[by]) {
+          wotDistance[by] = distance;
           WotStep* step = new WotStep();
           step->distance = distance;
           step->member = by;
@@ -364,10 +364,10 @@ namespace libwot {
           }
         }
       }
-      if (distance < distanceMax) {
+      if (distance <= distanceMax) {
         // Look one level deeper
         for (uint32_t j = 0; j < local_paths.size(); j++) {
-          lookup(source, local_paths[j]->member, distance + 1, distanceMax, local_paths[j], paths, matchingPaths, wotChecked);
+          lookup(source, local_paths[j]->member, distance + 1, distanceMax, local_paths[j], paths, matchingPaths, wotDistance);
         }
       }
     }
