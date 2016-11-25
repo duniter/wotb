@@ -17,6 +17,7 @@ namespace libsimu {
       Certification();
       ~Certification();
 
+      uint32_t uniqueNumber;
       Lien link;
       Identity* emetteur;
       Identity* receveur;

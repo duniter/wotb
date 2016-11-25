@@ -88,6 +88,18 @@ namespace libsimu {
          ****************/
         start = std::chrono::high_resolution_clock::now();
         // Ajoute les liens internes (membre à membre)
+//        for (int i = cPool->pending.size() - 1; i >= 0; i--) {
+//          Certification* cert = cPool->pending[i];
+//          int to = cert->receveur->uid;
+//          for (int j = 0; j < cPool->certs[to].size(); j++) {
+//            Certification* cert2 = cPool->certs[to][j];
+//            if (cert->uniqueNumber == cert2->uniqueNumber) {
+//              if (essaieIntegrerLien(cert, to, j)) {
+//                cPool->pending.erase(cPool->pending.begin() + i);
+//              }
+//            }
+//          }
+//        }
         for (int to = 0; to < iPool->lastUID(); to++) {
           for (int j = 0; j < cPool->certs[to].size(); j++) {
             essaieIntegrerLien(cPool->certs[to][j], to, j);
@@ -330,7 +342,7 @@ namespace libsimu {
       return existeEnToile;
     }
 
-    void Duniter::essaieIntegrerLien(Certification* cert, int to, int j) {
+    bool Duniter::essaieIntegrerLien(Certification* cert, int to, int j) {
       uint32_t from = cert->link.first;
       Identity* certifieur = cert->emetteur;
       Identity* certifie = cert->receveur;
@@ -340,11 +352,13 @@ namespace libsimu {
         if (wotbCertifieur->isEnabled() && wotbCertifie->isEnabled() && wotbCertifieur->getNbIssued() < SIG_STOCK) {
           if (wotbCertifieur->addLinkTo(wotbCertifie)) {
             cert2lien(cert, to, j, false);
+            return true;
           } else {
             Log2() << "ECHEC de l'ajout du lien UID " << from << " -> " << to << " | WID " << certifieur->wotb_id << " -> " << certifie->wotb_id;
           }
         }
       }
+      return false;
     };
 
     void Duniter::essaieIntegrerNouveauVenu(Identity *nouveau) {

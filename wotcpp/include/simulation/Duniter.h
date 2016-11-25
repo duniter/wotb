@@ -41,7 +41,7 @@ namespace libsimu {
       void supprimeLien(Certification* cert, int to, int j);
       void membreEmetUneCertifSiPossible(Identity *identity);
       void essaieIntegrerNouveauVenu(Identity *identity);
-      void essaieIntegrerLien(Certification* cert, int to, int j);
+      bool essaieIntegrerLien(Certification* cert, int to, int j);
       int nombreAleatoireUniformeEntreXetY(uint32_t x, uint32_t y);
       bool existeDejaCertification(Identity* emetteur, Identity* identiteCiblee);
 

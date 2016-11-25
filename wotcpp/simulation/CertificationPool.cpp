@@ -14,6 +14,7 @@ namespace libsimu {
     CertificationPool::CertificationPool() {
       certs = vector<vector<Certification*>>(10000000);
       liens = vector<vector<Certification*>>(10000000);
+      counter = 0;
     }
 
 
@@ -26,10 +27,12 @@ namespace libsimu {
       cert->dateOfIssuance = date;
       cert->emetteur = from;
       cert->receveur = from;
+      cert->uniqueNumber = counter++;
       Lien link;
       link.first = from->uid;
       link.second = to->uid;
       cert->link = link;
       certs[to->uid].push_back(cert);
+      pending.push_back(cert);
     }
 }
