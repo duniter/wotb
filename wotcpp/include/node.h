@@ -33,12 +33,12 @@ namespace libwot {
       bool hasLinkFrom(uint32_t from);
       bool hasLinkFrom(Node* from);
       void removeLinkTo(uint32_t to);
+      std::vector<Node*> mCert;
 
     private :
 
       WebOfTrust *mWot;
       bool mEnabled;
-      std::vector<Node*> mCert;
       uint32_t mNbIssued;
   };
 }

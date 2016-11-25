@@ -13,6 +13,7 @@ namespace libwot {
 
   using namespace std;
 
+  vector<uint32_t> levels;
 
   WebOfTrust::WebOfTrust(uint32_t maxCert) {
     mNodes = vector<Node*>(0);
@@ -226,13 +227,13 @@ namespace libwot {
       if (sentries[i]) {
         result.nbSentries++;
         if (wotMatches[i]) {
-          Log() << "Sentry " << i << ": OK";
+//          Log() << "Sentry " << i << ": OK";
           result.nbSuccess++;
         } else {
-          Log() << "Sentry " << i << ": KO";
+//          Log() << "Sentry " << i << ": KO";
         }
       } else {
-        Log() << "NON-Sentry "  << i;
+//        Log() << "NON-Sentry "  << i;
       }
     }
     result.isOutdistanced = result.nbSuccess < result.nbSentries;
@@ -252,10 +253,19 @@ namespace libwot {
   }
 
   void WebOfTrust::checkMatches(uint32_t m1, uint32_t distance, uint32_t distanceMax, bool *wotChecked) {
+    if (levels.size() < distance) {
+      levels.push_back(m1);
+    }
+    levels[distance - 1] = m1;
     // Mark as checked the linking nodes at this level
     for (uint32_t j = 0; j < mNodes.at(m1)->getNbLinks(); j++) {
       uint32_t by = getNodeIndex(mNodes.at(m1)->getLinkAt(j));
-      Log() << "Match " << by << " -> " << m1;
+//      for (int k = 0; k < levels.size(); k++) {
+//        if (k > 0) cout << " <- "; else cout << "Path : ";
+//        cout << levels[k];
+//      }
+//      cout << " <- " << by << endl;
+//      Log() << "Match " << by << " -> " << m1;
       wotChecked[by] = true;
     }
     if (distance < distanceMax) {
