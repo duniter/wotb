@@ -26,6 +26,15 @@ namespace libwot {
       uint32_t getMaxCert() {return mMaxCert;};
       uint32_t getNodeIndex(Node* node);
       uint32_t getSize() { return mNodes.size();};
+      uint32_t getEnabledCount() {
+        int count = 0;
+        for (int n = 0; n < mNodes.size(); n++) {
+          if (mNodes[n]->isEnabled()) {
+            count++;
+          }
+        }
+        return count;
+      };
       Node* getNodeAt(uint32_t index) { return mNodes.at(index);};
       Node* getRandomNode();
 
