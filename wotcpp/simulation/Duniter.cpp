@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <algorithm>
 #include <iostream>
+#include <chrono>
 
 #include "simulation/IdentityPool.h"
 #include "webOfTrust.h"
@@ -46,6 +47,9 @@ namespace libsimu {
      * un maximum de nouveaux membres selon les règles établies.
      */
     void Duniter::ajouteUnBloc() {
+      auto start = std::chrono::high_resolution_clock::now();
+      auto elapsed = std::chrono::high_resolution_clock::now() - start;
+      long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
       if (blocCourant == 0 && iPool->members.size() == 0) {
 
         Log() << "--------------- TOUR 0 ---------------";
@@ -63,9 +67,10 @@ namespace libsimu {
           i--;
         }
         // Ajoute les liens initiaux
-        for (auto i = cPool->certs.begin(); i != cPool->certs.end(); i++) {
-          Lien lien = i->first;
-          cert2lien(lien);
+        for (int to = 0; to < cPool->certs.size(); to++) {
+          for (int j = 0; j < cPool->certs[to].size(); j++) {
+            cert2lien(cPool->certs[to][j], to, j, true);
+          }
         }
         blocCourant = 0;
       } else {
@@ -75,15 +80,24 @@ namespace libsimu {
         /*****************
          * BLOC NORMAL
          ****************/
-
-        for (auto i = cPool->certs.begin(); i != cPool->certs.end(); i++) {
-          Lien lien = i->first;
-          essaieIntegrerLien(lien);
+        start = std::chrono::high_resolution_clock::now();
+        // Ajoute les liens internes (membre à membre)
+        for (int to = 0; to < iPool->lastUID(); to++) {
+          for (int j = 0; j < cPool->certs[to].size(); j++) {
+            essaieIntegrerLien(cPool->certs[to][j], to, j);
+          }
         }
+        elapsed = std::chrono::high_resolution_clock::now() - start;
+        microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
+        Log() << microseconds << "µs for essaieIntegrerLien";
 
+        start = std::chrono::high_resolution_clock::now();
         for (int i = 0; i < iPool->newcomers.size(); i++) {
           essaieIntegrerNouveauVenu(iPool->newcomers[i]);
         }
+        elapsed = std::chrono::high_resolution_clock::now() - start;
+        microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
+        Log() << microseconds << "µs for essaieIntegrerNouveauVenu";
 
         // TODO: actualisation tous les X periodes => Test de distance
 
@@ -99,12 +113,17 @@ namespace libsimu {
        * Les liens existants dans la WoT expirent et s'auto-détruisent.
        */
 
-      for (auto i = cPool->liens.begin(); i != cPool->liens.end(); i++) {
-        if (i->second.dateOfIssuance + SIG_VALIDITY <= blocCourant) {
-          // Suppression du lien
-          supprimeLien(i->first);
+      start = std::chrono::high_resolution_clock::now();
+      for (int to = 0; to < wot->getSize(); to++) {
+        for (int j = 0; j < cPool->liens[to].size(); j++) {
+          if (cPool->liens[to][j]->dateOfIssuance + SIG_VALIDITY <= blocCourant) {
+            supprimeLien(cPool->liens[to][j], to, j);
+          }
         }
       }
+      elapsed = std::chrono::high_resolution_clock::now() - start;
+      microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
+      Log() << microseconds << "µs for supprimeLien";
 
       // TODO expiration des certifications en piscine
 
@@ -117,12 +136,16 @@ namespace libsimu {
        *
        * A tout instant, les membres qui n'ont pas assez de certifications doivent être exclus.
        */
+      start = std::chrono::high_resolution_clock::now();
       for (uint32_t i = 0; i < wot->getSize(); i++) {
         Node* node = wot->getNodeAt(i);
         if (node->getNbLinks() < SIG_QTY) {
           node->setEnabled(false);
         }
       }
+      elapsed = std::chrono::high_resolution_clock::now() - start;
+      microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
+      Log() << microseconds << "µs for setEnabled";
 
       /*********************
        * NOUVEAUX VENUS
@@ -133,8 +156,12 @@ namespace libsimu {
        * Il existe toujours *a minima* MIN_NEW nouveaux membre, et *a maxima* MAX_NEW_PERCENT % de membres supplémentaires
        * de la taille actuelle de la toile de confiance.
        */
+      start = std::chrono::high_resolution_clock::now();
       int taillePiscineDeMembres = max(int(MIN_NEW), int(wot->getSize() * MAX_NEW_PERCENT));
       iPool->alimenteEnNouveaux(taillePiscineDeMembres);
+      elapsed = std::chrono::high_resolution_clock::now() - start;
+      microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
+      Log() << microseconds << "µs for alimenteEnNouveaux";
 
 
       /*********************
@@ -159,9 +186,13 @@ namespace libsimu {
        *
        * --> Il s'agit d'une stratégie particulière, d'autres peuvent être imaginées.
        */
+      start = std::chrono::high_resolution_clock::now();
       for (int i = 0; i < iPool->members.size(); i++) {
         membreEmetUneCertifSiPossible(iPool->members[i]);
       }
+      elapsed = std::chrono::high_resolution_clock::now() - start;
+      microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
+      Log() << microseconds << "µs for membreEmetUneCertifSiPossible";
     };
 
     void Duniter::alimenteLesPiscines() {
@@ -169,7 +200,7 @@ namespace libsimu {
     };
 
     void Duniter::afficheWoT() {
-      wot->showTable();
+//      wot->showTable();
       Log() << "Nouveaux membres en attente : " << iPool->newcomers.size();
       Log() << "Nombre de membres : " << wot->getEnabledCount();
       Log() << "Nombre d'individus passés : " << wot->getSize();
@@ -184,33 +215,34 @@ namespace libsimu {
       // Ajoute dans la liste des membres
       iPool->members.push_back(identity);
       wotMembers[identity->uid] = identity;
+      wotIdentities[identity->wotb_id] = identity;
     };
 
-    void Duniter::cert2lien(Lien& lien) {
+    void Duniter::cert2lien(Certification* cert, int to, int j, bool majWoTb) {
+      Lien lien = cert->link;
       uint32_t from = lien.first;
       Identity* certifieur = wotMembers[from];
-      uint32_t to = lien.second;
       Identity* certifie = wotMembers[to];
       if (certifie != NULL) {
-        Log() << "LIEN de UID " << from << " -> " << to << " | WID " << certifieur->wotb_id << " -> " << certifie->wotb_id;
-        wot->getNodeAt(certifieur->wotb_id)->addLinkTo(wot->getNodeAt(certifie->wotb_id));
-        Certification cert = cPool->certs[lien];
+        Log2() << "LIEN de UID " << from << " -> " << to << " | WID " << certifieur->wotb_id << " -> " << certifie->wotb_id;
+        if (majWoTb) {
+          wot->getNodeAt(certifieur->wotb_id)->addLinkTo(wot->getNodeAt(certifie->wotb_id));
+        }
         // Ajoute dans la liste des membres
-        cPool->liens[lien] = cert;
+        cPool->liens[to].push_back(cert);
         // Retire de la liste des certificats potentiels
-        cPool->certs.erase(lien);
+        cPool->certs[to].erase(cPool->certs[to].begin() + j);
       }
     };
 
-    void Duniter::supprimeLien(const Lien& lien) {
-      Log() << "SUPPRIME Lien de UID " << lien.first << " -> " << lien.second;
-      uint32_t from = lien.first;
+    void Duniter::supprimeLien(Certification* cert, int to, int j) {
+      Log2() << "SUPPRIME Lien de UID " << cert->link.first << " -> " << cert->link.second;
+      uint32_t from = cert->link.first;
       Identity* certifieur = wotMembers[from];
-      uint32_t to = lien.second;
       Identity* certifie = wotMembers[to];
       wot->getNodeAt(certifieur->wotb_id)->removeLinkTo(certifie->wotb_id);
-      // Retire de la liste des certificats potentiels
-      cPool->liens.erase(lien);
+      // Retire de la liste des certificats de toile
+      cPool->liens[to].erase(cPool->liens[to].begin() + j);
     };
 
     void Duniter::membreEmetUneCertifSiPossible(Identity *emetteur) {
@@ -219,73 +251,103 @@ namespace libsimu {
         if (emetteur->derniereEmissionDeCertif + multipleDeSigPeriod * SIG_PERIOD <= blocCourant) {
           // Emet une certification aléatoirement
           uint32_t nbPossibilites = iPool->newcomers.size() + iPool->members.size();
-          int cible = -1;
           int nbEssais = 0;
-          Identity* identiteCiblee;
-          do {
-            cible = nombreAleatoireUniformeEntreXetY(0, nbPossibilites - 1);
+          Identity* identiteCiblee = NULL;
+          // Priorite aux liens bidirectionnels
+//          Node* noeudEmetteur = wot->getNodeAt(emetteur->wotb_id);
+//          for (int i = 0; identiteCiblee == NULL && i < noeudEmetteur->getNbLinks(); i++) {
+//            WID indexNoeudCertifieurDeSoi = wot->getNodeIndex(noeudEmetteur->mCert[i]);
+//            identiteCiblee = wotIdentities[indexNoeudCertifieurDeSoi];
+//            if (existeDejaCertification(emetteur, identiteCiblee)) {
+//              identiteCiblee = NULL;
+//            }
+//          }
+          // Puis bascule éventuellement sur la certification d'un membre de façon aléatoire
+          while (identiteCiblee == NULL && nbEssais < 100) {
+            int cible = nombreAleatoireUniformeEntreXetY(0, nbPossibilites - 1);
             if (cible < iPool->newcomers.size()) {
               identiteCiblee = iPool->newcomers[cible];
             } else {
               identiteCiblee = iPool->members[cible - iPool->newcomers.size()];
             }
-            bool luiMeme = emetteur->uid == identiteCiblee->uid;
-            bool existeEnPiscine = !luiMeme && cPool->certs.find(Lien(emetteur->uid, identiteCiblee->uid)) != cPool->certs.end();
-            bool existeEnToile = !existeEnPiscine && cPool->liens.find(Lien(emetteur->uid, identiteCiblee->uid)) != cPool->liens.end();
-            if (luiMeme || existeEnPiscine || existeEnToile) {
-              cible = -1;
+            if (existeDejaCertification(emetteur, identiteCiblee)) {
+              identiteCiblee = NULL;
             }
             nbEssais++;
-          } while (cible == -1 && nbEssais < 100);
-          if (cible != -1) {
+          };
+          if (identiteCiblee != NULL) {
             cPool->createNew(emetteur->uid, identiteCiblee->uid, blocCourant);
           }
         }
       }
     };
 
-    void Duniter::essaieIntegrerLien(Lien lien) {
-      uint32_t from = lien.first;
+    bool Duniter::existeDejaCertification(Identity* emetteur, Identity* identiteCiblee) {
+      bool luiMeme = emetteur->uid == identiteCiblee->uid;
+      if (luiMeme) {
+        return true;
+      }
+      // Test en piscine
+      vector<Certification*> recuesEnPiscine = cPool->certs[identiteCiblee->uid];
+      bool existeEnPiscine = false;
+      for (int i = 0; !existeEnPiscine && i < recuesEnPiscine.size(); i++) {
+        int fromUID = recuesEnPiscine[i]->link.first;
+        if (fromUID == emetteur->uid) {
+          existeEnPiscine = true;
+        }
+      }
+      if (existeEnPiscine) {
+        return true;
+      }
+      // Test en toile
+      vector<Certification*> recuesEnToile = cPool->liens[identiteCiblee->uid];
+      bool existeEnToile = false;
+      for (int i = 0; !existeEnToile && i < recuesEnToile.size(); i++) {
+        int fromUID = recuesEnToile[i]->link.first;
+        if (fromUID == emetteur->uid) {
+          existeEnToile = true;
+        }
+      }
+      return existeEnToile;
+    }
+
+    void Duniter::essaieIntegrerLien(Certification* cert, int to, int j) {
+      uint32_t from = cert->link.first;
       Identity* certifieur = wotMembers[from];
-      uint32_t to = lien.second;
       Identity* certifie = wotMembers[to];
       if (certifieur != NULL && certifie != NULL) {
         Node* wotbCertifieur = wot->getNodeAt(certifieur->wotb_id);
         Node* wotbCertifie = wot->getNodeAt(certifie->wotb_id);
-        if (wotbCertifieur->isEnabled() && wotbCertifie->isEnabled()) {
+        if (wotbCertifieur->isEnabled() && wotbCertifie->isEnabled() && wotbCertifieur->getNbIssued() < SIG_STOCK) {
           if (wotbCertifieur->addLinkTo(wotbCertifie)) {
-            cert2lien(lien);
+            cert2lien(cert, to, j, false);
           } else {
-            Log() << "ECHEC de l'ajout du lien UID " << from << " -> " << to << " | WID " << certifieur->wotb_id << " -> " << certifie->wotb_id;
+            Log2() << "ECHEC de l'ajout du lien UID " << from << " -> " << to << " | WID " << certifieur->wotb_id << " -> " << certifie->wotb_id;
           }
         }
       }
     };
 
     void Duniter::essaieIntegrerNouveauVenu(Identity *nouveau) {
-      vector<Lien> liensPotentiels;
-      vector<Lien> liensEffectifs;
-      for (auto i = cPool->certs.begin(); i != cPool->certs.end(); i++) {
-        if (i->first.second == nouveau->uid) {
-          liensPotentiels.push_back(i->first);
-        }
-      }
+      vector<Certification*> liensPotentiels = cPool->certs[nouveau->uid];
+      vector<int> liensEffectifs;
       if (liensPotentiels.size() >= SIG_QTY) {
         // Passe la règle de quantités de signatures.
         // Ensuite, tester la distance :
         wot->addNode();
         uint32_t wotb_id = wot->getSize() - 1;
-        for (auto i = 0; i < liensPotentiels.size(); i++) {
-          uint32_t from = liensPotentiels[i].first;
+        for (int i = 0; i < liensPotentiels.size(); i++) {
+          uint32_t from = liensPotentiels[i]->link.first;
           Identity* certifieur = wotMembers[from];
-          if (wot->getNodeAt(certifieur->wotb_id)->addLinkTo(wotb_id)) {
-            liensEffectifs.push_back(liensPotentiels[i]);
+          Node* noeudCertifieur = wot->getNodeAt(certifieur->wotb_id);
+          if (noeudCertifieur->getNbIssued() < SIG_STOCK && noeudCertifieur->addLinkTo(wotb_id)) {
+            liensEffectifs.push_back(i);
           } else {
             Log() << "ECHEC de l'ajout du lien UID " << from << " -> " << nouveau->uid << " | WID " << certifieur->wotb_id << " -> " << nouveau->wotb_id;
           }
         }
         uint32_t d_min = ceil(pow(wot->getSize(), 1 / STEPMAX));
-        if (false && wot->computeDistance(wotb_id, d_min, STEPMAX, X_PERCENT).isOutdistanced) {
+        if (false && liensEffectifs.size() >= SIG_QTY && wot->computeDistance(wotb_id, d_min, STEPMAX, X_PERCENT).isOutdistanced) {
           // Rollback
 //          for (auto i = 0; i < liensPotentiels.size(); i++) {
 //            uint32_t from = liensPotentiels[i].first;
@@ -297,8 +359,9 @@ namespace libsimu {
         } else {
           nouveau->wotb_id = wotb_id;
           newcomer2member(nouveau);
-          for (auto i = 0; i < liensEffectifs.size(); i++) {
-            cert2lien(liensEffectifs[i]);
+          for (int j = liensEffectifs.size() - 1; j >= 0; j--) {
+            int position = liensEffectifs[j];
+            cert2lien(liensPotentiels[position], nouveau->uid, position, false);
           }
         }
       }

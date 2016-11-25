@@ -20,6 +20,7 @@ namespace libsimu {
 
       void alimenteEnNouveaux(uint32_t valuesNewSize);
       uint32_t nombreAleatoireGaussienDeMoyenneX(uint32_t x, int min, int max);
+      uint32_t lastUID() { return counter; };
 
       uint32_t counter = 0;
       uint32_t sigStock = 0;

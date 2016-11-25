@@ -18,8 +18,8 @@ namespace libsimu {
 
       void createNew(uint32_t from, uint32_t to, uint32_t date);
 
-      map<Lien, Certification> certs;
-      map<Lien, Certification> liens;
+      vector<vector<Certification*>> certs;
+      vector<vector<Certification*>> liens;
   };
 }
 

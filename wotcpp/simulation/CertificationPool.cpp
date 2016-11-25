@@ -12,6 +12,8 @@ namespace libsimu {
   using namespace libsimu;
 
     CertificationPool::CertificationPool() {
+      certs = vector<vector<Certification*>>(10000000);
+      liens = vector<vector<Certification*>>(10000000);
     }
 
 
@@ -19,13 +21,13 @@ namespace libsimu {
     }
 
     void CertificationPool::createNew(uint32_t from, uint32_t to, uint32_t date) {
-      Log() << "Nouvelle certif de UID " << from << " -> " << to;
-      Certification cert;
-      cert.dateOfIssuance = date;
+      Log2() << "Nouvelle certif de UID " << from << " -> " << to;
+      Certification* cert = new Certification();
+      cert->dateOfIssuance = date;
       Lien link;
       link.first = from;
       link.second = to;
-      cert.link = link;
-      certs[link] = cert;
+      cert->link = link;
+      certs[to].push_back(cert);
     }
 }

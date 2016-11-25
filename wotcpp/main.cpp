@@ -83,9 +83,9 @@ int main(int argc, char **argv) {
   const double X_PERCENT = 1.0;
   const uint32_t DIVISIONS_PAR_UNITE_TEMPS = 1; // 1 unité de temps = 1 jour
   const uint32_t MINIMUM_DE_NOUVEAUX_VENUS_EN_PERMANENCE = 2;
-  const uint32_t SIG_STOCK = 10;
   const uint32_t SIG_QTY = 1;
   const uint32_t STEP_MAX = 3;
+  const uint32_t SIG_STOCK = 150;
   const uint32_t SIG_PERIOD = 1 * DIVISIONS_PAR_UNITE_TEMPS; // 1 jour
   const uint32_t SIG_MOY = SIG_STOCK / 3;
 
@@ -95,9 +95,10 @@ int main(int argc, char **argv) {
 
   Duniter* simulateur = new Duniter(X_PERCENT, STEP_MAX, MINIMUM_DE_NOUVEAUX_VENUS_EN_PERMANENCE, POURCENTAGE_DE_NOUVEAUX_MEMBRES_MAXI, SIG_MOY, SIG_STOCK, SIG_QTY, SIG_PERIOD);
 //  const uint32_t NOMBRE_DE_BLOCKS_DE_SIMULATION = 5 * 12 * 24; // 24H avec 1 bloc toutes les 5 minutes
-  const uint32_t NOMBRE_DE_BLOCKS_DE_SIMULATION = 100 * DIVISIONS_PAR_UNITE_TEMPS;
+  const uint32_t NOMBRE_DE_BLOCKS_DE_SIMULATION = 200 * DIVISIONS_PAR_UNITE_TEMPS;
 
   Log::setEnabled(true);
+  Log2::setEnabled(false);
   Log() << "--------- SIMULATION ---------";
   Log() << "stepMax:             " << STEP_MAX << " saut(s)";
   Log() << "sigStock:            " << SIG_STOCK << " certification(s) maxi.";
@@ -133,8 +134,6 @@ int main(int argc, char **argv) {
    *   2. A chaque tour :
    *
    *     a. Commit
-   *       - Ejecte les membres qui ne respectent plus la règle stepMax (tous les X temps par rapport à leur date d'arrivée)
-   *       - Ajout des certifications à la WoT qui peuvent l'être (prio interne)
    *       - Ajout les membres qui peuvent l'être (+ supprime les identités et certifications de la piscine)
    *     b. Ajout d'identités en piscine (mettre une taille max)
    *     c. Emission de certifications en piscine

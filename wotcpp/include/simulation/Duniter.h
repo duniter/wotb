@@ -37,12 +37,13 @@ namespace libsimu {
       void afficheWoT();
 
       void newcomer2member(Identity *identity);
-      void cert2lien(Lien& lien);
-      void supprimeLien(const Lien& lien);
+      void cert2lien(Certification* cert, int i, int j, bool majWoTb);
+      void supprimeLien(Certification* cert, int to, int j);
       void membreEmetUneCertifSiPossible(Identity *identity);
       void essaieIntegrerNouveauVenu(Identity *identity);
-      void essaieIntegrerLien(Lien lien);
+      void essaieIntegrerLien(Certification* cert, int to, int j);
       int nombreAleatoireUniformeEntreXetY(uint32_t x, uint32_t y);
+      bool existeDejaCertification(Identity* emetteur, Identity* identiteCiblee);
 
       unsigned int blocCourant = 0;
       uint32_t STEPMAX;
@@ -58,6 +59,7 @@ namespace libsimu {
       IdentityPool* iPool;
       CertificationPool* cPool;
       map<UID, Identity*> wotMembers;
+      map<WID, Identity*> wotIdentities;
       vector<Certification> wotLinks;
   };
 }
