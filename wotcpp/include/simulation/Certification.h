@@ -18,6 +18,8 @@ namespace libsimu {
       ~Certification();
 
       Lien link;
+      Identity* emetteur;
+      Identity* receveur;
       uint32_t dateOfIssuance;
   };
 }

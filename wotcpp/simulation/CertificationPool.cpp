@@ -20,14 +20,16 @@ namespace libsimu {
     CertificationPool::~CertificationPool() {
     }
 
-    void CertificationPool::createNew(uint32_t from, uint32_t to, uint32_t date) {
+    void CertificationPool::createNew(Identity* from, Identity* to, uint32_t date) {
 //      Log2() << "Nouvelle certif de UID " << from << " -> " << to;
       Certification* cert = new Certification();
       cert->dateOfIssuance = date;
+      cert->emetteur = from;
+      cert->receveur = from;
       Lien link;
-      link.first = from;
-      link.second = to;
+      link.first = from->uid;
+      link.second = to->uid;
       cert->link = link;
-      certs[to].push_back(cert);
+      certs[to->uid].push_back(cert);
     }
 }

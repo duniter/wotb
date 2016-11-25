@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <vector>
 
+#include "simulation/Identity.h"
 #include "simulation/Certification.h"
 
 namespace libsimu {
@@ -16,7 +17,7 @@ namespace libsimu {
       CertificationPool();
       ~CertificationPool();
 
-      void createNew(uint32_t from, uint32_t to, uint32_t date);
+      void createNew(Identity* from, Identity* to, uint32_t date);
 
       vector<vector<Certification*>> certs;
       vector<vector<Certification*>> liens;

@@ -18,6 +18,8 @@ namespace libsimu {
       Identity(uint32_t sigPersoCible);
       ~Identity();
 
+      bool estMembre;
+      bool aEteMembre;
       UID uid;
       WID wotb_id;
       uint32_t joinDate;

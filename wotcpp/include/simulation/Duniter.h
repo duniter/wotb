@@ -59,7 +59,6 @@ namespace libsimu {
       WebOfTrust* wot;
       IdentityPool* iPool;
       CertificationPool* cPool;
-      map<UID, Identity*> wotMembers;
       map<WID, Identity*> wotIdentities;
       vector<Certification> wotLinks;
       vector<vector<Certification*>> expirationsDeLiens;

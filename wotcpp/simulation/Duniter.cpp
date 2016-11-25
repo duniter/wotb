@@ -44,7 +44,7 @@ namespace libsimu {
         // Certify next newcomer, and loop on first when necessary
         Identity* to = iPool->newcomers[(i + j + 1) % COMMUNAUTE_INITIALE];
         to->derniereEmissionDeCertif = 0; // t = 0
-        cPool->createNew(from->uid, to->uid, 0);
+        cPool->createNew(from, to, 0);
       }
     }
   }
@@ -131,6 +131,9 @@ namespace libsimu {
           bool memeEmetteur = certCourant->link.first == certExpirant->link.first;
           if (memeDate && memeEmetteur) {
             supprimeLien(cPool->liens[to][j], to, j);
+            if (cPool->liens[to].size() < SIG_QTY) {
+              certCourant->receveur->estMembre = false;
+            }
           }
         }
       }
@@ -227,16 +230,15 @@ namespace libsimu {
       }
       // Ajoute dans la liste des membres
       iPool->members.push_back(identity);
-      wotMembers[identity->uid] = identity;
       wotIdentities[identity->wotb_id] = identity;
     };
 
     void Duniter::cert2lien(Certification* cert, int to, int j, bool majWoTb) {
       Lien lien = cert->link;
       uint32_t from = lien.first;
-      Identity* certifieur = wotMembers[from];
-      Identity* certifie = wotMembers[to];
-      if (certifie != NULL) {
+      Identity* certifieur = cert->emetteur;
+      Identity* certifie = cert->receveur;
+      if (certifie->estMembre) {
         Log2() << "LIEN de UID " << from << " -> " << to << " | WID " << certifieur->wotb_id << " -> " << certifie->wotb_id;
         if (majWoTb) {
           wot->getNodeAt(certifieur->wotb_id)->addLinkTo(wot->getNodeAt(certifie->wotb_id));
@@ -255,8 +257,8 @@ namespace libsimu {
     void Duniter::supprimeLien(Certification* cert, int to, int j) {
       Log2() << "SUPPRIME Lien de UID " << cert->link.first << " -> " << cert->link.second;
       uint32_t from = cert->link.first;
-      Identity* certifieur = wotMembers[from];
-      Identity* certifie = wotMembers[to];
+      Identity* certifieur = cert->emetteur;
+      Identity* certifie = cert->receveur;
       wot->getNodeAt(certifieur->wotb_id)->removeLinkTo(certifie->wotb_id);
       // Retire de la liste des certificats de toile
       cPool->liens[to].erase(cPool->liens[to].begin() + j);
@@ -297,7 +299,7 @@ namespace libsimu {
             nbEssais++;
           };
           if (identiteCiblee != NULL) {
-            cPool->createNew(emetteur->uid, identiteCiblee->uid, blocCourant);
+            cPool->createNew(emetteur, identiteCiblee, blocCourant);
           }
         }
       }
@@ -330,9 +332,9 @@ namespace libsimu {
 
     void Duniter::essaieIntegrerLien(Certification* cert, int to, int j) {
       uint32_t from = cert->link.first;
-      Identity* certifieur = wotMembers[from];
-      Identity* certifie = wotMembers[to];
-      if (certifieur != NULL && certifie != NULL) {
+      Identity* certifieur = cert->emetteur;
+      Identity* certifie = cert->receveur;
+      if (certifieur->estMembre && certifie->estMembre) {
         Node* wotbCertifieur = wot->getNodeAt(certifieur->wotb_id);
         Node* wotbCertifie = wot->getNodeAt(certifie->wotb_id);
         if (wotbCertifieur->isEnabled() && wotbCertifie->isEnabled() && wotbCertifieur->getNbIssued() < SIG_STOCK) {
@@ -355,7 +357,7 @@ namespace libsimu {
         uint32_t wotb_id = wot->getSize() - 1;
         for (int i = 0; i < liensPotentiels.size(); i++) {
           uint32_t from = liensPotentiels[i]->link.first;
-          Identity* certifieur = wotMembers[from];
+          Identity* certifieur = liensPotentiels[i]->emetteur;
           Node* noeudCertifieur = wot->getNodeAt(certifieur->wotb_id);
           if (noeudCertifieur->getNbIssued() < SIG_STOCK && noeudCertifieur->addLinkTo(wotb_id)) {
             liensEffectifs.push_back(i);
@@ -375,6 +377,8 @@ namespace libsimu {
           wot->removeNode();
         } else {
           nouveau->wotb_id = wotb_id;
+          nouveau->estMembre = true;
+          nouveau->aEteMembre = true;
           newcomer2member(nouveau);
           for (int j = liensEffectifs.size() - 1; j >= 0; j--) {
             int position = liensEffectifs[j];
