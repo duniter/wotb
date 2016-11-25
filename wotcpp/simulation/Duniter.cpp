@@ -17,11 +17,12 @@ namespace libsimu {
     std::random_device rd;
     std::mt19937 eng(rd());
 
-  Duniter::Duniter(double xPercent, uint32_t stepMax, uint32_t minNew, double maxNewPercent, uint32_t sigMoy, uint32_t sigStock, uint32_t sigQty, uint32_t sigPeriod) {
+  Duniter::Duniter(int dureeSimulationEnBlocks, double xPercent, uint32_t stepMax, uint32_t minNew, double maxNewPercent, uint32_t sigMoy, uint32_t sigStock, uint32_t sigQty, uint32_t sigPeriod) {
     wot = new WebOfTrust(sigStock);
     iPool = new IdentityPool(sigMoy, sigStock);
     cPool = new CertificationPool();
     // Paramètres déduits
+    NOMBRE_DE_BLOCKS_DE_SIMULATION = dureeSimulationEnBlocks;
     X_PERCENT = xPercent;
     STEPMAX = stepMax;
     MIN_NEW = minNew;
@@ -31,6 +32,7 @@ namespace libsimu {
     SIG_PERIOD = sigPeriod;
     SIG_VALIDITY = sigStock * SIG_PERIOD;
     COMMUNAUTE_INITIALE = sigQty + 1;
+    expirationsDeLiens = vector<vector<Certification*>>(NOMBRE_DE_BLOCKS_DE_SIMULATION);
   }
 
   void Duniter::creeLaCommunauteInitialeEnPiscine() {
@@ -118,9 +120,16 @@ namespace libsimu {
        */
 
       start = std::chrono::high_resolution_clock::now();
-      for (int to = 0; to < wot->getSize(); to++) {
+
+      vector<Certification*> liensQuiExpirent = expirationsDeLiens[blocCourant];
+      for (int i = 0; i < liensQuiExpirent.size(); i++) {
+        Certification* certExpirant = liensQuiExpirent[i];
+        int to = certExpirant->link.second;
         for (int j = 0; j < cPool->liens[to].size(); j++) {
-          if (cPool->liens[to][j]->dateOfIssuance + SIG_VALIDITY <= blocCourant) {
+          Certification* certCourant = cPool->liens[to][j];
+          bool memeDate = certCourant->dateOfIssuance == certExpirant->dateOfIssuance;
+          bool memeEmetteur = certCourant->link.first == certExpirant->link.first;
+          if (memeDate && memeEmetteur) {
             supprimeLien(cPool->liens[to][j], to, j);
           }
         }
@@ -236,6 +245,10 @@ namespace libsimu {
         cPool->liens[to].push_back(cert);
         // Retire de la liste des certificats potentiels
         cPool->certs[to].erase(cPool->certs[to].begin() + j);
+        // On ne fera expirer que les liens qui auront la possibilité d'expirer durant la simu
+        if (cert->dateOfIssuance + SIG_VALIDITY < NOMBRE_DE_BLOCKS_DE_SIMULATION) {
+          expirationsDeLiens[cert->dateOfIssuance + SIG_VALIDITY].push_back(cert);
+        }
       }
     };
 

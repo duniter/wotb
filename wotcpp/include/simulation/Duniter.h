@@ -18,7 +18,7 @@ namespace libsimu {
 
     public :
 
-      Duniter(double xPercent, uint32_t stepMax, uint32_t minNew, double maxNewPercent, uint32_t sigMoy, uint32_t sigStock, uint32_t sigQty, uint32_t sigPeriod);
+      Duniter(int dureeSimulationEnBlocks, double xPercent, uint32_t stepMax, uint32_t minNew, double maxNewPercent, uint32_t sigMoy, uint32_t sigStock, uint32_t sigQty, uint32_t sigPeriod);
       ~Duniter();
 
       /**
@@ -46,6 +46,7 @@ namespace libsimu {
       bool existeDejaCertification(Identity* emetteur, Identity* identiteCiblee);
 
       unsigned int blocCourant = 0;
+      int NOMBRE_DE_BLOCKS_DE_SIMULATION;
       uint32_t STEPMAX;
       uint32_t SIG_STOCK;
       uint32_t SIG_QTY;
@@ -61,6 +62,7 @@ namespace libsimu {
       map<UID, Identity*> wotMembers;
       map<WID, Identity*> wotIdentities;
       vector<Certification> wotLinks;
+      vector<vector<Certification*>> expirationsDeLiens;
   };
 }
 

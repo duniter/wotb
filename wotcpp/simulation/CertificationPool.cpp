@@ -21,7 +21,7 @@ namespace libsimu {
     }
 
     void CertificationPool::createNew(uint32_t from, uint32_t to, uint32_t date) {
-      Log2() << "Nouvelle certif de UID " << from << " -> " << to;
+//      Log2() << "Nouvelle certif de UID " << from << " -> " << to;
       Certification* cert = new Certification();
       cert->dateOfIssuance = date;
       Lien link;

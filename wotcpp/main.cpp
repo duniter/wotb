@@ -93,9 +93,9 @@ int main(int argc, char **argv) {
    * SIMULATEUR DE NŒUD DUNITER
    ****************************/
 
-  Duniter* simulateur = new Duniter(X_PERCENT, STEP_MAX, MINIMUM_DE_NOUVEAUX_VENUS_EN_PERMANENCE, POURCENTAGE_DE_NOUVEAUX_MEMBRES_MAXI, SIG_MOY, SIG_STOCK, SIG_QTY, SIG_PERIOD);
-//  const uint32_t NOMBRE_DE_BLOCKS_DE_SIMULATION = 5 * 12 * 24; // 24H avec 1 bloc toutes les 5 minutes
   const uint32_t NOMBRE_DE_BLOCKS_DE_SIMULATION = 200 * DIVISIONS_PAR_UNITE_TEMPS;
+  Duniter* simulateur = new Duniter(NOMBRE_DE_BLOCKS_DE_SIMULATION, X_PERCENT, STEP_MAX, MINIMUM_DE_NOUVEAUX_VENUS_EN_PERMANENCE, POURCENTAGE_DE_NOUVEAUX_MEMBRES_MAXI, SIG_MOY, SIG_STOCK, SIG_QTY, SIG_PERIOD);
+//  const uint32_t NOMBRE_DE_BLOCKS_DE_SIMULATION = 5 * 12 * 24; // 24H avec 1 bloc toutes les 5 minutes
 
   Log::setEnabled(true);
   Log2::setEnabled(false);
