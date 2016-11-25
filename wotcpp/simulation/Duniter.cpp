@@ -14,6 +14,9 @@ namespace libsimu {
   using namespace std;
   using namespace libwot;
 
+    std::random_device rd;
+    std::mt19937 eng(rd());
+
   Duniter::Duniter(double xPercent, uint32_t stepMax, uint32_t minNew, double maxNewPercent, uint32_t sigMoy, uint32_t sigStock, uint32_t sigQty, uint32_t sigPeriod) {
     wot = new WebOfTrust(sigStock);
     iPool = new IdentityPool(sigMoy, sigStock);
@@ -271,7 +274,11 @@ namespace libsimu {
             } else {
               identiteCiblee = iPool->members[cible - iPool->newcomers.size()];
             }
-            if (existeDejaCertification(emetteur, identiteCiblee)) {
+            bool luiMeme = emetteur->uid == identiteCiblee->uid;
+            if (luiMeme) {
+              identiteCiblee = NULL;
+            }
+            else if (existeDejaCertification(emetteur, identiteCiblee)) {
               identiteCiblee = NULL;
             }
             nbEssais++;
@@ -284,10 +291,6 @@ namespace libsimu {
     };
 
     bool Duniter::existeDejaCertification(Identity* emetteur, Identity* identiteCiblee) {
-      bool luiMeme = emetteur->uid == identiteCiblee->uid;
-      if (luiMeme) {
-        return true;
-      }
       // Test en piscine
       vector<Certification*> recuesEnPiscine = cPool->certs[identiteCiblee->uid];
       bool existeEnPiscine = false;
@@ -369,8 +372,6 @@ namespace libsimu {
     };
 
     int Duniter::nombreAleatoireUniformeEntreXetY(uint32_t x, uint32_t y) {
-      std::random_device rd;
-      std::mt19937 eng(rd());
       std::uniform_int_distribution<> distr(x, y);
       return distr(eng);
     }
