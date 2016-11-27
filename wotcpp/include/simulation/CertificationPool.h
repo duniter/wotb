@@ -20,8 +20,6 @@ namespace libsimu {
       void createNew(Identity* from, Identity* to, uint32_t date);
 
       uint32_t counter;
-      vector<Certification*> pendingVersMembre;
-      vector<Certification*> pendingVersNonMembre;
       vector<vector<Certification*>> certs;
       vector<vector<Certification*>> liens;
   };

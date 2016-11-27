@@ -92,18 +92,6 @@ namespace libsimu {
          ****************/
         start = std::chrono::high_resolution_clock::now();
         // Ajoute les liens internes (membre à membre)
-//        for (int i = cPool->pendingVersMembre.size() - 1; i >= 0; i--) {
-//          Certification* cert = cPool->pendingVersMembre[i];
-//          int to = cert->receveur->uid;
-//          for (int j = 0; j < cPool->certs[to].size(); j++) {
-//            Certification* cert2 = cPool->certs[to][j];
-//            if (cert->uniqueNumber == cert2->uniqueNumber) {
-//              if (essaieIntegrerLien(cert, to, j)) {
-//                cPool->pendingVersMembre.erase(cPool->pendingVersMembre.begin() + i);
-//              }
-//            }
-//          }
-//        }
         for (int to = 0; to < iPool->lastUID(); to++) {
           for (int j = 0; j < cPool->certs[to].size(); j++) {
             essaieIntegrerLienCount++;
