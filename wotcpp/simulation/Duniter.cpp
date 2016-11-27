@@ -112,7 +112,7 @@ namespace libsimu {
         }
         elapsed = std::chrono::high_resolution_clock::now() - start;
         microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
-        Log() << setw(6) << microseconds << "µs for essaieIntegrerLien";
+        Log() << setw(7) << microseconds << "µs for essaieIntegrerLien";
 
         start = std::chrono::high_resolution_clock::now();
         for (int i = 0; i < iPool->newcomers.size(); i++) {
@@ -120,7 +120,7 @@ namespace libsimu {
         }
         elapsed = std::chrono::high_resolution_clock::now() - start;
         microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
-        Log() << setw(6) << microseconds << "µs for essaieIntegrerNouveauVenu";
+        Log() << setw(7) << microseconds << "µs for essaieIntegrerNouveauVenu";
 
         // TODO: actualisation tous les X periodes => Test de distance
 
@@ -156,7 +156,7 @@ namespace libsimu {
       }
       elapsed = std::chrono::high_resolution_clock::now() - start;
       microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
-      Log() << setw(6) << microseconds << "µs for supprimeLien";
+      Log() << setw(7) << microseconds << "µs for supprimeLien";
 
       // TODO expiration des certifications en piscine
 
@@ -178,7 +178,7 @@ namespace libsimu {
       }
       elapsed = std::chrono::high_resolution_clock::now() - start;
       microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
-      Log() << setw(6) << microseconds << "µs for setEnabled";
+      Log() << setw(7) << microseconds << "µs for setEnabled";
 
       /*********************
        * NOUVEAUX VENUS
@@ -194,7 +194,7 @@ namespace libsimu {
       iPool->alimenteEnNouveaux(taillePiscineDeMembres);
       elapsed = std::chrono::high_resolution_clock::now() - start;
       microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
-      Log() << setw(6) << microseconds << "µs for alimenteEnNouveaux";
+      Log() << setw(7) << microseconds << "µs for alimenteEnNouveaux";
 
 
       /*********************
@@ -225,7 +225,7 @@ namespace libsimu {
       }
       elapsed = std::chrono::high_resolution_clock::now() - start;
       microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
-      Log() << setw(6) << microseconds << "µs for membreEmetUneCertifSiPossible";
+      Log() << setw(7) << microseconds << "µs for membreEmetUneCertifSiPossible";
     };
 
     void Duniter::alimenteLesPiscines() {
