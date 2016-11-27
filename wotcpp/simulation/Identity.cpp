@@ -11,6 +11,7 @@ namespace libsimu {
   using namespace libsimu;
 
     Identity::Identity(uint32_t sigPersoCible) : sigPersoCible(sigPersoCible) {
+        wotb_node = NULL;
     }
 
     Identity::~Identity() {

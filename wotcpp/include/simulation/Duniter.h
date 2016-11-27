@@ -47,6 +47,7 @@ namespace libsimu {
 
       unsigned int blocCourant = 0;
       int NOMBRE_DE_BLOCKS_DE_SIMULATION;
+      int essaieIntegrerLienCount;
       uint32_t STEPMAX;
       uint32_t SIG_STOCK;
       uint32_t SIG_QTY;

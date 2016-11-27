@@ -68,8 +68,12 @@ namespace libsimu {
         for (int i = 0; i < iPool->newcomers.size(); i++) {
           wot->addNode();
           // Affecte un identifiant wotb
-          iPool->newcomers[i]->wotb_id = wot->getSize() - 1;
-          newcomer2member(iPool->newcomers[i]);
+          Identity* nouveau = iPool->newcomers[i];
+          nouveau->wotb_id = wot->getSize() - 1;
+          nouveau->estMembre = true;
+          nouveau->aEteMembre = true;
+          nouveau->wotb_node = wot->getNodeAt(nouveau->wotb_id);
+          newcomer2member(nouveau);
           i--;
         }
         // Ajoute les liens initiaux
@@ -88,20 +92,21 @@ namespace libsimu {
          ****************/
         start = std::chrono::high_resolution_clock::now();
         // Ajoute les liens internes (membre à membre)
-//        for (int i = cPool->pending.size() - 1; i >= 0; i--) {
-//          Certification* cert = cPool->pending[i];
+//        for (int i = cPool->pendingVersMembre.size() - 1; i >= 0; i--) {
+//          Certification* cert = cPool->pendingVersMembre[i];
 //          int to = cert->receveur->uid;
 //          for (int j = 0; j < cPool->certs[to].size(); j++) {
 //            Certification* cert2 = cPool->certs[to][j];
 //            if (cert->uniqueNumber == cert2->uniqueNumber) {
 //              if (essaieIntegrerLien(cert, to, j)) {
-//                cPool->pending.erase(cPool->pending.begin() + i);
+//                cPool->pendingVersMembre.erase(cPool->pendingVersMembre.begin() + i);
 //              }
 //            }
 //          }
 //        }
         for (int to = 0; to < iPool->lastUID(); to++) {
           for (int j = 0; j < cPool->certs[to].size(); j++) {
+            essaieIntegrerLienCount++;
             essaieIntegrerLien(cPool->certs[to][j], to, j);
           }
         }
@@ -229,6 +234,7 @@ namespace libsimu {
 
     void Duniter::afficheWoT() {
 //      wot->showTable();
+      Log() << "Nombre d'essais : " << essaieIntegrerLienCount;
       Log() << "Nouveaux membres en attente : " << iPool->newcomers.size();
       Log() << "Nombre de membres : " << wot->getEnabledCount();
       Log() << "Nombre d'individus passés : " << wot->getSize();
@@ -253,7 +259,7 @@ namespace libsimu {
       if (certifie->estMembre) {
         Log2() << "LIEN de UID " << from << " -> " << to << " | WID " << certifieur->wotb_id << " -> " << certifie->wotb_id;
         if (majWoTb) {
-          wot->getNodeAt(certifieur->wotb_id)->addLinkTo(wot->getNodeAt(certifie->wotb_id));
+          certifieur->wotb_node->addLinkTo(certifie->wotb_node);
         }
         // Ajoute dans la liste des membres
         cPool->liens[to].push_back(cert);
@@ -267,11 +273,11 @@ namespace libsimu {
     };
 
     void Duniter::supprimeLien(Certification* cert, int to, int j) {
-      Log2() << "SUPPRIME Lien de UID " << cert->link.first << " -> " << cert->link.second;
+      Log2() << "SUPPRIME Lien de UID " << cert->link.first << " -> " << cert->link.second << " | WID " << cert->emetteur->wotb_id << " -> " << cert->receveur->wotb_id;
       uint32_t from = cert->link.first;
       Identity* certifieur = cert->emetteur;
       Identity* certifie = cert->receveur;
-      wot->getNodeAt(certifieur->wotb_id)->removeLinkTo(certifie->wotb_id);
+      certifieur->wotb_node->removeLinkTo(certifie->wotb_node);
       // Retire de la liste des certificats de toile
       cPool->liens[to].erase(cPool->liens[to].begin() + j);
     };
@@ -347,14 +353,15 @@ namespace libsimu {
       Identity* certifieur = cert->emetteur;
       Identity* certifie = cert->receveur;
       if (certifieur->estMembre && certifie->estMembre) {
-        Node* wotbCertifieur = wot->getNodeAt(certifieur->wotb_id);
-        Node* wotbCertifie = wot->getNodeAt(certifie->wotb_id);
-        if (wotbCertifieur->isEnabled() && wotbCertifie->isEnabled() && wotbCertifieur->getNbIssued() < SIG_STOCK) {
+        Node* wotbCertifieur = certifieur->wotb_node;
+        Node* wotbCertifie = certifie->wotb_node;
+        if (wotbCertifie != NULL && wotbCertifieur->isEnabled() && wotbCertifie->isEnabled() && wotbCertifieur->getNbIssued() < SIG_STOCK) {
           if (wotbCertifieur->addLinkTo(wotbCertifie)) {
             cert2lien(cert, to, j, false);
             return true;
           } else {
             Log2() << "ECHEC de l'ajout du lien UID " << from << " -> " << to << " | WID " << certifieur->wotb_id << " -> " << certifie->wotb_id;
+            Log2();
           }
         }
       }
@@ -372,7 +379,7 @@ namespace libsimu {
         for (int i = 0; i < liensPotentiels.size(); i++) {
           uint32_t from = liensPotentiels[i]->link.first;
           Identity* certifieur = liensPotentiels[i]->emetteur;
-          Node* noeudCertifieur = wot->getNodeAt(certifieur->wotb_id);
+          Node* noeudCertifieur = certifieur->wotb_node;
           if (noeudCertifieur->getNbIssued() < SIG_STOCK && noeudCertifieur->addLinkTo(wotb_id)) {
             liensEffectifs.push_back(i);
           } else {
@@ -393,9 +400,11 @@ namespace libsimu {
           nouveau->wotb_id = wotb_id;
           nouveau->estMembre = true;
           nouveau->aEteMembre = true;
+          nouveau->wotb_node = wot->getNodeAt(wotb_id);
           newcomer2member(nouveau);
           for (int j = liensEffectifs.size() - 1; j >= 0; j--) {
             int position = liensEffectifs[j];
+//            liensPotentiels[position]->receveur->
             cert2lien(liensPotentiels[position], nouveau->uid, position, false);
           }
         }

@@ -33,6 +33,7 @@ namespace libwot {
       bool hasLinkFrom(uint32_t from);
       bool hasLinkFrom(Node* from);
       void removeLinkTo(uint32_t to);
+      void removeLinkTo(Node* node);
       std::vector<Node*> mCert;
 
     private :

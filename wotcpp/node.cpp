@@ -72,14 +72,18 @@ namespace libwot {
     return true;
   }
 
+  void Node::removeLinkTo(Node* to) {
+    vector<Node*>::iterator it = find(to->mCert.begin(), to->mCert.end(), this);
+    if (it != mCert.end()) {
+      to->mCert.erase(it);
+      mNbIssued--;
+    }
+  }
+
 
   void Node::removeLinkTo(uint32_t to) {
     Node* node = mWot->getNodeAt(to);
-    vector<Node*>::iterator it = find(node->mCert.begin(), node->mCert.end(), this);
-    if (it != mCert.end()) {
-      node->mCert.erase(it);
-      mNbIssued--;
-    }
+    removeLinkTo(node);
   }
 
 }

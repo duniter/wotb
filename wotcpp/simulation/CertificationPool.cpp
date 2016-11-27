@@ -26,13 +26,17 @@ namespace libsimu {
       Certification* cert = new Certification();
       cert->dateOfIssuance = date;
       cert->emetteur = from;
-      cert->receveur = from;
+      cert->receveur = to;
       cert->uniqueNumber = counter++;
       Lien link;
       link.first = from->uid;
       link.second = to->uid;
       cert->link = link;
       certs[to->uid].push_back(cert);
-      pending.push_back(cert);
+      if (to->estMembre) {
+        pendingVersMembre.push_back(cert);
+      } else {
+        pendingVersNonMembre.push_back(cert);
+      }
     }
 }
