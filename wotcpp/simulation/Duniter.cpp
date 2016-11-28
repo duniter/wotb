@@ -375,7 +375,7 @@ namespace libsimu {
           }
         }
         uint32_t d_min = ceil(pow(wot->getSize(), 1 / STEPMAX));
-        if (false && liensEffectifs.size() >= SIG_QTY && wot->computeDistance(wotb_id, d_min, STEPMAX, X_PERCENT).isOutdistanced) {
+        if (liensEffectifs.size() < SIG_QTY || wot->computeDistance(wotb_id, d_min, STEPMAX, X_PERCENT).isOutdistanced) {
           // Rollback
 //          for (auto i = 0; i < liensPotentiels.size(); i++) {
 //            uint32_t from = liensPotentiels[i].first;
