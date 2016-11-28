@@ -49,8 +49,8 @@ namespace libwot {
       bool writeToDisk(std::string filename);
 
       DistanceResult computeDistance(uint32_t member, uint32_t d_min, uint32_t k_max, double x_percent);
-      void findMatches(uint32_t m1, uint32_t k_max, bool *wotChecked);
-      void checkMatches(uint32_t m1, uint32_t distance, uint32_t distanceMax, bool *wotChecked);
+      void findMatches(uint32_t m1, uint32_t k_max, bool *wotChecked, uint32_t minimumRequired);
+      void checkMatches(uint32_t m1, uint32_t distance, uint32_t distanceMax, bool *wotChecked, uint32_t minimumRequired);
 
       // Data extraction
       WoTSet getSentries(int d_min);

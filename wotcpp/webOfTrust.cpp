@@ -222,7 +222,8 @@ namespace libwot {
     sentries[member] = false;
     wotMatches[member] = true;
     result.nbSuccess = 0;
-    findMatches(member, k_max, wotMatches);
+    uint32_t minimumRequired = int(floor(x_percent * result.nbSentries));
+    findMatches(member, k_max, wotMatches, minimumRequired);
     for (uint32_t i = 0; i < mNodes.size(); i++) {
       if (sentries[i]) {
         result.nbSentries++;
@@ -236,23 +237,22 @@ namespace libwot {
 //        Log() << "NON-Sentry "  << i;
       }
     }
-    result.isOutdistanced = result.nbSuccess < result.nbSentries;
     delete[] wotMatches;
     delete[] sentries;
 
     // We override the result with X% rule
-    Log() << "Success = " << result.nbSuccess << " / " << x_percent * result.nbSentries << " (" << x_percent << " x " << result.nbSentries << ")";
-    result.isOutdistanced = result.nbSuccess < x_percent * result.nbSentries;
+//    Log() << "Success = " << result.nbSuccess << " / " << x_percent * result.nbSentries << " (" << x_percent << " x " << result.nbSentries << ")";
+    result.isOutdistanced = result.nbSuccess < minimumRequired;
     return result;
   }
 
-  void WebOfTrust::findMatches(uint32_t m1, uint32_t k_max, bool *wotChecked) {
+  void WebOfTrust::findMatches(uint32_t m1, uint32_t k_max, bool *wotChecked, uint32_t minimumRequired) {
     if (k_max >= 1) {
-      checkMatches(m1, 1, k_max, wotChecked);
+      checkMatches(m1, 1, k_max, wotChecked, minimumRequired);
     }
   }
 
-  void WebOfTrust::checkMatches(uint32_t m1, uint32_t distance, uint32_t distanceMax, bool *wotChecked) {
+  void WebOfTrust::checkMatches(uint32_t m1, uint32_t distance, uint32_t distanceMax, bool *wotChecked, uint32_t minimumRequired) {
     if (levels.size() < distance) {
       levels.push_back(m1);
     }
@@ -260,19 +260,24 @@ namespace libwot {
     // Mark as checked the linking nodes at this level
     for (uint32_t j = 0; j < mNodes.at(m1)->getNbLinks(); j++) {
       uint32_t by = getNodeIndex(mNodes.at(m1)->getLinkAt(j));
-//      for (int k = 0; k < levels.size(); k++) {
-//        if (k > 0) cout << " <- "; else cout << "Path : ";
-//        cout << levels[k];
-//      }
-//      cout << " <- " << by << endl;
-//      Log() << "Match " << by << " -> " << m1;
       wotChecked[by] = true;
     }
+    uint32_t matchedCount = 0;
     if (distance < distanceMax) {
       // Look one level deeper
       for (uint32_t j = 0; j < mNodes.at(m1)->getNbLinks(); j++) {
+        // Count how much we have reached yet
+        for (uint32_t i = 0; i < getSize(); i++) {
+          if (wotChecked[i]) {
+            matchedCount++;
+          }
+          if (matchedCount >= minimumRequired) {
+            return;
+          }
+        }
+        // If not enough, we continue
         uint32_t by = getNodeIndex(mNodes.at(m1)->getLinkAt(j));
-        checkMatches(by, distance + 1, distanceMax, wotChecked);
+        checkMatches(by, distance + 1, distanceMax, wotChecked, minimumRequired);
       }
     }
   }
