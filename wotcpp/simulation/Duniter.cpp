@@ -78,7 +78,7 @@ namespace libsimu {
         }
         // Ajoute les liens initiaux
         for (int to = 0; to < cPool->certs.size(); to++) {
-          for (int j = 0; j < cPool->certs[to].size(); j++) {
+          for (int j = cPool->certs[to].size() - 1; j >= 0; j--) {
             cert2lien(cPool->certs[to][j], to, j, true);
           }
         }
