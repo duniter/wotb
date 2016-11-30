@@ -2,6 +2,8 @@
 #include <cstdlib>
 #include <algorithm>
 #include <iostream>
+#include <chrono>
+#include <iomanip>
 
 #include "simulation/Identity.h"
 #include "webOfTrust.h"
@@ -12,7 +14,7 @@ namespace libsimu {
   using namespace std;
   using namespace libsimu;
 
-    IdentityPool::IdentityPool(uint32_t sigMoy, uint32_t sigStock) : sigMoy(sigMoy), sigStock(sigStock) {
+    IdentityPool::IdentityPool(uint32_t sigMoy, uint32_t sigStock, uint32_t sigQty) : sigMoy(sigMoy), sigStock(sigStock), sigQty(sigQty) {
       newcomers = vector<Identity*>();
     }
 
@@ -20,6 +22,7 @@ namespace libsimu {
     }
 
     void IdentityPool::alimenteEnNouveaux(uint32_t valuesNewSize) {
+      auto start = std::chrono::high_resolution_clock::now();
       for (unsigned long i = newcomers.size(); i < valuesNewSize; i++) {
         uint32_t sigPersoCible = sigStock; // Le maximum possible
 //        uint32_t sigPersoCible = nombreAleatoireGaussienDeMoyenneX(sigMoy, 0, sigStock);
@@ -29,7 +32,20 @@ namespace libsimu {
         newcomer->joinDate = 0;
         newcomers.push_back(newcomer);
       }
+      auto elapsed = std::chrono::high_resolution_clock::now() - start;
+      long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
+      Log() << setw(7) << microseconds << "µs for alimenteEnNouveaux";
     }
+
+    void IdentityPool::newcomer2member(Identity *identity) {
+      // Retire de la liste des newcomers
+      vector<Identity*>::iterator it = std::find(newcomers.begin(), newcomers.end(), identity);
+      if (it != newcomers.end()) {
+        newcomers.erase(it);
+      }
+      // Ajoute dans la liste des membres
+      members.push_back(identity);
+    };
 
     uint32_t IdentityPool::nombreAleatoireGaussienDeMoyenneX(uint32_t x, int min, int max) {
       std::random_device rd;
@@ -41,5 +57,42 @@ namespace libsimu {
         number = distr(eng);
       }
       return number;
+    }
+
+    void IdentityPool::allNewcomersBecomeMembers(WebOfTrust* wot) {
+      for (int i = 0; i < newcomers.size(); i++) {
+        wot->addNode();
+        // Affecte un identifiant wotb
+        Identity* nouveau = newcomers[i];
+        nouveau->wotb_id = wot->getSize() - 1;
+        nouveau->estMembre = true;
+        nouveau->aEteMembre = true;
+        nouveau->wotb_node = wot->getNodeAt(nouveau->wotb_id);
+        newcomer2member(nouveau);
+        i--;
+      }
+    }
+
+    void IdentityPool::desactiveIdentitesPasAssezCertifiees() {
+
+      /*********************
+       * PASSAGE DU TEMPS
+       *
+       * Règle du nombre de liens
+       * ------------------------
+       *
+       * A tout instant, les membres qui n'ont pas assez de certifications doivent être exclus.
+       */
+
+      auto start = std::chrono::high_resolution_clock::now();
+      for (uint32_t i = 0; i < members.size(); i++) {
+        Node* node = members[i]->wotb_node;
+        if (node->getNbLinks() < sigQty) {
+          node->setEnabled(false);
+        }
+      }
+      auto elapsed = std::chrono::high_resolution_clock::now() - start;
+      long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
+      Log() << setw(7) << microseconds << "µs for setEnabled";
     }
 }

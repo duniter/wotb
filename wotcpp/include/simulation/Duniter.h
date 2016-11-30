@@ -24,30 +24,18 @@ namespace libsimu {
       /**
        * Crée la communauté initiale, circulairement signée.
        */
-      void creeLaCommunauteInitialeEnPiscine();
+      void creeBlockInitialEtSaCommunaute();
 
       /**
        * Mécanique principale qui exclut les membres ne répondant plus aux critères et tente d'ajouter
        * un maximum de nouveaux membres selon les règles établies.
        */
       void ajouteUnBloc();
-
       void alimenteLesPiscines();
-
       void afficheWoT();
 
-      void newcomer2member(Identity *identity);
-      void cert2lien(Certification* cert, int i, int j, bool majWoTb);
-      void supprimeLien(Certification* cert, int to, int j);
-      void membreEmetUneCertifSiPossible(Identity *identity);
-      void essaieIntegrerNouveauVenu(Identity *identity);
-      bool essaieIntegrerLien(Certification* cert, int to, int j);
-      int nombreAleatoireUniformeEntreXetY(uint32_t x, uint32_t y);
-      bool existeDejaCertification(Identity* emetteur, Identity* identiteCiblee);
-
-      unsigned int blocCourant = 0;
+      unsigned int blocCourant = -1;
       int NOMBRE_DE_BLOCKS_DE_SIMULATION;
-      int essaieIntegrerLienCount;
       uint32_t STEPMAX;
       uint32_t SIG_STOCK;
       uint32_t SIG_QTY;
@@ -60,9 +48,7 @@ namespace libsimu {
       WebOfTrust* wot;
       IdentityPool* iPool;
       CertificationPool* cPool;
-      map<WID, Identity*> wotIdentities;
       vector<Certification> wotLinks;
-      vector<vector<Certification*>> expirationsDeLiens;
   };
 }
 
