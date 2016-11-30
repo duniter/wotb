@@ -101,7 +101,7 @@ namespace libsimu {
     }
     auto elapsed = std::chrono::high_resolution_clock::now() - start;
     long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
-    Log() << setw(7) << microseconds << "µs for supprimeLien";
+    Log() << setw(7) << microseconds << " µs pour supprimeLien";
   }
 
   void CertificationPool::supprimeLien(Certification* cert, int to, int j) {
@@ -143,18 +143,17 @@ namespace libsimu {
     return false;
   };
 
-  void CertificationPool::essaieIntegrerLiensInternes() {
+  void CertificationPool::essaieIntegrerLiensInternes(IdentityPool *iPool) {
     auto start = std::chrono::high_resolution_clock::now();
     // Ajoute les liens internes (membre à membre)
-    for (int to = 0; to < certs.size(); to++) {
+    for (int to = 0; to < iPool->members.size(); to++) {
       for (int j = 0; j < certs[to].size(); j++) {
-        essaieIntegrerLienCount++;
         essaieIntegrerLien(certs[to][j], to, j);
       }
     }
     auto elapsed = std::chrono::high_resolution_clock::now() - start;
     long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
-    Log() << setw(7) << microseconds << "µs for essaieIntegrerLiensInternes";
+    Log() << setw(7) << microseconds << " µs pour essaieIntegrerLiensInternes";
   }
 
   void CertificationPool::essaieIntegrerNouveauxVenus(WebOfTrust *wot, IdentityPool *iPool) {
@@ -164,7 +163,7 @@ namespace libsimu {
     }
     auto elapsed = std::chrono::high_resolution_clock::now() - start;
     long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
-    Log() << setw(7) << microseconds << "µs for essaieIntegrerNouveauVenu";
+    Log() << setw(7) << microseconds << " µs pour essaieIntegrerNouveauxVenus";
   }
 
   void CertificationPool::essaieIntegrerNouveauVenu(Identity *nouveau, WebOfTrust* wot, IdentityPool* iPool) {
@@ -186,7 +185,7 @@ namespace libsimu {
         }
       }
       uint32_t d_min = ceil(pow(wot->getSize(), 1 / STEPMAX));
-      if (liensEffectifs.size() < SIG_QTY || wot->computeDistance(wotb_id, d_min, STEPMAX, X_PERCENT).isOutdistanced) {
+      if (liensEffectifs.size() < SIG_QTY || (false && wot->computeDistance(wotb_id, d_min, STEPMAX, X_PERCENT).isOutdistanced)) {
         // Rollback
 //          for (auto i = 0; i < liensPotentiels.size(); i++) {
 //            uint32_t from = liensPotentiels[i].first;
@@ -282,7 +281,7 @@ namespace libsimu {
     }
     auto elapsed = std::chrono::high_resolution_clock::now() - start;
     long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
-    Log() << setw(7) << microseconds << "µs for membreEmetUneCertifSiPossible";
+    Log() << setw(7) << microseconds << " µs pour membreEmetUneCertifSiPossible";
   }
 
   int CertificationPool::nombreAleatoireUniformeEntreXetY(uint32_t x, uint32_t y) {
@@ -294,7 +293,8 @@ namespace libsimu {
     // Test en piscine
     vector<Certification*> recuesEnPiscine = certs[identiteCiblee->uid];
     bool existeEnPiscine = false;
-    for (int i = 0; !existeEnPiscine && i < recuesEnPiscine.size(); i++) {
+    uint32_t tailleDeLaPiscine = recuesEnPiscine.size();
+    for (int i = 0; !existeEnPiscine && i < tailleDeLaPiscine; i++) {
       int fromUID = recuesEnPiscine[i]->link.first;
       if (fromUID == emetteur->uid) {
         existeEnPiscine = true;
@@ -306,7 +306,8 @@ namespace libsimu {
     // Test en toile
     vector<Certification*> recuesEnToile = liens[identiteCiblee->uid];
     bool existeEnToile = false;
-    for (int i = 0; !existeEnToile && i < recuesEnToile.size(); i++) {
+    uint32_t tailleDeLaToile = recuesEnToile.size();
+    for (int i = 0; !existeEnToile && i < tailleDeLaToile; i++) {
       int fromUID = recuesEnToile[i]->link.first;
       if (fromUID == emetteur->uid) {
         existeEnToile = true;

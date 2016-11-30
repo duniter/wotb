@@ -22,7 +22,7 @@ namespace libsimu {
       void faitExpirerLesLiens(uint32_t blocCourant);
       void supprimeLien(Certification* cert, int to, int j);
       void allPendingsToLinks();
-      void essaieIntegrerLiensInternes();
+      void essaieIntegrerLiensInternes(IdentityPool *iPool);
       bool essaieIntegrerLien(Certification* cert, int to, int j);
       void essaieIntegrerNouveauxVenus(WebOfTrust *wot, IdentityPool *iPool);
       void essaieIntegrerNouveauVenu(Identity *identity, WebOfTrust* wot, IdentityPool* iPool);
@@ -32,7 +32,6 @@ namespace libsimu {
       bool existeDejaCertification(Identity* emetteur, Identity* identiteCiblee);
 
       uint32_t counter;
-      int essaieIntegrerLienCount;
       vector<vector<Certification*>> certs;
       vector<vector<Certification*>> liens;
       vector<vector<Certification*>> expirationsDeLiens;

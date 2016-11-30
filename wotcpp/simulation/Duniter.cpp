@@ -36,20 +36,25 @@ namespace libsimu {
    */
   void Duniter::ajouteUnBloc() {
     auto start = std::chrono::high_resolution_clock::now();
-    auto elapsed = std::chrono::high_resolution_clock::now() - start;
-    long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
 
     Log() << "--------------- TOUR " << blocCourant << " ---------------";
-    cPool->essaieIntegrerLiensInternes();
+    cPool->essaieIntegrerLiensInternes(iPool);
     cPool->essaieIntegrerNouveauxVenus(wot, iPool);
 
     blocCourant++;
 
-    // Le temps s'est incrémenté, conséquences :
-    cPool->faitExpirerLesLiens(blocCourant);
-    iPool->desactiveIdentitesPasAssezCertifiees();
-    // TODO: actualisation tous les X periodes => Test de distance
-    // TODO expiration des certifications en piscine
+    if (blocCourant < NOMBRE_DE_BLOCKS_DE_SIMULATION) {
+      // Le temps s'est incrémenté, conséquences :
+      cPool->faitExpirerLesLiens(blocCourant);
+      iPool->desactiveIdentitesPasAssezCertifiees();
+      // TODO: actualisation tous les X periodes => Test de distance
+      // TODO expiration des certifications en piscine
+      alimenteLesPiscines();
+    }
+    auto elapsed = std::chrono::high_resolution_clock::now() - start;
+    long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
+    Log() << setw(7) << "   -------";
+    Log() << setw(7) << microseconds << " µs pour l'ajout du bloc";
   };
 
   void Duniter::creeBlockInitialEtSaCommunaute() {
@@ -70,12 +75,13 @@ namespace libsimu {
     cPool->allPendingsToLinks();
   }
 
-  void Duniter::afficheWoT() {
+  void Duniter::afficheStats() {
 //      wot->showTable();
-    Log() << "Nombre d'essais : " << cPool->essaieIntegrerLienCount;
+    Log() << setw(7) << "   -------";
     Log() << "Nouveaux membres en attente : " << iPool->newcomers.size();
     Log() << "Nombre de membres : " << wot->getEnabledCount();
     Log() << "Nombre d'individus passés : " << wot->getSize();
+    Log();
   };
 
   void Duniter::alimenteLesPiscines() {

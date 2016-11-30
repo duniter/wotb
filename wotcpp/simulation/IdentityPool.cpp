@@ -34,7 +34,7 @@ namespace libsimu {
       }
       auto elapsed = std::chrono::high_resolution_clock::now() - start;
       long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
-      Log() << setw(7) << microseconds << "µs for alimenteEnNouveaux";
+      Log() << setw(7) << microseconds << " µs pour alimenteEnNouveaux";
     }
 
     void IdentityPool::newcomer2member(Identity *identity) {
@@ -93,6 +93,6 @@ namespace libsimu {
       }
       auto elapsed = std::chrono::high_resolution_clock::now() - start;
       long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
-      Log() << setw(7) << microseconds << "µs for setEnabled";
+      Log() << setw(7) << microseconds << " µs pour setEnabled";
     }
 }

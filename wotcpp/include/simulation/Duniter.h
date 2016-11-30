@@ -32,9 +32,9 @@ namespace libsimu {
        */
       void ajouteUnBloc();
       void alimenteLesPiscines();
-      void afficheWoT();
+      void afficheStats();
 
-      unsigned int blocCourant = -1;
+      unsigned int blocCourant = 0;
       int NOMBRE_DE_BLOCKS_DE_SIMULATION;
       uint32_t STEPMAX;
       uint32_t SIG_STOCK;

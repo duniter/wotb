@@ -222,11 +222,15 @@ namespace libwot {
     sentries[member] = false;
     wotMatches[member] = true;
     result.nbSuccess = 0;
+    for (uint32_t i = 0; i < mNodes.size(); i++) {
+      if (sentries[i]) {
+        result.nbSentries++;
+      }
+    }
     uint32_t minimumRequired = int(floor(x_percent * result.nbSentries));
     findMatches(member, k_max, wotMatches, minimumRequired);
     for (uint32_t i = 0; i < mNodes.size(); i++) {
       if (sentries[i]) {
-        result.nbSentries++;
         if (wotMatches[i]) {
 //          Log() << "Sentry " << i << ": OK";
           result.nbSuccess++;
@@ -241,8 +245,8 @@ namespace libwot {
     delete[] sentries;
 
     // We override the result with X% rule
-//    Log() << "Success = " << result.nbSuccess << " / " << x_percent * result.nbSentries << " (" << x_percent << " x " << result.nbSentries << ")";
     result.isOutdistanced = result.nbSuccess < minimumRequired;
+//    Log() << "Success = " << (result.isOutdistanced ? "false" : "true") << ": reached " << result.nbSuccess << " / " << x_percent * result.nbSentries << " (needed " << (x_percent * 100) << "% of " << result.nbSentries << ")";
     return result;
   }
 

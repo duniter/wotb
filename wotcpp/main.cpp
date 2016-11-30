@@ -15,12 +15,12 @@ int main(int argc, char **argv) {
 
   // Paramètres voulus
   const double POURCENTAGE_DE_NOUVEAUX_MEMBRES_MAXI = 0.1;
-  const double X_PERCENT = 0.9;
+  const double X_PERCENT = 0.1;
   const uint32_t DIVISIONS_PAR_UNITE_TEMPS = 1; // 1 unité de temps = 1 jour
   const uint32_t MINIMUM_DE_NOUVEAUX_VENUS_EN_PERMANENCE = 2;
-  const uint32_t SIG_QTY = 5;
-  const uint32_t STEP_MAX = 5;
-  const uint32_t SIG_STOCK = 20;
+  const uint32_t SIG_QTY = 1;
+  const uint32_t STEP_MAX = 21;
+  const uint32_t SIG_STOCK = 150;
   const uint32_t SIG_PERIOD = 1 * DIVISIONS_PAR_UNITE_TEMPS; // 1 jour
   const uint32_t SIG_MOY = SIG_STOCK / 3;
 
@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
 //  const uint32_t NOMBRE_DE_BLOCKS_DE_SIMULATION = 5 * 12 * 24; // 24H avec 1 bloc toutes les 5 minutes
 
   Log::setEnabled(true);
-  Log2::setEnabled(true);
+  Log2::setEnabled(false);
   Log() << "--------- SIMULATION ---------";
   Log() << "stepMax:             " << STEP_MAX << " saut(s)";
   Log() << "sigStock:            " << SIG_STOCK << " certification(s) maxi.";
@@ -47,20 +47,18 @@ int main(int argc, char **argv) {
   Log() << "% d'arrivants max:   " << int(POURCENTAGE_DE_NOUVEAUX_MEMBRES_MAXI * 100.0) << " %";
   Log() << "Durée de simulation: " << NOMBRE_DE_BLOCKS_DE_SIMULATION << " jour(s)";
   Log() << "------------------------------";
+  Log() << "        TOILE INITIALE        ";
 
   // 1. Creation d'une communauté initiale reconnue
   simulateur->creeBlockInitialEtSaCommunaute();
   simulateur->wot->showTable();
+  Log();
+  Log();
 
-  for (int i = 1; i < NOMBRE_DE_BLOCKS_DE_SIMULATION; i++) {
+  for (int i = 0; i < NOMBRE_DE_BLOCKS_DE_SIMULATION; i++) {
     simulateur->ajouteUnBloc();
-    simulateur->afficheWoT();
-//    simulateur->wot->showTable();
-    Log();
-    simulateur->alimenteLesPiscines();
+    simulateur->afficheStats();
   }
 
-  // Affiche la WoT finale
-  simulateur->afficheWoT();
 //  simulateur->wot->showTable();
 }
