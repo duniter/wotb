@@ -29,7 +29,7 @@ namespace libsimu {
     SIG_PERIOD = sigPeriod;
     SIG_VALIDITY = sigStock * SIG_PERIOD;
     COMMUNAUTE_INITIALE = sigQty + 1;
-    expirationsDeLiens = vector<vector<Certification*>>(NOMBRE_DE_BLOCKS_DE_SIMULATION);
+    expirationsDeLiens = vector<vector<Certification*>>(NOMBRE_DE_BLOCKS_DE_SIMULATION + 1);
   }
 
 
@@ -48,6 +48,7 @@ namespace libsimu {
     link.second = to->uid;
     cert->link = link;
     certs[to->uid].push_back(cert);
+    statCourante->nombreDeCertifsGenereesEnPisicine++;
   }
 
   void CertificationPool::cert2lien(Certification* cert, int to, int j, bool majWoTb) {
@@ -68,6 +69,7 @@ namespace libsimu {
       if (cert->dateOfIssuance + SIG_VALIDITY < NOMBRE_DE_BLOCKS_DE_SIMULATION) {
         expirationsDeLiens[cert->dateOfIssuance + SIG_VALIDITY].push_back(cert);
       }
+      statCourante->nombreDeCertifsTransfereesEnToile++;
     }
   };
 
@@ -93,16 +95,16 @@ namespace libsimu {
         bool memeEmetteur = certCourant->link.first == certExpirant->link.first;
         if (memeDate && memeEmetteur) {
           supprimeLien(liens[to][j], to, j);
+          statCourante->nombreDeCertifsExpirees++;
           if (liens[to].size() < SIG_QTY) {
             certCourant->receveur->estMembre = false;
             certCourant->receveur->wotb_node->setEnabled(false);
+            statCourante->nombreDeMembresExclusParManqueDeCertif++;
           }
         }
       }
     }
-    auto elapsed = std::chrono::high_resolution_clock::now() - start;
-    long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
-    Log() << setw(7) << microseconds << " µs pour supprimeLien";
+    statCourante->tempsExecutionSuppressionLiens = StatsDuTour::compteMicrosecondesDepuis(start);
   }
 
   void CertificationPool::supprimeLien(Certification* cert, int to, int j) {
@@ -120,6 +122,7 @@ namespace libsimu {
     for (int to = 0; to < certs.size(); to++) {
       for (int j = certs[to].size() - 1; j >= 0; j--) {
         cert2lien(certs[to][j], to, j, true);
+        statCourante->nombreDeTentativesDAjoutCertNouveauVenuSucces++;
       }
     }
   };
@@ -131,14 +134,23 @@ namespace libsimu {
     if (certifieur->estMembre && certifie->estMembre) {
       Node* wotbCertifieur = certifieur->wotb_node;
       Node* wotbCertifie = certifie->wotb_node;
-      if (wotbCertifie != NULL && wotbCertifieur->isEnabled() && wotbCertifie->isEnabled() && wotbCertifieur->getNbIssued() < SIG_STOCK) {
+      bool echecParLadhesion = !(wotbCertifie != NULL && wotbCertifieur->isEnabled() && wotbCertifie->isEnabled());
+      bool echecParLeStock = !echecParLadhesion && wotbCertifieur->getNbIssued() >= SIG_STOCK;
+      if (!echecParLadhesion && !echecParLeStock) {
         if (wotbCertifieur->addLinkTo(wotbCertifie)) {
           cert2lien(cert, to, j, false);
           return true;
         } else {
+          statCourante->nombreDeTentativesDAjoutCertInterneEchouees++;
           Log2() << "ECHEC de l'ajout du lien UID " << from << " -> " << to << " | WID " << certifieur->wotb_id << " -> " << certifie->wotb_id;
           Log2();
         }
+      } else {
+        statCourante->nombreDeTentativesDAjoutCertInterneEchouees++;
+        if (echecParLadhesion) statCourante->nombreDeTentativesDAjoutCertInterneEchoueesParAdhesion++;
+        if (echecParLeStock) statCourante->nombreDeTentativesDAjoutCertInterneEchoueesParStock++;
+        Log2() << "ECHEC de l'ajout du lien UID " << from << " -> " << to << " | WID " << certifieur->wotb_id << " -> " << certifie->wotb_id;
+        Log2();
       }
     }
     return false;
@@ -149,12 +161,13 @@ namespace libsimu {
     // Ajoute les liens internes (membre à membre)
     for (int to = 0; to < iPool->members.size(); to++) {
       for (int j = 0; j < certs[to].size(); j++) {
-        essaieIntegrerLien(certs[to][j], to, j);
+        statCourante->nombreDeTentativesDAjoutCertInterne++;
+        if (essaieIntegrerLien(certs[to][j], to, j)) {
+          statCourante->nombreDeTentativesDAjoutCertInterneSucces++;
+        }
       }
     }
-    auto elapsed = std::chrono::high_resolution_clock::now() - start;
-    long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
-    Log() << setw(7) << microseconds << " µs pour essaieIntegrerLiensInternes";
+    statCourante->tempsExecutionIntegrationLiensInternes = StatsDuTour::compteMicrosecondesDepuis(start);
   }
 
   void CertificationPool::essaieIntegrerNouveauxVenus(WebOfTrust *wot, IdentityPool *iPool) {
@@ -162,12 +175,11 @@ namespace libsimu {
     for (int i = 0; i < iPool->newcomers.size(); i++) {
       essaieIntegrerNouveauVenu(iPool->newcomers[i], wot, iPool);
     }
-    auto elapsed = std::chrono::high_resolution_clock::now() - start;
-    long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
-    Log() << setw(7) << microseconds << " µs pour essaieIntegrerNouveauxVenus";
+    statCourante->tempsExecutionIntegrationNouveauxVenus = StatsDuTour::compteMicrosecondesDepuis(start);
   }
 
   void CertificationPool::essaieIntegrerNouveauVenu(Identity *nouveau, WebOfTrust* wot, IdentityPool* iPool) {
+    statCourante->nombreDeTentativesDAjoutMembre++;
     vector<Certification*> liensPotentiels = certs[nouveau->uid];
     vector<int> liensEffectifs;
     if (liensPotentiels.size() >= SIG_QTY) {
@@ -179,22 +191,34 @@ namespace libsimu {
         uint32_t from = liensPotentiels[i]->link.first;
         Identity* certifieur = liensPotentiels[i]->emetteur;
         Node* noeudCertifieur = certifieur->wotb_node;
+        statCourante->nombreDeTentativesDAjoutCertNouveauVenu++;
         if (noeudCertifieur->getNbIssued() < SIG_STOCK && noeudCertifieur->addLinkTo(wotb_id)) {
           liensEffectifs.push_back(i);
         } else {
+          statCourante->nombreDeTentativesDAjoutCertNouveauVenuEchouees++;
+          statCourante->nombreDeTentativesDAjoutCertNouveauVenuEchoueesParStock++;
 //            Log() << "ECHEC de l'ajout du lien UID " << from << " -> " << nouveau->uid << " | WID " << certifieur->wotb_id << " -> " << nouveau->wotb_id;
         }
       }
       uint32_t d_min = ceil(pow(wot->getSize(), 1 / STEPMAX));
-      if (liensEffectifs.size() < SIG_QTY || (false && wot->computeDistance(wotb_id, d_min, STEPMAX, X_PERCENT).isOutdistanced)) {
-        // Rollback
-//          for (auto i = 0; i < liensPotentiels.size(); i++) {
-//            uint32_t from = liensPotentiels[i].first;
-//            Identity* certifieur = wotMembers[from];
-//            wot->getNodeAt(certifieur->wotb_id)->removeLinkTo(wotb_id);
-//          }
-        // Pop the last node
+      statCourante->nombreDeLiensEmisPourEtreSentry = d_min;
+      statCourante->nombreDeSentries = wot->getSentries(d_min).nbNodes;
+      bool echecSigQty = liensEffectifs.size() < SIG_QTY;
+      bool echecDistance = !echecSigQty && wot->computeDistance(wotb_id, d_min, STEPMAX, X_PERCENT).isOutdistanced;
+      if (echecSigQty || echecDistance) {
+
+//        Log() << "ECHEC AJOUT EN TOILE";
+//        wot->showTable();
+        // Rollback: pop the last node (and its links)
         wot->removeNode();
+        for (int j = liensEffectifs.size() - 1; j >= 0; j--) {
+          statCourante->nombreDeTentativesDAjoutCertNouveauVenuEchouees++;
+          if (echecSigQty) statCourante->nombreDeTentativesDAjoutCertNouveauVenuEchoueesParQteLiens++;
+          if (echecDistance) statCourante->nombreDeTentativesDAjoutCertNouveauVenuEchoueesParDistance++;
+        }
+        if (echecSigQty) statCourante->nombreDeTentativesDAjoutMembreEchoueesParQteLiens++;
+        if (echecDistance) statCourante->nombreDeTentativesDAjoutMembreEchoueesParDistance++;
+        statCourante->nombreDeTentativesDAjoutMembreEchouees++;
       } else {
         nouveau->wotb_id = wotb_id;
         nouveau->estMembre = true;
@@ -205,6 +229,7 @@ namespace libsimu {
           int position = liensEffectifs[j];
 //            liensPotentiels[position]->receveur->
           cert2lien(liensPotentiels[position], nouveau->uid, position, false);
+          statCourante->nombreDeTentativesDAjoutCertNouveauVenuSucces++;
         }
       }
     }
@@ -280,9 +305,7 @@ namespace libsimu {
     for (int i = 0; i < iPool->members.size(); i++) {
       membreEmetUneCertifSiPossible(iPool, iPool->members[i], blocCourant);
     }
-    auto elapsed = std::chrono::high_resolution_clock::now() - start;
-    long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
-    Log() << setw(7) << microseconds << " µs pour membreEmetUneCertifSiPossible";
+    statCourante->tempsExecutionMembreEmetUneCertifSiPossible = StatsDuTour::compteMicrosecondesDepuis(start);
   }
 
   int CertificationPool::nombreAleatoireUniformeEntreXetY(uint32_t x, uint32_t y) {

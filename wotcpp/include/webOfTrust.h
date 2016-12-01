@@ -35,6 +35,18 @@ namespace libwot {
         }
         return count;
       };
+
+      uint32_t getNbLinks() {
+        int count = 0;
+        for (int n = 0; n < mNodes.size(); n++) {
+          Node* node = mNodes[n];
+          if (node->isEnabled()) {
+            count += node->getNbLinks();
+          }
+        }
+        return count;
+      };
+
       Node* getNodeAt(uint32_t index) { return mNodes.at(index);};
       Node* getRandomNode();
 

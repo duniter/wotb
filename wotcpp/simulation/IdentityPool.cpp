@@ -31,10 +31,9 @@ namespace libsimu {
         newcomer->wotb_id = 0; // La valeur doit être écrasée systématiquement
         newcomer->joinDate = 0;
         newcomers.push_back(newcomer);
+        statCourante->nombreDIdentitesGenereesEnPisicine++;
       }
-      auto elapsed = std::chrono::high_resolution_clock::now() - start;
-      long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
-      Log() << setw(7) << microseconds << " µs pour alimenteEnNouveaux";
+      statCourante->tempsExecutionAlimenteEnNouveaux = StatsDuTour::compteMicrosecondesDepuis(start);
     }
 
     void IdentityPool::newcomer2member(Identity *identity) {
@@ -45,6 +44,7 @@ namespace libsimu {
       }
       // Ajoute dans la liste des membres
       members.push_back(identity);
+      statCourante->nombreDeTentativesDAjoutMembreSucces++;
     };
 
     uint32_t IdentityPool::nombreAleatoireGaussienDeMoyenneX(uint32_t x, int min, int max) {

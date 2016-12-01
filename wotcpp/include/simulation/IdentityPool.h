@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <map>
 #include "simulation/Identity.h"
+#include "simulation/StatsDuTour.h"
 
 
 namespace libsimu {
@@ -32,6 +33,7 @@ namespace libsimu {
 
       vector<Identity*> newcomers;
       vector<Identity*> members;
+      StatsDuTour* statCourante;
   };
 }
 

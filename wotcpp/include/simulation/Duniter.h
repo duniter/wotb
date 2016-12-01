@@ -7,6 +7,8 @@
 #include "webOfTrust.h"
 #include "simulation/IdentityPool.h"
 #include "simulation/CertificationPool.h"
+#include "simulation/Statistiques.h"
+#include "simulation/StatsDuTour.h"
 
 
 namespace libsimu {
@@ -49,6 +51,8 @@ namespace libsimu {
       IdentityPool* iPool;
       CertificationPool* cPool;
       vector<Certification> wotLinks;
+      Statistiques* stats;
+      StatsDuTour* statCourante;
   };
 }
 

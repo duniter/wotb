@@ -31,6 +31,15 @@ namespace libsimu {
       int nombreAleatoireUniformeEntreXetY(uint32_t x, uint32_t y);
       bool existeDejaCertification(Identity* emetteur, Identity* identiteCiblee);
 
+      int getNbCertifsEnPiscine() {
+        int count = 0;
+        int certsSize = certs.size();
+        for (int i = 0; i < certsSize; i++) {
+          count += certs[i].size();
+        }
+        return count;
+      }
+
       uint32_t counter;
       vector<vector<Certification*>> certs;
       vector<vector<Certification*>> liens;
@@ -45,6 +54,7 @@ namespace libsimu {
       uint32_t MIN_NEW;
       double MAX_NEW_PERCENT;
       double X_PERCENT;
+      StatsDuTour* statCourante;
   };
 }
 
