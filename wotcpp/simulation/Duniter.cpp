@@ -49,13 +49,11 @@ namespace libsimu {
 
     blocCourant++;
 
-    if (blocCourant < NOMBRE_DE_BLOCKS_DE_SIMULATION) {
-      // Le temps s'est incrémenté, conséquences :
-      cPool->faitExpirerLesLiens(blocCourant);
-      // TODO: actualisation tous les X periodes => Test de distance
-      // TODO expiration des certifications en piscine
-      alimenteLesPiscines();
-    }
+    // Le temps s'est incrémenté, conséquences :
+    cPool->faitExpirerLesLiens(blocCourant);
+    // TODO: actualisation tous les X periodes => Test de distance
+    // TODO expiration des certifications en piscine
+    alimenteLesPiscines();
     statCourante->nombreDeMembresEnToile = wot->getEnabledCount();
     statCourante->nombreDeMembresPassesEnToile = wot->getSize();
     statCourante->nombreDeLiensEnToile = wot->getNbLinks();
