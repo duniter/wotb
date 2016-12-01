@@ -46,7 +46,6 @@ namespace libsimu {
     if (blocCourant < NOMBRE_DE_BLOCKS_DE_SIMULATION) {
       // Le temps s'est incrémenté, conséquences :
       cPool->faitExpirerLesLiens(blocCourant);
-      iPool->desactiveIdentitesPasAssezCertifiees();
       // TODO: actualisation tous les X periodes => Test de distance
       // TODO expiration des certifications en piscine
       alimenteLesPiscines();

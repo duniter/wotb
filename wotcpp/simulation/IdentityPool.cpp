@@ -72,27 +72,4 @@ namespace libsimu {
         i--;
       }
     }
-
-    void IdentityPool::desactiveIdentitesPasAssezCertifiees() {
-
-      /*********************
-       * PASSAGE DU TEMPS
-       *
-       * Règle du nombre de liens
-       * ------------------------
-       *
-       * A tout instant, les membres qui n'ont pas assez de certifications doivent être exclus.
-       */
-
-      auto start = std::chrono::high_resolution_clock::now();
-      for (uint32_t i = 0; i < members.size(); i++) {
-        Node* node = members[i]->wotb_node;
-        if (node->getNbLinks() < sigQty) {
-          node->setEnabled(false);
-        }
-      }
-      auto elapsed = std::chrono::high_resolution_clock::now() - start;
-      long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
-      Log() << setw(7) << microseconds << " µs pour setEnabled";
-    }
 }

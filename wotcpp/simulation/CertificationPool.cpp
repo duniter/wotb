@@ -95,6 +95,7 @@ namespace libsimu {
           supprimeLien(liens[to][j], to, j);
           if (liens[to].size() < SIG_QTY) {
             certCourant->receveur->estMembre = false;
+            certCourant->receveur->wotb_node->setEnabled(false);
           }
         }
       }
