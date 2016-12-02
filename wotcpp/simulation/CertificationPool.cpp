@@ -37,7 +37,7 @@ namespace libsimu {
   }
 
   void CertificationPool::createNew(Identity* from, Identity* to, uint32_t date) {
-//      Log2() << "Nouvelle certif de UID " << from->uid << " -> " << to->uid;
+      Log2() << "Nouvelle certif de UID " << from->uid << " -> " << to->uid;
     Certification* cert = new Certification();
     cert->dateOfIssuance = date;
     cert->emetteur = from;
@@ -48,7 +48,7 @@ namespace libsimu {
     link.second = to->uid;
     cert->link = link;
     certs[to->uid].push_back(cert);
-    statCourante->nombreDeCertifsGenereesEnPisicine++;
+    statDuJourEnCours->nombreDeCertifsGenereesEnPisicine++;
   }
 
   void CertificationPool::cert2lien(Certification* cert, int to, int j, bool majWoTb) {
@@ -104,7 +104,7 @@ namespace libsimu {
         }
       }
     }
-    statCourante->tempsExecutionSuppressionLiens = StatsDuTour::compteMicrosecondesDepuis(start);
+    statCourante->tempsExecutionSuppressionLiens = Statistiques::compteMicrosecondesDepuis(start);
   }
 
   void CertificationPool::supprimeLien(Certification* cert, int to, int j) {
@@ -132,6 +132,7 @@ namespace libsimu {
     Identity* certifieur = cert->emetteur;
     Identity* certifie = cert->receveur;
     if (certifieur->estMembre && certifie->estMembre) {
+      statCourante->nombreDeTentativesDAjoutCertInterne++;
       Node* wotbCertifieur = certifieur->wotb_node;
       Node* wotbCertifie = certifie->wotb_node;
       bool echecParLadhesion = !(wotbCertifie != NULL && wotbCertifieur->isEnabled() && wotbCertifie->isEnabled());
@@ -139,6 +140,7 @@ namespace libsimu {
       if (!echecParLadhesion && !echecParLeStock) {
         if (wotbCertifieur->addLinkTo(wotbCertifie)) {
           cert2lien(cert, to, j, false);
+          statCourante->nombreDeTentativesDAjoutCertInterneSucces++;
           return true;
         } else {
           statCourante->nombreDeTentativesDAjoutCertInterneEchouees++;
@@ -161,27 +163,28 @@ namespace libsimu {
     // Ajoute les liens internes (membre à membre)
     for (int to = 0; to < iPool->members.size(); to++) {
       for (int j = 0; j < certs[to].size(); j++) {
-        statCourante->nombreDeTentativesDAjoutCertInterne++;
-        if (essaieIntegrerLien(certs[to][j], to, j)) {
-          statCourante->nombreDeTentativesDAjoutCertInterneSucces++;
-        }
+        essaieIntegrerLien(certs[to][j], to, j);
       }
     }
-    statCourante->tempsExecutionIntegrationLiensInternes = StatsDuTour::compteMicrosecondesDepuis(start);
+    statCourante->tempsExecutionIntegrationLiensInternes = Statistiques::compteMicrosecondesDepuis(start);
   }
 
   void CertificationPool::essaieIntegrerNouveauxVenus(WebOfTrust *wot, IdentityPool *iPool) {
     auto start = std::chrono::high_resolution_clock::now();
-    for (int i = 0; i < iPool->newcomers.size(); i++) {
+    uint32_t d_min = ceil(pow(wot->getSize(), 1 / STEPMAX));
+    statCourante->nombreDeLiensEmisPourEtreSentry = d_min;
+    statCourante->nombreDeSentries = wot->getSentries(d_min).nbNodes;
+    for (int i = iPool->newcomers.size() - 1; i >= 0; i--) {
       essaieIntegrerNouveauVenu(iPool->newcomers[i], wot, iPool);
     }
-    statCourante->tempsExecutionIntegrationNouveauxVenus = StatsDuTour::compteMicrosecondesDepuis(start);
+    statCourante->tempsExecutionIntegrationNouveauxVenus = Statistiques::compteMicrosecondesDepuis(start);
   }
 
   void CertificationPool::essaieIntegrerNouveauVenu(Identity *nouveau, WebOfTrust* wot, IdentityPool* iPool) {
     statCourante->nombreDeTentativesDAjoutMembre++;
     vector<Certification*> liensPotentiels = certs[nouveau->uid];
     vector<int> liensEffectifs;
+    uint32_t d_min = ceil(pow(wot->getSize(), 1 / STEPMAX));
     if (liensPotentiels.size() >= SIG_QTY) {
       // Passe la règle de quantités de signatures.
       // Ensuite, tester la distance :
@@ -200,9 +203,6 @@ namespace libsimu {
 //            Log() << "ECHEC de l'ajout du lien UID " << from << " -> " << nouveau->uid << " | WID " << certifieur->wotb_id << " -> " << nouveau->wotb_id;
         }
       }
-      uint32_t d_min = ceil(pow(wot->getSize(), 1 / STEPMAX));
-      statCourante->nombreDeLiensEmisPourEtreSentry = d_min;
-      statCourante->nombreDeSentries = wot->getSentries(d_min).nbNodes;
       bool echecSigQty = liensEffectifs.size() < SIG_QTY;
       bool echecDistance = !echecSigQty && wot->computeDistance(wotb_id, d_min, STEPMAX, X_PERCENT).isOutdistanced;
       if (echecSigQty || echecDistance) {
@@ -232,29 +232,34 @@ namespace libsimu {
           statCourante->nombreDeTentativesDAjoutCertNouveauVenuSucces++;
         }
       }
+    } else {
+      statCourante->nombreDeTentativesDAjoutMembreEchouees++;
+      statCourante->nombreDeTentativesDAjoutMembreEchoueesParQteLiens++;
     }
   };
 
   void CertificationPool::membreEmetUneCertifSiPossible(IdentityPool* iPool, Identity *emetteur, uint32_t blocCourant) {
     if (emetteur->sigPersoCible > 0) {
       uint32_t multipleDeSigPeriod = SIG_STOCK / emetteur->sigPersoCible;
-      if (emetteur->derniereEmissionDeCertif + multipleDeSigPeriod * SIG_PERIOD <= blocCourant) {
+      if (blocCourant == 0 || emetteur->derniereEmissionDeCertif + multipleDeSigPeriod * SIG_PERIOD <= blocCourant) {
         // Emet une certification aléatoirement
         uint32_t nbPossibilites = iPool->newcomers.size() + iPool->members.size();
         int nbEssais = 0;
         Identity* identiteCiblee = NULL;
-        // Priorite aux liens bidirectionnels
-//          Node* noeudEmetteur = wot->getNodeAt(emetteur->wotb_id);
-//          for (int i = 0; identiteCiblee == NULL && i < noeudEmetteur->getNbLinks(); i++) {
-//            WID indexNoeudCertifieurDeSoi = wot->getNodeIndex(noeudEmetteur->mCert[i]);
-//            identiteCiblee = wotIdentities[indexNoeudCertifieurDeSoi];
-//            if (existeDejaCertification(emetteur, identiteCiblee)) {
-//              identiteCiblee = NULL;
-//            }
-//          }
         // Puis bascule éventuellement sur la certification d'un membre de façon aléatoire
-        while (identiteCiblee == NULL && nbEssais < 100) {
-          int cible = nombreAleatoireUniformeEntreXetY(0, nbPossibilites - 1);
+        while (identiteCiblee == NULL && nbEssais < 10) {
+
+          int cible = 0;
+
+          // Emet une certif en interne 33% du temps
+          if ((blocCourant + nbEssais) % 10 == 0) {
+            // Parmi les membres
+            cible = nombreAleatoireUniformeEntreXetY(iPool->newcomers.size(), nbPossibilites - 1);
+          } else {
+            // Parmi les nouveaux
+            cible = nombreAleatoireUniformeEntreXetY(0, iPool->newcomers.size() - 1);
+          }
+
           if (cible < iPool->newcomers.size()) {
             identiteCiblee = iPool->newcomers[cible];
           } else {
@@ -303,9 +308,14 @@ namespace libsimu {
 
     auto start = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < iPool->members.size(); i++) {
-      membreEmetUneCertifSiPossible(iPool, iPool->members[i], blocCourant);
+
+      Identity* emetteur = iPool->members[i];
+      if (emetteur->wotb_node->getNbLinks() >= SIG_STOCK) {
+        statCourante->nombreDeMembresStockEpuise++;
+      }
+      membreEmetUneCertifSiPossible(iPool, emetteur, blocCourant);
     }
-    statCourante->tempsExecutionMembreEmetUneCertifSiPossible = StatsDuTour::compteMicrosecondesDepuis(start);
+    statCourante->tempsExecutionMembreEmetUneCertifSiPossible = Statistiques::compteMicrosecondesDepuis(start);
   }
 
   int CertificationPool::nombreAleatoireUniformeEntreXetY(uint32_t x, uint32_t y) {

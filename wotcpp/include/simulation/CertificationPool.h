@@ -54,7 +54,8 @@ namespace libsimu {
       uint32_t MIN_NEW;
       double MAX_NEW_PERCENT;
       double X_PERCENT;
-      StatsDuTour* statCourante;
+      StatsDuBloc* statCourante;
+      StatsDuJour* statDuJourEnCours;
   };
 }
 

@@ -31,9 +31,9 @@ namespace libsimu {
         newcomer->wotb_id = 0; // La valeur doit être écrasée systématiquement
         newcomer->joinDate = 0;
         newcomers.push_back(newcomer);
-        statCourante->nombreDIdentitesGenereesEnPisicine++;
+        statDuJourEnCours->nombreDIdentitesGenereesEnPisicine++;
       }
-      statCourante->tempsExecutionAlimenteEnNouveaux = StatsDuTour::compteMicrosecondesDepuis(start);
+      statCourante->tempsExecutionAlimenteEnNouveaux = Statistiques::compteMicrosecondesDepuis(start);
     }
 
     void IdentityPool::newcomer2member(Identity *identity) {

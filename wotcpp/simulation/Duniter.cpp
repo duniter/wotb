@@ -36,11 +36,11 @@ namespace libsimu {
    * un maximum de nouveaux membres selon les règles établies.
    */
   void Duniter::ajouteUnBloc() {
-    Log() << "--------------- TOUR " << blocCourant << " ---------------";
+    Log() << "--------------- BLOC " << blocCourant << " ---------------";
 
     // Stats
     auto start = std::chrono::high_resolution_clock::now();
-    statCourante = new StatsDuTour();
+    statCourante = new StatsDuBloc();
     iPool->statCourante = statCourante;
     cPool->statCourante = statCourante;
 
@@ -53,20 +53,22 @@ namespace libsimu {
     cPool->faitExpirerLesLiens(blocCourant);
     // TODO: actualisation tous les X periodes => Test de distance
     // TODO expiration des certifications en piscine
-    alimenteLesPiscines();
     statCourante->nombreDeMembresEnToile = wot->getEnabledCount();
     statCourante->nombreDeMembresPassesEnToile = wot->getSize();
     statCourante->nombreDeLiensEnToile = wot->getNbLinks();
     statCourante->nombreDeMembresEnAttenteFinDeTour = iPool->newcomers.size();
     statCourante->nombreDeMembresCertifsEnAttenteFinDeTour = cPool->getNbCertifsEnPiscine();
     statCourante->nombreDeMembresAjoutes = statCourante->nombreDeTentativesDAjoutMembreSucces - statCourante->nombreDeMembresExclusParManqueDeCertif;
-    statCourante->tempsExecutionDuBloc = StatsDuTour::compteMicrosecondesDepuis(start);
+    statCourante->tempsExecutionDuBloc = Statistiques::compteMicrosecondesDepuis(start);
   };
 
   void Duniter::creeBlockInitialEtSaCommunaute() {
-    statCourante = new StatsDuTour();
+    statCourante = new StatsDuBloc();
+    statDuJourEnCours = new StatsDuJour();
     iPool->statCourante = statCourante;
     cPool->statCourante = statCourante;
+    iPool->statDuJourEnCours = statDuJourEnCours;
+    cPool->statDuJourEnCours = statDuJourEnCours;
     iPool->alimenteEnNouveaux(COMMUNAUTE_INITIALE);
     for (int i = 0; i < iPool->newcomers.size(); i++) {
       // Each initial member certifies the SIG_QTY following initial members
@@ -95,6 +97,7 @@ namespace libsimu {
     double variationL = statCourante->nombreDeTentativesDAjoutCertInterneSucces + statCourante->nombreDeTentativesDAjoutCertNouveauVenuSucces - statCourante->nombreDeCertifsExpirees;
     Log() << setw(7) << statCourante->nombreDeMembresEnToile << " Membres en toile (" << (variationN >= 0 ? "+" : "") << variationN << ")";
     Log() << setw(7) << statCourante->nombreDeMembresPassesEnToile << " Membres passés et présents";
+    Log() << setw(7) << statCourante->nombreDeMembresStockEpuise << " Membres avec stock épuisé";
     Log() << setw(7) << statCourante->nombreDeLiensEmisPourEtreSentry << " Liens émis pour être point de contrôle";
     Log() << setw(7) << statCourante->nombreDeSentries << " Points de contrôles (xPercent = " << X_PERCENT*100 << "% => " <<  int(floor(statCourante->nombreDeSentries * X_PERCENT)) << " points effectifs)";
     Log() << setw(7) << statCourante->nombreDeLiensEnToile << " Liens en toile (" << (variationL >= 0 ? "+" : "") << variationL << ")";
@@ -103,31 +106,34 @@ namespace libsimu {
     Log() << setw(7) << "" << "  * " << statCourante->nombreDeTentativesDAjoutMembreEchouees << " Echecs";
     Log() << setw(7) << "" << "    * dont " << statCourante->nombreDeTentativesDAjoutMembreEchoueesParQteLiens << " par le nombre de liens";
     Log() << setw(7) << "" << "    * dont " << statCourante->nombreDeTentativesDAjoutMembreEchoueesParDistance << " par la distance";
-    Log() << setw(7) << statCourante->nombreDeTentativesDAjoutCertInterne + statCourante->nombreDeTentativesDAjoutCertNouveauVenu << " Tentatives d'intégration de lien en toile";
-    Log() << setw(7) << "" << "  * " << statCourante->nombreDeTentativesDAjoutCertInterneSucces << " Succès (interne)";
-    Log() << setw(7) << "" << "  * " << statCourante->nombreDeTentativesDAjoutCertNouveauVenuSucces<< " Succès (nouveau venu)";
-    Log() << setw(7) << "" << "  * " << statCourante->nombreDeTentativesDAjoutCertInterneEchouees << " Echecs (interne)";
+    Log() << setw(7) << statCourante->nombreDeTentativesDAjoutCertInterne << " Tentatives d'ajout de lien (membre à membre)";
+    Log() << setw(7) << "" << "  * " << statCourante->nombreDeTentativesDAjoutCertInterneSucces << " Succès";
+    Log() << setw(7) << "" << "  * " << statCourante->nombreDeTentativesDAjoutCertInterneEchouees << " Echecs";
     Log() << setw(7) << "" << "    * " << statCourante->nombreDeTentativesDAjoutCertInterneEchoueesParAdhesion << " par l'adhésion";
     Log() << setw(7) << "" << "    * " << statCourante->nombreDeTentativesDAjoutCertInterneEchoueesParStock<< " par le stock";
-    Log() << setw(7) << "" << "  * " << statCourante->nombreDeTentativesDAjoutCertNouveauVenuEchouees<< " Echecs (nouveau venu)";
+    Log() << setw(7) << statCourante->nombreDeTentativesDAjoutCertNouveauVenu << " Tentatives d'ajout de lien (membre à nouveau venu)";
+    Log() << setw(7) << "" << "  * " << statCourante->nombreDeTentativesDAjoutCertNouveauVenuSucces<< " Succès";
+    Log() << setw(7) << "" << "  * " << statCourante->nombreDeTentativesDAjoutCertNouveauVenuEchouees<< " Echecs";
     Log() << setw(7) << "" << "    * " << statCourante->nombreDeTentativesDAjoutCertNouveauVenuEchoueesParQteLiens << " par le nombre de liens";
     Log() << setw(7) << "" << "    * " << statCourante->nombreDeTentativesDAjoutCertNouveauVenuEchoueesParDistance << " par la distance";
     Log() << setw(7) << "" << "    * " << statCourante->nombreDeTentativesDAjoutCertNouveauVenuEchoueesParStock<< " par le stock";
     Log() << setw(7) << statCourante->nombreDeMembresExclusParManqueDeCertif << " Membres exclus (par nombre de liens)";
     Log() << setw(7) << statCourante->nombreDeCertifsExpirees << " Liens détruits en toile (expiration)";
-    Log() << setw(7) << statCourante->nombreDeMembresEnAttenteFinDeTour << " Identités en piscine";
-    Log() << setw(7) << "" << "  * -" << statCourante->nombreDeTentativesDAjoutMembreSucces << " Identités devenues membres";
-    Log() << setw(7) << "" << "  * +" << statCourante->nombreDIdentitesGenereesEnPisicine << " Identités nouvelles générées";
-    Log() << setw(7) << statCourante->nombreDeMembresCertifsEnAttenteFinDeTour << " Certifications en piscine";
-    Log() << setw(7) << "" << "  * -" << statCourante->nombreDeCertifsTransfereesEnToile << " Transférées en toile";
-    Log() << setw(7) << "" << "  * +" << statCourante->nombreDeCertifsGenereesEnPisicine << " Nouvellement émises";
+    Log() << setw(7) << statCourante->nombreDeMembresEnAttenteFinDeTour << " Identités en piscine (-" << statCourante->nombreDeTentativesDAjoutMembreSucces << " devenues membres)";
+    Log() << setw(7) << statCourante->nombreDeMembresCertifsEnAttenteFinDeTour << " Certifications en piscine (-" << statCourante->nombreDeCertifsTransfereesEnToile << " transférées en toile)";
     Log() << setw(7) << "  --------";
     Log() << setw(7) << statCourante->tempsExecutionDuBloc << " µs pour l'ajout du bloc";
     Log() << setw(7) << "  --------";
     Log();
   };
 
-  void Duniter::alimenteLesPiscines() {
+  void Duniter::alimenteLesPiscines(int jour) {
+
+    statDuJourEnCours = new StatsDuJour();
+    iPool->statDuJourEnCours = statDuJourEnCours;
+    cPool->statDuJourEnCours = statDuJourEnCours;
+
+    Log() << ">>>>>>>>>>>>>>>> JOUR " << jour << " <<<<<<<<<<<<<<<<<<<<";
 
     /*********************
      * NOUVEAUX VENUS
@@ -145,5 +151,11 @@ namespace libsimu {
      *   CERTIFICATIONS
      */
     cPool->emetDeNouvellesCertifications(iPool, blocCourant);
+
+    // Stats
+    statDuJourEnCours->nombreDeMembresEnAttenteFinDeTour = iPool->newcomers.size();
+    statDuJourEnCours->nombreDeMembresCertifsEnAttenteFinDeTour = cPool->getNbCertifsEnPiscine();
+    Log() << setw(7) << statDuJourEnCours->nombreDeMembresEnAttenteFinDeTour << " Identités en piscine (+" << statDuJourEnCours->nombreDIdentitesGenereesEnPisicine << ")";
+    Log() << setw(7) << statDuJourEnCours->nombreDeMembresCertifsEnAttenteFinDeTour << " Certifications en piscine (+" << statDuJourEnCours->nombreDeCertifsGenereesEnPisicine << ")";
   };
 }

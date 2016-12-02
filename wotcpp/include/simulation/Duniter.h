@@ -8,7 +8,7 @@
 #include "simulation/IdentityPool.h"
 #include "simulation/CertificationPool.h"
 #include "simulation/Statistiques.h"
-#include "simulation/StatsDuTour.h"
+#include "simulation/StatsDuBloc.h"
 
 
 namespace libsimu {
@@ -33,7 +33,7 @@ namespace libsimu {
        * un maximum de nouveaux membres selon les règles établies.
        */
       void ajouteUnBloc();
-      void alimenteLesPiscines();
+      void alimenteLesPiscines(int jour);
       void afficheStats();
 
       unsigned int blocCourant = 0;
@@ -52,7 +52,8 @@ namespace libsimu {
       CertificationPool* cPool;
       vector<Certification> wotLinks;
       Statistiques* stats;
-      StatsDuTour* statCourante;
+      StatsDuBloc* statCourante;
+      StatsDuJour* statDuJourEnCours;
   };
 }
 

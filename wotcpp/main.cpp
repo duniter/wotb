@@ -14,32 +14,34 @@ int main(int argc, char **argv) {
   srand(time(NULL));
 
   // Paramètres voulus
-  const double POURCENTAGE_DE_NOUVEAUX_MEMBRES_MAXI = 0.1;
-  const double X_PERCENT = 0.1;
-  const uint32_t DIVISIONS_PAR_UNITE_TEMPS = 1; // 1 unité de temps = 1 jour
-  const uint32_t MINIMUM_DE_NOUVEAUX_VENUS_EN_PERMANENCE = 2;
+  const uint32_t UNITES_TEMPS = 1; // Unité de temps = 1 jour
+  const uint32_t BLOCS_PAR_UNITE_TEMPS = 3; // 1 bloc/heure
   const uint32_t SIG_QTY = 1;
-  const uint32_t STEP_MAX = 21;
-  const uint32_t SIG_STOCK = 150;
-  const uint32_t SIG_PERIOD = 1 * DIVISIONS_PAR_UNITE_TEMPS; // 1 jour
+  const uint32_t STEP_MAX = 5;
+  const uint32_t SIG_STOCK = 40;
+  const uint32_t SIG_PERIOD = 1 * UNITES_TEMPS; // 1 jour
   const uint32_t SIG_MOY = SIG_STOCK / 3;
+  const double X_PERCENT = 0.8;
+  const double POURCENTAGE_DE_NOUVEAUX_MEMBRES_MAXI = 0.1;
+  const uint32_t MINIMUM_DE_NOUVEAUX_VENUS_PAR_UNITE_TEMPS = 2;
 
   /*****************************
    * SIMULATEUR DE NŒUD DUNITER
    ****************************/
 
-  const uint32_t NOMBRE_DE_BLOCKS_DE_SIMULATION = 200 * DIVISIONS_PAR_UNITE_TEMPS;
-  Duniter* simulateur = new Duniter(NOMBRE_DE_BLOCKS_DE_SIMULATION, X_PERCENT, STEP_MAX, MINIMUM_DE_NOUVEAUX_VENUS_EN_PERMANENCE, POURCENTAGE_DE_NOUVEAUX_MEMBRES_MAXI, SIG_MOY, SIG_STOCK, SIG_QTY, SIG_PERIOD);
+  const uint32_t DUREE_SIMULATION = 3 * UNITES_TEMPS;
+  const uint32_t NOMBRE_DE_BLOCKS_DE_SIMULATION = DUREE_SIMULATION * BLOCS_PAR_UNITE_TEMPS;
+  Duniter* simulateur = new Duniter(NOMBRE_DE_BLOCKS_DE_SIMULATION, X_PERCENT, STEP_MAX, MINIMUM_DE_NOUVEAUX_VENUS_PAR_UNITE_TEMPS, POURCENTAGE_DE_NOUVEAUX_MEMBRES_MAXI, SIG_MOY, SIG_STOCK, SIG_QTY, SIG_PERIOD);
 //  const uint32_t NOMBRE_DE_BLOCKS_DE_SIMULATION = 5 * 12 * 24; // 24H avec 1 bloc toutes les 5 minutes
 
   Log::setEnabled(true);
-  Log2::setEnabled(false);
+  Log2::setEnabled(true);
   Log() << "--------- SIMULATION ---------";
   Log() << "stepMax:             " << STEP_MAX << " saut(s)";
   Log() << "sigStock:            " << SIG_STOCK << " certification(s) maxi.";
   Log() << "sigQty:              " << SIG_QTY << " certification(s) mini.";
   Log() << "sigPeriod:           " << SIG_PERIOD << " jour(s) de délai";
-  Log() << "sigValidity:         " << simulateur->SIG_VALIDITY / DIVISIONS_PAR_UNITE_TEMPS << " jour(s)";
+  Log() << "sigValidity:         " << simulateur->SIG_VALIDITY << " jour(s)";
   Log() << "xPercent:            " << X_PERCENT * 100.0 << " %";
   Log() << "------------------------------";
 //  Log() << "sigMoy:              " << SIG_MOY << " certification(s) émise(s) en moyenne par membre";
@@ -55,9 +57,16 @@ int main(int argc, char **argv) {
   Log();
   Log();
 
-  for (int i = 0; i < NOMBRE_DE_BLOCKS_DE_SIMULATION; i++) {
-    simulateur->ajouteUnBloc();
-    simulateur->afficheStats();
+  for (int jour = 0; jour < DUREE_SIMULATION; jour++) {
+    // A chaque période de temps humaine, on alimente les piscines
+    simulateur->alimenteLesPiscines(jour);
+    // Puis, le réseau intègre techniquement ces données en BLOCS_PAR_UNITE_TEMPS opérations ou « blocs »
+    for (int b = 0; b < BLOCS_PAR_UNITE_TEMPS; b++) {
+      simulateur->ajouteUnBloc();
+      simulateur->afficheStats();
+    }
+//    simulateur->wot->showTable();
+//    Log();
   }
 
 //  simulateur->wot->showTable();

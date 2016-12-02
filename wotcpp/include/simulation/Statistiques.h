@@ -7,7 +7,7 @@
 
 
 #include <vector>
-#include "StatsDuTour.h"
+#include "StatsDuBloc.h"
 
 using namespace std;
 
@@ -17,7 +17,12 @@ namespace libsimu {
     public:
         Statistiques(int nbBlocsDeSimulation);
 
-        vector<StatsDuTour*> parTour;
+        vector<StatsDuBloc*> parTour;
+
+        static long long compteMicrosecondesDepuis(std::chrono::high_resolution_clock::time_point start) {
+          auto elapsed = std::chrono::high_resolution_clock::now() - start;
+          return std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
+        };
     };
 }
 

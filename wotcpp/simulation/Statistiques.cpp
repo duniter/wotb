@@ -7,6 +7,6 @@
 namespace libsimu {
 
     Statistiques::Statistiques(int nbBlocsDeSimulation) {
-      parTour = vector<StatsDuTour*>(nbBlocsDeSimulation);
+      parTour = vector<StatsDuBloc*>(nbBlocsDeSimulation);
     }
 }
