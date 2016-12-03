@@ -31,8 +31,6 @@ int main(int argc, char **argv) {
 
   const uint32_t DUREE_SIMULATION = 345 * UNITES_TEMPS;
   const uint32_t NOMBRE_DE_BLOCKS_DE_SIMULATION = DUREE_SIMULATION * BLOCS_PAR_UNITE_TEMPS;
-#pragma omp parallel
-  {
     Duniter *simulateur = new Duniter(NOMBRE_DE_BLOCKS_DE_SIMULATION, X_PERCENT, STEP_MAX,
                                       MINIMUM_DE_NOUVEAUX_VENUS_PAR_UNITE_TEMPS, POURCENTAGE_DE_NOUVEAUX_MEMBRES_MAXI,
                                       SIG_MOY, SIG_STOCK, SIG_QTY, SIG_PERIOD);
@@ -76,5 +74,4 @@ int main(int argc, char **argv) {
     simulateur->fermeCSV();
 
 //  simulateur->wot->showTable();
-  }
 }

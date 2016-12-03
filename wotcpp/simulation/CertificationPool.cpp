@@ -49,6 +49,7 @@ namespace libsimu {
     link.first = from->uid;
     link.second = to->uid;
     cert->link = link;
+#pragma omp critical
     certs[to->uid].push_back(cert);
     statDuJourEnCours->nombreDeCertifsGenereesEnPisicine++;
   }
@@ -71,6 +72,7 @@ namespace libsimu {
       if (cert->dateOfIssuance + SIG_VALIDITY < NOMBRE_DE_BLOCKS_DE_SIMULATION) {
         expirationsDeLiens[cert->dateOfIssuance + SIG_VALIDITY].push_back(cert);
       }
+#pragma omp atomic
       statCourante->nombreDeCertifsTransfereesEnToile++;
     }
   };
@@ -249,6 +251,7 @@ namespace libsimu {
         int nbEssais = 0;
         Identity* identiteCiblee = NULL;
         // Puis bascule éventuellement sur la certification d'un membre de façon aléatoire
+
         while (identiteCiblee == NULL && nbEssais < 10) {
 
           int cible = 0;
@@ -328,28 +331,31 @@ namespace libsimu {
 
   bool CertificationPool::existeDejaCertification(Identity* emetteur, Identity* identiteCiblee) {
     // Test en piscine
-    vector<Certification*> recuesEnPiscine = certs[identiteCiblee->uid];
     bool existeEnPiscine = false;
-    uint32_t tailleDeLaPiscine = recuesEnPiscine.size();
-    for (int i = 0; !existeEnPiscine && i < tailleDeLaPiscine; i++) {
-      int fromUID = recuesEnPiscine[i]->link.first;
-      if (fromUID == emetteur->uid) {
-        existeEnPiscine = true;
-      }
-    }
-    if (existeEnPiscine) {
-      return true;
-    }
-    // Test en toile
-    vector<Certification*> recuesEnToile = liens[identiteCiblee->uid];
     bool existeEnToile = false;
-    uint32_t tailleDeLaToile = recuesEnToile.size();
-    for (int i = 0; !existeEnToile && i < tailleDeLaToile; i++) {
-      int fromUID = recuesEnToile[i]->link.first;
-      if (fromUID == emetteur->uid) {
-        existeEnToile = true;
+#pragma omp critical
+    {
+      vector<Certification *> recuesEnPiscine = certs[identiteCiblee->uid];
+      uint32_t tailleDeLaPiscine = recuesEnPiscine.size();
+      for (int i = 0; !existeEnPiscine && i < tailleDeLaPiscine; i++) {
+        int fromUID = recuesEnPiscine[i]->link.first;
+        if (fromUID == emetteur->uid) {
+          existeEnPiscine = true;
+        }
       }
     }
-    return existeEnToile;
+    if (!existeEnPiscine) {
+      // Test en toile
+      vector<Certification *> recuesEnToile = liens[identiteCiblee->uid];
+      uint32_t tailleDeLaToile = recuesEnToile.size();
+      for (int i = 0; !existeEnToile && i < tailleDeLaToile; i++) {
+        int fromUID = recuesEnToile[i]->link.first;
+        if (fromUID == emetteur->uid) {
+          existeEnToile = true;
+        }
+      }
+    }
+    return existeEnPiscine || existeEnToile;
   }
+
 }
