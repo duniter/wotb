@@ -8,6 +8,7 @@
 #include "simulation/IdentityPool.h"
 #include "webOfTrust.h"
 #include "log.h"
+#include <math.h>
 
 namespace libsimu {
 

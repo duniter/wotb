@@ -4,6 +4,8 @@
 #include <iostream>
 #include <chrono>
 #include <iomanip>
+#include <math.h>
+#include <random>
 
 #include "simulation/CertificationPool.h"
 #include "log.h"
@@ -144,15 +146,15 @@ namespace libsimu {
           return true;
         } else {
           statCourante->nombreDeTentativesDAjoutCertInterneEchouees++;
-          Log2() << "ECHEC de l'ajout du lien UID " << from << " -> " << to << " | WID " << certifieur->wotb_id << " -> " << certifie->wotb_id;
-          Log2();
+          //Log2() << "ECHEC de l'ajout du lien UID " << from << " -> " << to << " | WID " << certifieur->wotb_id << " -> " << certifie->wotb_id;
+          //Log2();
         }
       } else {
         statCourante->nombreDeTentativesDAjoutCertInterneEchouees++;
         if (echecParLadhesion) statCourante->nombreDeTentativesDAjoutCertInterneEchoueesParAdhesion++;
         if (echecParLeStock) statCourante->nombreDeTentativesDAjoutCertInterneEchoueesParStock++;
-        Log2() << "ECHEC de l'ajout du lien UID " << from << " -> " << to << " | WID " << certifieur->wotb_id << " -> " << certifie->wotb_id;
-        Log2();
+        //Log2() << "ECHEC de l'ajout du lien (Non adhérent ou pas de stock) UID " << from << " -> " << to << " | WID " << certifieur->wotb_id << " -> " << certifie->wotb_id;
+        //Log2();
       }
     }
     return false;
@@ -310,7 +312,7 @@ namespace libsimu {
     for (int i = 0; i < iPool->members.size(); i++) {
 
       Identity* emetteur = iPool->members[i];
-      if (emetteur->wotb_node->getNbLinks() >= SIG_STOCK) {
+      if (emetteur->wotb_node->getNbIssued() >= SIG_STOCK) {
         statCourante->nombreDeMembresStockEpuise++;
       }
       membreEmetUneCertifSiPossible(iPool, emetteur, blocCourant);
