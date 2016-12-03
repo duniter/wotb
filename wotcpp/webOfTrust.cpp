@@ -8,6 +8,7 @@
 #include <cmath>
 #include <random>
 #include <fstream>
+#include <sstream>
 
 namespace libwot {
 
@@ -189,17 +190,24 @@ namespace libwot {
   }
 
 
-  WebOfTrust* WebOfTrust::showGraphviz() {
-    int i = 0;
-    cout << "digraph G {" << endl << endl;
-    for(vector<Node*>::iterator itNode = mNodes.begin(); itNode != mNodes.end(); itNode++) {
-      vector<Node*> links = ((Node*)*itNode)->getLinks();
-      for(vector<Node*>::iterator itLink = links.begin(); itLink != links.end(); itLink++) {
-        cout << "    " << getNodeIndex((Node*)*itLink) << " -> " << i << "" << endl;
+    string WebOfTrust::getGraphviz() {
+      int i = 0;
+      stringstream iss;
+      iss << "digraph G {" << endl << endl;
+      for(vector<Node*>::iterator itNode = mNodes.begin(); itNode != mNodes.end(); itNode++) {
+        vector<Node*> links = ((Node*)*itNode)->getLinks();
+        for(vector<Node*>::iterator itLink = links.begin(); itLink != links.end(); itLink++) {
+          iss << "    " << getNodeIndex((Node*)*itLink) << " -> " << i << "" << endl;
+        }
+        i++;
       }
-      i++;
+      iss << "}" << endl;
+
+      return iss.str();
     }
-    cout << "}" << endl;
+
+  WebOfTrust* WebOfTrust::showGraphviz() {
+    cout << getGraphviz();
 
     return this;
   }

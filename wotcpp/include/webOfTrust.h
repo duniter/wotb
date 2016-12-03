@@ -9,6 +9,7 @@
 #include "distanceResult.h"
 #include "wotSet.h"
 #include "wotStep.h"
+#include <string>
 
 
 namespace libwot {
@@ -57,6 +58,7 @@ namespace libwot {
 
       WebOfTrust* showTable();
       WebOfTrust* showGraphviz();
+      std::string getGraphviz();
 
       bool writeToDisk(std::string filename);
 

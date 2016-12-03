@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
    * SIMULATEUR DE NŒUD DUNITER
    ****************************/
 
-  const uint32_t DUREE_SIMULATION = 345 * UNITES_TEMPS;
+  const uint32_t DUREE_SIMULATION = 130 * UNITES_TEMPS;
   const uint32_t NOMBRE_DE_BLOCKS_DE_SIMULATION = DUREE_SIMULATION * BLOCS_PAR_UNITE_TEMPS;
     Duniter *simulateur = new Duniter(NOMBRE_DE_BLOCKS_DE_SIMULATION, X_PERCENT, STEP_MAX,
                                       MINIMUM_DE_NOUVEAUX_VENUS_PAR_UNITE_TEMPS, POURCENTAGE_DE_NOUVEAUX_MEMBRES_MAXI,
@@ -75,6 +75,6 @@ int main(int argc, char **argv) {
 //    Log();
     }
     simulateur->fermeCSV();
-
+    simulateur->sauvegardeWoT();
 //  simulateur->wot->showTable();
 }

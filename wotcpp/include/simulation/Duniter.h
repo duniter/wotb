@@ -37,6 +37,7 @@ namespace libsimu {
       void alimenteLesPiscines(int jour);
       void afficheStats();
       void genereCSV();
+      void sauvegardeWoT();
       void ouvreCSV();
       void fermeCSV();
       void resetStatsCourantes();

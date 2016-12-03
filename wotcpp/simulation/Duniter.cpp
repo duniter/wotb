@@ -153,6 +153,23 @@ namespace libsimu {
       csvFile << "Membres exclus;Liens détruits;Identités en piscine;Nouveaux membres;Certifications en piscine;Certifications intégrées";
       csvFile << "\n";
     }
+    void Duniter::sauvegardeWoT() {
+
+      auto now = std::chrono::system_clock::now();
+      auto in_time_t = std::chrono::system_clock::to_time_t(now);
+      std::stringstream ss;
+      ss << "wotcpp-wot-";
+      ss << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d-%H-%M");
+      ss << ".dot";
+      std::string filename = ss.str();
+      Log() << "WoT dans " << ss.str();
+
+      ofstream dotFile;
+      dotFile.open (filename);
+      dotFile << this->wot->getGraphviz();
+      dotFile.close();
+    }
+
 
     void Duniter::fermeCSV() {
       csvFile.close();
