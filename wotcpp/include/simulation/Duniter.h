@@ -9,6 +9,7 @@
 #include "CertificationPool.h"
 #include "Statistiques.h"
 #include "StatsDuBloc.h"
+#include <fstream>
 
 
 namespace libsimu {
@@ -35,6 +36,9 @@ namespace libsimu {
       void ajouteUnBloc();
       void alimenteLesPiscines(int jour);
       void afficheStats();
+      void genereCSV();
+      void ouvreCSV();
+      void fermeCSV();
 
       unsigned int blocCourant = 0;
       int NOMBRE_DE_BLOCKS_DE_SIMULATION;
@@ -54,6 +58,7 @@ namespace libsimu {
       Statistiques* stats;
       StatsDuBloc* statCourante;
       StatsDuJour* statDuJourEnCours;
+      ofstream csvFile;
   };
 }
 

@@ -16,9 +16,9 @@ int main(int argc, char **argv) {
   // Paramètres voulus
   const uint32_t UNITES_TEMPS = 1; // Unité de temps = 1 jour
   const uint32_t BLOCS_PAR_UNITE_TEMPS = 3; // 1 bloc/heure
-  const uint32_t SIG_QTY = 1;
-  const uint32_t STEP_MAX = 5;
-  const uint32_t SIG_STOCK = 40;
+  const uint32_t SIG_QTY = 5;
+  const uint32_t STEP_MAX = 6;
+  const uint32_t SIG_STOCK = 150;
   const uint32_t SIG_PERIOD = 1 * UNITES_TEMPS; // 1 jour
   const uint32_t SIG_MOY = SIG_STOCK / 3;
   const double X_PERCENT = 0.8;
@@ -29,13 +29,13 @@ int main(int argc, char **argv) {
    * SIMULATEUR DE NŒUD DUNITER
    ****************************/
 
-  const uint32_t DUREE_SIMULATION = 3 * UNITES_TEMPS;
+  const uint32_t DUREE_SIMULATION = 7 *  UNITES_TEMPS;
   const uint32_t NOMBRE_DE_BLOCKS_DE_SIMULATION = DUREE_SIMULATION * BLOCS_PAR_UNITE_TEMPS;
   Duniter* simulateur = new Duniter(NOMBRE_DE_BLOCKS_DE_SIMULATION, X_PERCENT, STEP_MAX, MINIMUM_DE_NOUVEAUX_VENUS_PAR_UNITE_TEMPS, POURCENTAGE_DE_NOUVEAUX_MEMBRES_MAXI, SIG_MOY, SIG_STOCK, SIG_QTY, SIG_PERIOD);
 //  const uint32_t NOMBRE_DE_BLOCKS_DE_SIMULATION = 5 * 12 * 24; // 24H avec 1 bloc toutes les 5 minutes
-
   Log::setEnabled(true);
   Log2::setEnabled(true);
+  simulateur->ouvreCSV();
   Log() << "--------- SIMULATION ---------";
   Log() << "stepMax:             " << STEP_MAX << " saut(s)";
   Log() << "sigStock:            " << SIG_STOCK << " certification(s) maxi.";
@@ -64,7 +64,9 @@ int main(int argc, char **argv) {
     for (int b = 0; b < BLOCS_PAR_UNITE_TEMPS; b++) {
       simulateur->ajouteUnBloc();
       simulateur->afficheStats();
+      simulateur->genereCSV();
     }
+    simulateur->fermeCSV();
 //    simulateur->wot->showTable();
 //    Log();
   }

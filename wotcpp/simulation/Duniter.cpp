@@ -9,6 +9,10 @@
 #include "webOfTrust.h"
 #include "log.h"
 #include <math.h>
+#include <fstream>
+#include <iomanip>
+#include <sstream> // stringstream
+
 
 namespace libsimu {
 
@@ -126,6 +130,59 @@ namespace libsimu {
     Log() << setw(7) << "  --------";
     Log();
   };
+
+    void Duniter::ouvreCSV() {
+
+      auto now = std::chrono::system_clock::now();
+      auto in_time_t = std::chrono::system_clock::to_time_t(now);
+      std::stringstream ss;
+      ss << "wotcpp-stats-";
+      ss << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d-%H-%M");
+      ss << ".csv";
+      Log() << "Stats dans " << ss.str();
+      csvFile.open (ss.str());
+      csvFile << "Membres en toile;Membres passes et presents;Membres avec stock epuise;";
+      csvFile << "Liens emis pour etre point de controle;Points de controle;Liens en toile;";
+      csvFile << "(Ajout membre) Succes;(Ajout membre) Echecs par nombre de liens;(Ajout membre) Echecs par la distance;";
+      csvFile << "(M2M) Succes ajout de lien;(M2M) Echecs par adhésion;(M2M) Echecs par le stock;";
+      csvFile << "(M2N) Succes ajout de lien;(M2N) Echecs par nombre de liens;(M2N) Echecs par la distance;(M2N) Echecs par le stock;";
+      csvFile << "Membres exclus;Liens détruits;Identités en piscine;Nouveaux membres;Certifications en piscine;Certifications intégrées";
+      csvFile << "\n";
+    }
+
+    void Duniter::fermeCSV() {
+      csvFile.close();
+    }
+    void Duniter::genereCSV() {;
+      csvFile << statCourante->nombreDeMembresEnToile << ";";
+      csvFile << statCourante->nombreDeMembresPassesEnToile << ";";
+      csvFile << statCourante->nombreDeMembresStockEpuise << ";";
+
+      csvFile << statCourante->nombreDeLiensEmisPourEtreSentry << ";";
+      csvFile << statCourante->nombreDeSentries << ";";
+      csvFile << statCourante->nombreDeLiensEnToile << ";";
+
+      csvFile << statCourante->nombreDeTentativesDAjoutMembreSucces  << ";";
+      csvFile << statCourante->nombreDeTentativesDAjoutMembreEchoueesParQteLiens << ";";
+      csvFile << statCourante->nombreDeTentativesDAjoutMembreEchoueesParDistance  << ";";
+
+      csvFile << statCourante->nombreDeTentativesDAjoutCertInterneSucces  << ";";
+      csvFile << statCourante->nombreDeTentativesDAjoutCertInterneEchoueesParAdhesion  << ";";
+      csvFile << statCourante->nombreDeTentativesDAjoutCertInterneEchoueesParStock << ";";
+
+      csvFile << statCourante->nombreDeTentativesDAjoutCertNouveauVenuSucces  << ";";
+      csvFile << statCourante->nombreDeTentativesDAjoutCertNouveauVenuEchoueesParQteLiens  << ";";
+      csvFile << statCourante->nombreDeTentativesDAjoutCertNouveauVenuEchoueesParDistance  << ";";
+      csvFile << statCourante->nombreDeTentativesDAjoutCertNouveauVenuEchoueesParStock  << ";";
+
+      csvFile << statCourante->nombreDeMembresExclusParManqueDeCertif << ";";
+      csvFile << statCourante->nombreDeCertifsExpirees  << ";";
+      csvFile << statCourante->nombreDeTentativesDAjoutMembreSucces << ";";
+      csvFile << statCourante->nombreDeMembresEnAttenteFinDeTour  << ";";
+      csvFile << statCourante->nombreDeMembresCertifsEnAttenteFinDeTour << ";";
+      csvFile << statCourante->nombreDeCertifsTransfereesEnToile << ";";
+      csvFile << "\n";
+    };
 
   void Duniter::alimenteLesPiscines(int jour) {
 
