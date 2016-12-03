@@ -60,10 +60,14 @@ int main(int argc, char **argv) {
     Log();
 
     for (int jour = 0; jour < DUREE_SIMULATION; jour++) {
+      simulateur->resetStatsCourantes();
       // A chaque période de temps humaine, on alimente les piscines
       simulateur->alimenteLesPiscines(jour);
       // Puis, le réseau intègre techniquement ces données en BLOCS_PAR_UNITE_TEMPS opérations ou « blocs »
       for (int b = 0; b < BLOCS_PAR_UNITE_TEMPS; b++) {
+
+        if (b != 0) simulateur->resetStatsCourantes();
+
         simulateur->ajouteUnBloc();
         simulateur->afficheStats();
         simulateur->genereCSV();

@@ -39,6 +39,7 @@ namespace libsimu {
       void genereCSV();
       void ouvreCSV();
       void fermeCSV();
+      void resetStatsCourantes();
 
       unsigned int blocCourant = 0;
       int NOMBRE_DE_BLOCKS_DE_SIMULATION;

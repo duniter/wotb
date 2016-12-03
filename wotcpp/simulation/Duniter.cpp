@@ -36,6 +36,12 @@ namespace libsimu {
     stats = new Statistiques(NOMBRE_DE_BLOCKS_DE_SIMULATION);
   }
 
+  void Duniter::resetStatsCourantes() {
+
+    statCourante = new StatsDuBloc();
+    iPool->statCourante = statCourante;
+    cPool->statCourante = statCourante;
+  }
   /**
    * Mécanique principale qui ajoute des exclu les membres ne répondant plus aux critères et tente d'ajouter
    * un maximum de nouveaux membres selon les règles établies.
@@ -45,8 +51,6 @@ namespace libsimu {
 
     // Stats
     auto start = std::chrono::high_resolution_clock::now();
-    iPool->statCourante = statCourante;
-    cPool->statCourante = statCourante;
 
     cPool->essaieIntegrerLiensInternes(iPool);
     cPool->essaieIntegrerNouveauxVenus(wot, iPool);
