@@ -247,6 +247,9 @@ namespace libsimu {
       uint32_t multipleDeSigPeriod = SIG_STOCK / emetteur->sigPersoCible;
       if (blocCourant == 0 || emetteur->derniereEmissionDeCertif + multipleDeSigPeriod * SIG_PERIOD <= blocCourant) {
         // Emet une certification aléatoirement
+        // Vers des nouveaux, des certifications deja existantes, ou des membres
+        uint32_t indexNewComers = 0;
+        uint32_t indexMembres = indexNewComers + iPool->newcomers.size();
         uint32_t nbPossibilites = iPool->newcomers.size() + iPool->members.size();
         int nbEssais = 0;
         Identity* identiteCiblee = NULL;
@@ -256,20 +259,17 @@ namespace libsimu {
 
           int cible = 0;
 
-          // Emet une certif en interne 33% du temps
-          if ((blocCourant + nbEssais) % 10 == 0) {
+          // Emet une certif en interne déja existante 1% du temps
+          if ((blocCourant + nbEssais) % 100 == 0) {
             // Parmi les membres
-            cible = nombreAleatoireUniformeEntreXetY(iPool->newcomers.size(), nbPossibilites - 1);
+            cible = nombreAleatoireUniformeEntreXetY(indexMembres, nbPossibilites - 1);
+            identiteCiblee = iPool->members[cible - indexMembres];
           } else {
             // Parmi les nouveaux
-            cible = nombreAleatoireUniformeEntreXetY(0, iPool->newcomers.size() - 1);
+            cible = nombreAleatoireUniformeEntreXetY(indexNewComers, indexMembres - 1);
+            identiteCiblee = iPool->newcomers[cible];
           }
 
-          if (cible < iPool->newcomers.size()) {
-            identiteCiblee = iPool->newcomers[cible];
-          } else {
-            identiteCiblee = iPool->members[cible - iPool->newcomers.size()];
-          }
           bool luiMeme = emetteur->uid == identiteCiblee->uid;
           if (luiMeme) {
             identiteCiblee = NULL;
