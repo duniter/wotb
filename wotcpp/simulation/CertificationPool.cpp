@@ -214,12 +214,15 @@ namespace libsimu {
 //        Log() << "ECHEC AJOUT EN TOILE";
 //        wot->showTable();
         // Rollback: pop the last node (and its links)
-        wot->removeNode();
         for (int j = liensEffectifs.size() - 1; j >= 0; j--) {
+          int position = liensEffectifs[j];
+          Certification* certEffective = liensPotentiels[position];
+          certEffective->emetteur->wotb_node->removeLinkTo(wotb_id);
           statCourante->nombreDeTentativesDAjoutCertNouveauVenuEchouees++;
           if (echecSigQty) statCourante->nombreDeTentativesDAjoutCertNouveauVenuEchoueesParQteLiens++;
           if (echecDistance) statCourante->nombreDeTentativesDAjoutCertNouveauVenuEchoueesParDistance++;
         }
+        wot->removeNode();
         if (echecSigQty) statCourante->nombreDeTentativesDAjoutMembreEchoueesParQteLiens++;
         if (echecDistance) statCourante->nombreDeTentativesDAjoutMembreEchoueesParDistance++;
         statCourante->nombreDeTentativesDAjoutMembreEchouees++;
