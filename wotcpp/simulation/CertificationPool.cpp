@@ -139,7 +139,7 @@ namespace libsimu {
       statCourante->nombreDeTentativesDAjoutCertInterne++;
       Node* wotbCertifieur = certifieur->wotb_node;
       Node* wotbCertifie = certifie->wotb_node;
-      bool echecParLadhesion = !(wotbCertifie != NULL && wotbCertifieur->isEnabled() && wotbCertifie->isEnabled());
+      bool echecParLadhesion = wotbCertifie == NULL || !wotbCertifieur->isEnabled() || !wotbCertifie->isEnabled();
       bool echecParLeStock = !echecParLadhesion && wotbCertifieur->getNbIssued() >= SIG_STOCK;
       if (!echecParLadhesion && !echecParLeStock) {
         if (wotbCertifieur->addLinkTo(wotbCertifie)) {
