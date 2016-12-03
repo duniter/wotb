@@ -17,8 +17,8 @@ namespace libsimu {
       Identity(uint32_t sigPersoCible);
       ~Identity();
 
-      bool estMembre;
-      bool aEteMembre;
+      bool estMembre = false;
+      bool aEteMembre = false;
       UID uid;
       WID wotb_id;
       libwot::Node* wotb_node;
