@@ -22,7 +22,7 @@ namespace libsimu {
       ~IdentityPool();
 
       void alimenteEnNouveaux(uint32_t valuesNewSize);
-      void newcomer2member(Identity *identity);
+      void newcomer2member(Identity *identity, uint32_t blocCourant);
       void allNewcomersBecomeMembers(WebOfTrust* wot);
       uint32_t nombreAleatoireGaussienDeMoyenneX(uint32_t x, int min, int max);
       uint32_t lastUID() { return counter; };

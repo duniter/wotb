@@ -54,13 +54,14 @@ namespace libsimu {
     // Stats
     auto start = std::chrono::high_resolution_clock::now();
 
-    cPool->essaieIntegrerLiensInternes(iPool);
-    cPool->essaieIntegrerNouveauxVenus(wot, iPool);
+    cPool->essaieIntegrerLiensInternes(iPool, blocCourant);
+    cPool->essaieIntegrerNouveauxVenus(wot, iPool, blocCourant);
 
     blocCourant++;
 
     // Le temps s'est incrémenté, conséquences :
     cPool->faitExpirerLesLiens(blocCourant);
+
     // TODO: actualisation tous les X periodes => Test de distance
     // TODO expiration des certifications en piscine
     statCourante->nombreDeMembresEnToile = wot->getEnabledCount();
@@ -172,6 +173,22 @@ namespace libsimu {
       dotFile.close();
     }
 
+    void Duniter::sauvegardeGephi() {
+
+        auto now = std::chrono::system_clock::now();
+        auto in_time_t = std::chrono::system_clock::to_time_t(now);
+        std::stringstream ss;
+        ss << "wotcpp-wot-";
+        ss << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d-%H-%M");
+        ss << ".gexf";
+        std::string filename = ss.str();
+        Log() << "WoT Gephi dans " << ss.str();
+
+        ofstream gefxFile;
+        gefxFile.open (filename);
+        gefxFile << this->cPool->getGephiHistorique(blocCourant);
+        gefxFile.close();
+    }
 
     void Duniter::fermeCSV() {
       csvFile.close();

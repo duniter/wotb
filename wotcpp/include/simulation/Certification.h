@@ -22,6 +22,7 @@ namespace libsimu {
       Identity* emetteur;
       Identity* receveur;
       uint32_t dateOfIssuance;
+      uint32_t writtenOn;
   };
 }
 

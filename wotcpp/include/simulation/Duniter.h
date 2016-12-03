@@ -10,6 +10,7 @@
 #include "Statistiques.h"
 #include "StatsDuBloc.h"
 #include <fstream>
+#include <array>
 
 
 namespace libsimu {
@@ -40,6 +41,7 @@ namespace libsimu {
       void afficheStats();
       void genereCSV();
       void sauvegardeWoT();
+      void sauvegardeGephi();
       void ouvreCSV();
       void fermeCSV();
       void resetStatsCourantes();

@@ -37,7 +37,7 @@ namespace libsimu {
       statCourante->tempsExecutionAlimenteEnNouveaux = Statistiques::compteMicrosecondesDepuis(start);
     }
 
-    void IdentityPool::newcomer2member(Identity *identity) {
+    void IdentityPool::newcomer2member(Identity *identity, uint32_t blocCourant) {
       // Retire de la liste des newcomers
       vector<Identity*>::iterator it = std::find(newcomers.begin(), newcomers.end(), identity);
       if (it != newcomers.end()) {
@@ -45,6 +45,7 @@ namespace libsimu {
       }
       // Ajoute dans la liste des membres
       members.push_back(identity);
+      identity->joinDate = blocCourant;
       statCourante->nombreDeTentativesDAjoutMembreSucces++;
     };
 
@@ -69,7 +70,7 @@ namespace libsimu {
         nouveau->estMembre = true;
         nouveau->aEteMembre = true;
         nouveau->wotb_node = wot->getNodeAt(nouveau->wotb_id);
-        newcomer2member(nouveau);
+        newcomer2member(nouveau, 0);
         i--;
       }
     }

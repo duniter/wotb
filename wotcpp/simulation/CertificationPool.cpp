@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <algorithm>
 #include <iostream>
-#include <chrono>
+#include <sstream>
 #include <iomanip>
 #include <math.h>
 #include <random>
@@ -99,11 +99,15 @@ namespace libsimu {
         bool memeEmetteur = certCourant->link.first == certExpirant->link.first;
         if (memeDate && memeEmetteur) {
           supprimeLien(liens[to][j], to, j);
+          historiqueLiens.push_back(array<uint32_t, 4>{certCourant->emetteur->wotb_id, certCourant->receveur->wotb_id,
+                                                  certCourant->writtenOn, blocCourant});
           statCourante->nombreDeCertifsExpirees++;
-          if (liens[to].size() < SIG_QTY) {
+          if (liens[to].size() < SIG_QTY && certCourant->receveur->estMembre) {
             certCourant->receveur->estMembre = false;
             certCourant->receveur->wotb_node->setEnabled(false);
             statCourante->nombreDeMembresExclusParManqueDeCertif++;
+            historiqueNoeuds.push_back(array<uint32_t, 3>{certCourant->receveur->wotb_id, certCourant->receveur->joinDate,
+                                                     blocCourant});
           }
         }
       }
@@ -131,7 +135,7 @@ namespace libsimu {
     }
   };
 
-  bool CertificationPool::essaieIntegrerLien(Certification* cert, int to, int j) {
+  bool CertificationPool::essaieIntegrerLien(Certification* cert, int to, int j, uint32_t blocCourant) {
     uint32_t from = cert->link.first;
     Identity* certifieur = cert->emetteur;
     Identity* certifie = cert->receveur;
@@ -144,6 +148,7 @@ namespace libsimu {
       if (!echecParLadhesion && !echecParLeStock) {
         if (wotbCertifieur->addLinkTo(wotbCertifie)) {
           cert2lien(cert, to, j, false);
+          cert->writtenOn = blocCourant;
           statCourante->nombreDeTentativesDAjoutCertInterneSucces++;
           return true;
         } else {
@@ -162,29 +167,29 @@ namespace libsimu {
     return false;
   };
 
-  void CertificationPool::essaieIntegrerLiensInternes(IdentityPool *iPool) {
+  void CertificationPool::essaieIntegrerLiensInternes(IdentityPool *iPool, uint32_t blocCourant) {
     auto start = std::chrono::high_resolution_clock::now();
     // Ajoute les liens internes (membre à membre)
     for (int to = 0; to < iPool->members.size(); to++) {
       for (int j = 0; j < certs[to].size(); j++) {
-        essaieIntegrerLien(certs[to][j], to, j);
+        essaieIntegrerLien(certs[to][j], to, j, blocCourant);
       }
     }
     statCourante->tempsExecutionIntegrationLiensInternes = Statistiques::compteMicrosecondesDepuis(start);
   }
 
-  void CertificationPool::essaieIntegrerNouveauxVenus(WebOfTrust *wot, IdentityPool *iPool) {
+  void CertificationPool::essaieIntegrerNouveauxVenus(WebOfTrust *wot, IdentityPool *iPool, uint32_t blocCourant) {
     auto start = std::chrono::high_resolution_clock::now();
     uint32_t d_min = ceil(pow(wot->getSize(), 1 / STEPMAX));
     statCourante->nombreDeLiensEmisPourEtreSentry = d_min;
     statCourante->nombreDeSentries = wot->getSentries(d_min).nbNodes;
     for (int i = iPool->newcomers.size() - 1; i >= 0; i--) {
-      essaieIntegrerNouveauVenu(iPool->newcomers[i], wot, iPool);
+      essaieIntegrerNouveauVenu(iPool->newcomers[i], wot, iPool, blocCourant);
     }
     statCourante->tempsExecutionIntegrationNouveauxVenus = Statistiques::compteMicrosecondesDepuis(start);
   }
 
-  void CertificationPool::essaieIntegrerNouveauVenu(Identity *nouveau, WebOfTrust* wot, IdentityPool* iPool) {
+  void CertificationPool::essaieIntegrerNouveauVenu(Identity *nouveau, WebOfTrust* wot, IdentityPool* iPool, uint32_t blocCourant) {
     statCourante->nombreDeTentativesDAjoutMembre++;
     vector<Certification*> liensPotentiels = certs[nouveau->uid];
     vector<int> liensEffectifs;
@@ -231,11 +236,12 @@ namespace libsimu {
         nouveau->estMembre = true;
         nouveau->aEteMembre = true;
         nouveau->wotb_node = wot->getNodeAt(wotb_id);
-        iPool->newcomer2member(nouveau);
+        iPool->newcomer2member(nouveau, blocCourant);
         for (int j = liensEffectifs.size() - 1; j >= 0; j--) {
           int position = liensEffectifs[j];
 //            liensPotentiels[position]->receveur->
           cert2lien(liensPotentiels[position], nouveau->uid, position, false);
+          liensPotentiels[j]->writtenOn = blocCourant;
           statCourante->nombreDeTentativesDAjoutCertNouveauVenuSucces++;
         }
       }
@@ -373,5 +379,52 @@ namespace libsimu {
     }
     return existeEnPiscine || existeEnToile;
   }
+
+    string CertificationPool::getGephiHistorique(uint32_t blocCourant) {
+        for (auto iteratorIdentities=liens.begin(); iteratorIdentities!=liens.end(); iteratorIdentities++) {
+            for (auto iteratorLiens=iteratorIdentities->begin(); iteratorLiens!=iteratorIdentities->end(); iteratorLiens++) {
+                historiqueLiens.push_back(array<uint32_t, 4>{(*iteratorLiens)->emetteur->wotb_id,
+                                                        (*iteratorLiens)->receveur->wotb_id,
+                                                        (*iteratorLiens)->writtenOn, blocCourant});
+
+                if ((*iteratorLiens)->receveur->estMembre) {
+                    historiqueNoeuds.push_back(array<uint32_t, 3>{(*iteratorLiens)->receveur->wotb_id,
+                                                             (*iteratorLiens)->receveur->joinDate,
+                                                             blocCourant});
+                    (*iteratorLiens)->receveur->estMembre = false; // on ferme les noeuds
+                }
+            }
+        }
+
+
+        stringstream iss;
+        iss << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                "<gexf xmlns=\"http://www.gexf.net/1.1draft\"\n"
+                "       xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+                "       xsi:schemaLocation=\"http://www.gexf.net/1.1draft\n"
+                "                             http://www.gexf.net/1.1draft/gexf.xsd\"\n"
+                "      version=\"1.1\">\n"
+                "  <graph mode=\"dynamic\" defaultedgetype=\"directed\">\n"
+                "    <nodes>" << endl;
+
+        for (uint32_t i = 0; i < historiqueNoeuds.size(); i++) {
+            array<uint32_t, 3> elem = historiqueNoeuds[i];
+            iss << "      <node id=\"" << elem[0] << "\" label=\"" << elem[0] << "\" start=\"" << elem[1] << "\" end=\"" << elem[2] << "\" />" << endl;
+        }
+
+        iss << "    </nodes>\n"
+                "    <edges>" << endl;
+
+        for (uint32_t i = 0; i < historiqueLiens.size(); i++) {
+            array<uint32_t, 4> elem = historiqueLiens[i];
+            iss << "      <edge source=\"" << elem[0] << "\" target=\"" << elem[1] << "\" start=\"" << elem[2] << "\" end=\"" << elem[3] << "\" />" << endl;
+        }
+
+        iss << "    </edges>\n"
+                "  </graph>\n"
+                "</gexf>" << endl;
+        return iss.str();
+
+    }
 
 }

@@ -22,15 +22,16 @@ namespace libsimu {
       void faitExpirerLesLiens(uint32_t blocCourant);
       void supprimeLien(Certification* cert, int to, int j);
       void allPendingsToLinks();
-      void essaieIntegrerLiensInternes(IdentityPool *iPool);
-      bool essaieIntegrerLien(Certification* cert, int to, int j);
-      void essaieIntegrerNouveauxVenus(WebOfTrust *wot, IdentityPool *iPool);
-      void essaieIntegrerNouveauVenu(Identity *identity, WebOfTrust* wot, IdentityPool* iPool);
+      void essaieIntegrerLiensInternes(IdentityPool *iPool,  uint32_t blocCourant);
+      bool essaieIntegrerLien(Certification* cert, int to, int j, uint32_t blocCourant);
+      void essaieIntegrerNouveauxVenus(WebOfTrust *wot, IdentityPool *iPool, uint32_t blocCourant);
+      void essaieIntegrerNouveauVenu(Identity *identity, WebOfTrust* wot, IdentityPool* iPool, uint32_t blocCourant);
       void membreEmetUneCertifSiPossible(IdentityPool* iPool, Identity *emetteur, uint32_t blocCourant);
       void emetDeNouvellesCertifications(IdentityPool* iPool, uint32_t blocCourant);
       void purgeLesCertifications(uint32_t sigWindow, uint32_t blocCourant);
       int nombreAleatoireUniformeEntreXetY(uint32_t x, uint32_t y);
       bool existeDejaCertification(Identity* emetteur, Identity* identiteCiblee);
+      string getGephiHistorique(uint32_t blocCourant);
 
       int getNbCertifsEnPiscine() {
         int count = 0;
@@ -57,6 +58,8 @@ namespace libsimu {
       double X_PERCENT;
       StatsDuBloc* statCourante;
       StatsDuJour* statDuJourEnCours;
+      vector<array<uint32_t, 4>> historiqueLiens;
+      vector<array<uint32_t, 3>> historiqueNoeuds;
   };
 }
 
