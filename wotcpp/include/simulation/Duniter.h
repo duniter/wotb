@@ -4,11 +4,11 @@
 #include <cstdint>
 #include <cstddef>
 #include <vector>
-#include "webOfTrust.h"
-#include "simulation/IdentityPool.h"
-#include "simulation/CertificationPool.h"
-#include "simulation/Statistiques.h"
-#include "simulation/StatsDuBloc.h"
+#include "../webOfTrust.h"
+#include "IdentityPool.h"
+#include "CertificationPool.h"
+#include "Statistiques.h"
+#include "StatsDuBloc.h"
 
 
 namespace libsimu {

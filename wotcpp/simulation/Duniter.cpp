@@ -41,7 +41,6 @@ namespace libsimu {
 
     // Stats
     auto start = std::chrono::high_resolution_clock::now();
-    statCourante = new StatsDuBloc();
     iPool->statCourante = statCourante;
     cPool->statCourante = statCourante;
 
