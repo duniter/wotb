@@ -317,11 +317,11 @@ namespace libsimu {
 
         Identity* emetteur = iPool->members[i];
         if (emetteur->wotb_node->getNbIssued() >= SIG_STOCK) {
-          statCourante->nombreDeMembresStockEpuise++;
+          statDuJourEnCours->nombreDeMembresStockEpuise++;
         }
         membreEmetUneCertifSiPossible(iPool, emetteur, blocCourant);
       }
-      statCourante->tempsExecutionMembreEmetUneCertifSiPossible = Statistiques::compteMicrosecondesDepuis(start);
+    statDuJourEnCours->tempsExecutionMembreEmetUneCertifSiPossible = Statistiques::compteMicrosecondesDepuis(start);
   }
 
   int CertificationPool::nombreAleatoireUniformeEntreXetY(uint32_t x, uint32_t y) {

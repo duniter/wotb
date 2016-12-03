@@ -18,7 +18,6 @@ namespace libsimu {
         double nombreDeLiensEnToile = 0;
         double nombreDeMembresAjoutes = 0;
         double nombreDeMembresExclusParManqueDeCertif = 0;
-        double nombreDeMembresStockEpuise = 0;
         double nombreDeTentativesDAjoutMembre = 0;
         double nombreDeTentativesDAjoutMembreSucces = 0;
         double nombreDeTentativesDAjoutMembreEchouees = 0;
@@ -45,7 +44,6 @@ namespace libsimu {
         long long tempsExecutionIntegrationNouveauxVenus = 0;
         long long tempsExecutionSuppressionLiens = 0;
         long long tempsExecutionAlimenteEnNouveaux = 0;
-        long long tempsExecutionMembreEmetUneCertifSiPossible = 0;
         long long tempsExecutionDuBloc = 0;
     };
 }

@@ -105,7 +105,7 @@ namespace libsimu {
     double variationL = statCourante->nombreDeTentativesDAjoutCertInterneSucces + statCourante->nombreDeTentativesDAjoutCertNouveauVenuSucces - statCourante->nombreDeCertifsExpirees;
     Log() << setw(7) << statCourante->nombreDeMembresEnToile << " Membres en toile (" << (variationN >= 0 ? "+" : "") << variationN << ")";
     Log() << setw(7) << statCourante->nombreDeMembresPassesEnToile << " Membres passés et présents";
-    Log() << setw(7) << statCourante->nombreDeMembresStockEpuise << " Membres avec stock épuisé";
+    Log() << setw(7) << statDuJourEnCours->nombreDeMembresStockEpuise << " Membres avec stock épuisé";
     Log() << setw(7) << statCourante->nombreDeLiensEmisPourEtreSentry << " Liens émis pour être point de contrôle";
     Log() << setw(7) << statCourante->nombreDeSentries << " Points de contrôles (xPercent = " << X_PERCENT*100 << "% => " <<  int(floor(statCourante->nombreDeSentries * X_PERCENT)) << " points effectifs)";
     Log() << setw(7) << statCourante->nombreDeLiensEnToile << " Liens en toile (" << (variationL >= 0 ? "+" : "") << variationL << ")";
@@ -160,7 +160,7 @@ namespace libsimu {
     void Duniter::genereCSV() {;
       csvFile << statCourante->nombreDeMembresEnToile << ";";
       csvFile << statCourante->nombreDeMembresPassesEnToile << ";";
-      csvFile << statCourante->nombreDeMembresStockEpuise << ";";
+      csvFile << statDuJourEnCours->nombreDeMembresStockEpuise << ";";
 
       csvFile << statCourante->nombreDeLiensEmisPourEtreSentry << ";";
       csvFile << statCourante->nombreDeSentries << ";";

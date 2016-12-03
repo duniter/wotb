@@ -17,6 +17,8 @@ namespace libsimu {
         double nombreDeCertifsGenereesEnPisicine = 0;
         double nombreDeMembresEnAttenteFinDeTour = 0;
         double nombreDeMembresCertifsEnAttenteFinDeTour = 0;
+        double nombreDeMembresStockEpuise = 0;
+        long long tempsExecutionMembreEmetUneCertifSiPossible = 0;
     };
 }
 
