@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
    * SIMULATEUR DE NŒUD DUNITER
    ****************************/
 
-  const uint32_t DUREE_SIMULATION = 345 * 20 *  UNITES_TEMPS;
+  const uint32_t DUREE_SIMULATION = 345 * UNITES_TEMPS;
   const uint32_t NOMBRE_DE_BLOCKS_DE_SIMULATION = DUREE_SIMULATION * BLOCS_PAR_UNITE_TEMPS;
 #pragma omp parallel
   {
@@ -70,10 +70,10 @@ int main(int argc, char **argv) {
         simulateur->afficheStats();
         simulateur->genereCSV();
       }
-      simulateur->fermeCSV();
 //    simulateur->wot->showTable();
 //    Log();
     }
+    simulateur->fermeCSV();
 
 //  simulateur->wot->showTable();
   }
