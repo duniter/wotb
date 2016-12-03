@@ -309,15 +309,16 @@ namespace libsimu {
      */
 
     auto start = std::chrono::high_resolution_clock::now();
-    for (int i = 0; i < iPool->members.size(); i++) {
+#pragma omp parallel for
+      for (int i = 0; i < iPool->members.size(); i++) {
 
-      Identity* emetteur = iPool->members[i];
-      if (emetteur->wotb_node->getNbIssued() >= SIG_STOCK) {
-        statCourante->nombreDeMembresStockEpuise++;
+        Identity* emetteur = iPool->members[i];
+        if (emetteur->wotb_node->getNbIssued() >= SIG_STOCK) {
+          statCourante->nombreDeMembresStockEpuise++;
+        }
+        membreEmetUneCertifSiPossible(iPool, emetteur, blocCourant);
       }
-      membreEmetUneCertifSiPossible(iPool, emetteur, blocCourant);
-    }
-    statCourante->tempsExecutionMembreEmetUneCertifSiPossible = Statistiques::compteMicrosecondesDepuis(start);
+      statCourante->tempsExecutionMembreEmetUneCertifSiPossible = Statistiques::compteMicrosecondesDepuis(start);
   }
 
   int CertificationPool::nombreAleatoireUniformeEntreXetY(uint32_t x, uint32_t y) {
