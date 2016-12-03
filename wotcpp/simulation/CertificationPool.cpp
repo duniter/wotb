@@ -327,6 +327,19 @@ namespace libsimu {
     statDuJourEnCours->tempsExecutionMembreEmetUneCertifSiPossible = Statistiques::compteMicrosecondesDepuis(start);
   }
 
+    void CertificationPool::purgeLesCertifications(uint32_t sigWindow, uint32_t blocCourant) {
+      for (auto iteratorIdentities=liens.begin(); iteratorIdentities!=liens.end(); iteratorIdentities++) {
+        auto iteratorLiens=iteratorIdentities->begin();
+        while (iteratorLiens!=iteratorIdentities->end()) {
+          if ((*iteratorLiens)->dateOfIssuance + sigWindow < blocCourant) {
+              iteratorLiens = iteratorIdentities->erase(iteratorLiens);
+          } else {
+            ++iteratorLiens;
+          }
+        }
+      }
+    }
+
   int CertificationPool::nombreAleatoireUniformeEntreXetY(uint32_t x, uint32_t y) {
     std::uniform_int_distribution<> distr(x, y);
     return distr(eng);

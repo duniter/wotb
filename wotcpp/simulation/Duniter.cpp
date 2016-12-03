@@ -19,7 +19,8 @@ namespace libsimu {
   using namespace std;
   using namespace libwot;
 
-  Duniter::Duniter(int dureeSimulationEnBlocks, double xPercent, uint32_t stepMax, uint32_t minNew, double maxNewPercent, uint32_t sigMoy, uint32_t sigStock, uint32_t sigQty, uint32_t sigPeriod) {
+  Duniter::Duniter(int dureeSimulationEnBlocks, double xPercent, uint32_t stepMax, uint32_t minNew, double maxNewPercent,
+                   uint32_t sigMoy, uint32_t sigStock, uint32_t sigQty, uint32_t sigPeriod, uint32_t sigWindow) {
     NOMBRE_DE_BLOCKS_DE_SIMULATION = dureeSimulationEnBlocks;
     X_PERCENT = xPercent;
     STEPMAX = stepMax;
@@ -29,6 +30,7 @@ namespace libsimu {
     SIG_QTY = sigQty;
     SIG_PERIOD = sigPeriod;
     SIG_VALIDITY = sigStock * SIG_PERIOD;
+    SIG_WINDOW = sigWindow;
     COMMUNAUTE_INITIALE = sigQty + 1;
     wot = new WebOfTrust(sigStock);
     iPool = new IdentityPool(sigMoy, sigStock, sigQty);
@@ -235,5 +237,13 @@ namespace libsimu {
     statDuJourEnCours->nombreDeMembresCertifsEnAttenteFinDeTour = cPool->getNbCertifsEnPiscine();
     Log() << setw(7) << statDuJourEnCours->nombreDeMembresEnAttenteFinDeTour << " Identités en piscine (+" << statDuJourEnCours->nombreDIdentitesGenereesEnPisicine << ")";
     Log() << setw(7) << statDuJourEnCours->nombreDeMembresCertifsEnAttenteFinDeTour << " Certifications en piscine (+" << statDuJourEnCours->nombreDeCertifsGenereesEnPisicine << ")";
+  };
+
+  void Duniter::purgeLesPiscines() {
+
+      /*********************
+       *   CERTIFICATIONS
+       */
+      cPool->purgeLesCertifications(SIG_WINDOW, blocCourant);
   };
 }

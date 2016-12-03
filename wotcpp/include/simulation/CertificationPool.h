@@ -28,6 +28,7 @@ namespace libsimu {
       void essaieIntegrerNouveauVenu(Identity *identity, WebOfTrust* wot, IdentityPool* iPool);
       void membreEmetUneCertifSiPossible(IdentityPool* iPool, Identity *emetteur, uint32_t blocCourant);
       void emetDeNouvellesCertifications(IdentityPool* iPool, uint32_t blocCourant);
+      void purgeLesCertifications(uint32_t sigWindow, uint32_t blocCourant);
       int nombreAleatoireUniformeEntreXetY(uint32_t x, uint32_t y);
       bool existeDejaCertification(Identity* emetteur, Identity* identiteCiblee);
 

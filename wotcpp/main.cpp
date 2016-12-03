@@ -19,6 +19,7 @@ int main(int argc, char **argv) {
   const uint32_t SIG_QTY = 5;
   const uint32_t STEP_MAX = 6;
   const uint32_t SIG_STOCK = 150;
+  const uint32_t SIG_WINDOW = 15 * BLOCS_PAR_UNITE_TEMPS * UNITES_TEMPS;
   const uint32_t SIG_PERIOD = 15 * UNITES_TEMPS; // 1 jour
   const uint32_t SIG_MOY = SIG_STOCK / 3;
   const double X_PERCENT = 0.8;
@@ -29,11 +30,11 @@ int main(int argc, char **argv) {
    * SIMULATEUR DE NŒUD DUNITER
    ****************************/
 
-  const uint32_t DUREE_SIMULATION = 130 * UNITES_TEMPS;
+  const uint32_t DUREE_SIMULATION = 385 * 20 * UNITES_TEMPS;
   const uint32_t NOMBRE_DE_BLOCKS_DE_SIMULATION = DUREE_SIMULATION * BLOCS_PAR_UNITE_TEMPS;
     Duniter *simulateur = new Duniter(NOMBRE_DE_BLOCKS_DE_SIMULATION, X_PERCENT, STEP_MAX,
                                       MINIMUM_DE_NOUVEAUX_VENUS_PAR_UNITE_TEMPS, POURCENTAGE_DE_NOUVEAUX_MEMBRES_MAXI,
-                                      SIG_MOY, SIG_STOCK, SIG_QTY, SIG_PERIOD);
+                                      SIG_MOY, SIG_STOCK, SIG_QTY, SIG_PERIOD, SIG_WINDOW);
 //  const uint32_t NOMBRE_DE_BLOCKS_DE_SIMULATION = 5 * 12 * 24; // 24H avec 1 bloc toutes les 5 minutes
     Log::setEnabled(true);
     //Log2::setEnabled(true);
@@ -43,6 +44,7 @@ int main(int argc, char **argv) {
     Log() << "sigStock:            " << SIG_STOCK << " certification(s) maxi.";
     Log() << "sigQty:              " << SIG_QTY << " certification(s) mini.";
     Log() << "sigPeriod:           " << SIG_PERIOD << " jour(s) de délai";
+    Log() << "sigWindow:           " << SIG_WINDOW << " jour(s) avant expiration pour non-enregistrement";
     Log() << "sigValidity:         " << simulateur->SIG_VALIDITY << " jour(s)";
     Log() << "xPercent:            " << X_PERCENT * 100.0 << " %";
     Log() << "------------------------------";
@@ -71,6 +73,7 @@ int main(int argc, char **argv) {
         simulateur->afficheStats();
         simulateur->genereCSV();
       }
+      simulateur->purgeLesPiscines();
 //    simulateur->wot->showTable();
 //    Log();
     }

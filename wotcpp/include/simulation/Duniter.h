@@ -21,7 +21,8 @@ namespace libsimu {
 
     public :
 
-      Duniter(int dureeSimulationEnBlocks, double xPercent, uint32_t stepMax, uint32_t minNew, double maxNewPercent, uint32_t sigMoy, uint32_t sigStock, uint32_t sigQty, uint32_t sigPeriod);
+      Duniter(int dureeSimulationEnBlocks, double xPercent, uint32_t stepMax, uint32_t minNew, double maxNewPercent,
+              uint32_t sigMoy, uint32_t sigStock, uint32_t sigQty, uint32_t sigPeriod, uint32_t sigWindow);
       ~Duniter();
 
       /**
@@ -35,6 +36,7 @@ namespace libsimu {
        */
       void ajouteUnBloc();
       void alimenteLesPiscines(int jour);
+      void purgeLesPiscines();
       void afficheStats();
       void genereCSV();
       void sauvegardeWoT();
@@ -49,6 +51,7 @@ namespace libsimu {
       uint32_t SIG_QTY;
       uint32_t SIG_VALIDITY;
       uint32_t SIG_PERIOD;
+      uint32_t SIG_WINDOW;
       uint32_t COMMUNAUTE_INITIALE;
       uint32_t MIN_NEW;
       double MAX_NEW_PERCENT;
