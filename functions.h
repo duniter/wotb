@@ -4,6 +4,7 @@
 NAN_METHOD(newFileInstance);
 NAN_METHOD(newFileInstanceWin32);
 NAN_METHOD(newMemoryInstance);
+NAN_METHOD(clearInstance);
 NAN_METHOD(setVerbose);
 NAN_METHOD(showWoT);
 NAN_METHOD(showGraph);

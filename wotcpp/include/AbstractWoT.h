@@ -14,6 +14,7 @@ namespace libwot {
 
     public:
       virtual void reset() = 0;
+      virtual WebOfTrust* getWoT() = 0;
       virtual void showWoT() = 0;
       virtual void showGraph() = 0;
       virtual uint32_t getWoTSize() = 0;

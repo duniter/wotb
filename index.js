@@ -24,6 +24,18 @@ module.exports = {
 
 function WotB(instanceID) {
 
+  /**
+   * Creates a copy of given instanceID as a new memory instance
+   * @returns {WotB} A WotB wrapper.
+   */
+  this.memCopy = () => {
+    return new WotB(binding.newMemoryInstance(instanceID));
+  };
+
+  this.clear = () => {
+    return binding.clearInstance(instanceID);
+  };
+
   this.showWoT = () => {
     return binding.showWoT(instanceID);
   };

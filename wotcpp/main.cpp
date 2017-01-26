@@ -41,18 +41,23 @@ int main(int argc, char **argv) {
   wot->getNodeAt(0)->addLinkTo((uint32_t)4);
   wot->getNodeAt(4)->addLinkTo((uint32_t)1);
 
+  // We can make mem copies
+  WebOfTrust* wot2 = wot->clone();
+  delete wot;
+//  WebOfTrust* wot2 = wot;
+
   Log::setEnabled(true);
 
 
-  wot->showTable();
-  wot->showGraphviz();
-  Log() << "Sentries count = " << wot->getSentries(1).nbNodes;
-  Log() << "Non-Sentries count = " << wot->getNonSentries(1).nbNodes;
+  wot2->showTable();
+  wot2->showGraphviz();
+  Log() << "Sentries count = " << wot2->getSentries(1).nbNodes;
+  Log() << "Non-Sentries count = " << wot2->getNonSentries(1).nbNodes;
 
   uint32_t by = 0;
   uint32_t target = 1;
   uint32_t k_max = 3;
-  std::vector<std::vector<uint32_t>> steps = wot->getPaths(by, target, k_max);
+  std::vector<std::vector<uint32_t>> steps = wot2->getPaths(by, target, k_max);
   if (steps.size() == 0) {
     Log() << target << " is NOT reachable by " << by;
   } else {
@@ -68,5 +73,5 @@ int main(int argc, char **argv) {
     }
   }
 
-  delete wot;
+  delete wot2;
 }

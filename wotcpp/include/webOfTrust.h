@@ -43,6 +43,7 @@ namespace libwot {
 
       void reset();
 
+      WebOfTrust* clone();
       WebOfTrust* showTable();
       WebOfTrust* showGraphviz();
 

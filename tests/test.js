@@ -233,6 +233,13 @@ function testSuite(title, mode) {
         should.equal(wotb.isOutdistanced(0, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_1, X_PERCENT), __OK__); // OK: No path 3 --> 0, but is disabled
       });
 
+      it('should be able to make a mem copy', function() {
+        const copy = wotb.memCopy();
+        should.equal(copy.setEnabled(false, 3), false);
+        should.equal(copy.isOutdistanced(0, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_1, X_PERCENT), __OK__); // OK: No path 3 --> 0, but is disabled
+        copy.clear();
+      });
+
       after(cleanInstance);
     }));
 

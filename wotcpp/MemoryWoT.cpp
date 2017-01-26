@@ -17,12 +17,20 @@ namespace libwot {
     wot = new WebOfTrust(3);
   }
 
+  MemoryWoT::MemoryWoT(WebOfTrust* sourceWoT) {
+    wot = sourceWoT->clone();
+  }
+
   MemoryWoT::~MemoryWoT() {
     delete wot;
   }
 
   void MemoryWoT::reset() {
     wot->reset();
+  }
+
+  WebOfTrust* MemoryWoT::getWoT() {
+    return wot;
   }
 
   void MemoryWoT::showWoT() {

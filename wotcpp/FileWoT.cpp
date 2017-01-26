@@ -33,6 +33,11 @@ namespace libwot {
     delete wot;
   }
 
+  WebOfTrust* FileWoT::getWoT() {
+    WebOfTrust* wot = WebOfTrust::readFromDisk(filename);
+    return wot;
+  }
+
   void FileWoT::showWoT() {
     WebOfTrust* wot = WebOfTrust::readFromDisk(filename);
     wot->showTable();

@@ -14,8 +14,10 @@ namespace libwot {
 
     public:
       MemoryWoT();
+      MemoryWoT(WebOfTrust* sourceWoT);
       ~MemoryWoT();
       void reset();
+      WebOfTrust* getWoT();
       void showWoT();
       void showGraph();
       uint32_t getWoTSize();

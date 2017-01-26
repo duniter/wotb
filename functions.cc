@@ -58,9 +58,29 @@ NAN_METHOD(newFileInstanceWin32) {
 }
 
 NAN_METHOD(newMemoryInstance) {
-  AbstractWoT* wot = new MemoryWoT();
+  AbstractWoT* wot;
+  if (info.Length() == 1) {
+    // Make a copy
+    int wotID = Nan::To<int>(info[0]).FromJust();
+    AbstractWoT* sourceWoT = wots[wotID];
+    wot = new MemoryWoT(sourceWoT->getWoT());
+  } else {
+    // Create a new one
+    wot = new MemoryWoT();
+  }
   wots.push_back(wot);
   info.GetReturnValue().Set(New<Number>(wots.size() - 1));
+}
+
+NAN_METHOD(clearInstance) {
+  int wotID = Nan::To<int>(info[0]).FromJust();
+  AbstractWoT* wot = wots[wotID];
+  // Free the memory of this wot
+  delete wot;
+  // Eventually remove the wot from the list
+  if (wotID == wots.size()) {
+    wots.pop_back();
+  }
 }
 
 NAN_METHOD(resetWoT) {

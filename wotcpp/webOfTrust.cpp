@@ -167,6 +167,27 @@ namespace libwot {
   }
 
 
+  WebOfTrust* WebOfTrust::clone() {
+    WebOfTrust* clone = new WebOfTrust(this->mMaxCert);
+    // Create the nodes
+    for (uint32_t i = 0; i < this->mNodes.size(); i++) {
+      clone->addNode();
+    }
+    // Create the links
+    for (uint32_t i = 0; i < this->mNodes.size(); i++) {
+      Node* node = this->mNodes[i];
+      Node* clonedNode = clone->mNodes[i];
+      for (uint32_t j = 0; j < node->getLinks().size(); j++) {
+        uint32_t to = j;
+        Node* sourceNode = node->getLinkAt(j);
+        uint32_t from = getNodeIndex(sourceNode);
+        clone->getNodeAt(from)->addLinkTo(clonedNode);
+      }
+    }
+    return clone;
+  }
+
+
   WebOfTrust* WebOfTrust::showTable() {
     int fieldWidth = (mNodes.size() >= 1) ? countDigits(mNodes.size() - 1) : 1;
     int i = 0;
