@@ -235,7 +235,7 @@ namespace libwot {
     for (uint32_t i = 0; i < mNodes.size(); i++) {
       // We will check only members with at least d_min links (other do not participate the distance rule)
       Node *node = mNodes.at(i);
-      sentries[i] = node->isEnabled() && node->getNbIssued() >= d_min;
+      sentries[i] = node->isEnabled() && node->getNbIssued() >= d_min && node->getNbLinks() >= d_min;
       wotMatches[i] = false;
     }
     // The member to check is not considered a sentry
@@ -293,7 +293,7 @@ namespace libwot {
     set.nbNodes = 0;
     for (uint32_t i = 0; i < mNodes.size(); i++) {
       Node *node = mNodes.at(i);
-      if (node->isEnabled() && node->getNbIssued() >= d_min) {
+      if (node->isEnabled() && node->getNbIssued() >= d_min && node->getNbLinks() >= d_min) {
         set.nbNodes++;
       }
     }
@@ -301,7 +301,7 @@ namespace libwot {
     int j = 0;
     for (uint32_t i = 0; i < mNodes.size(); i++) {
       Node *node = mNodes.at(i);
-      if (node->isEnabled() && node->getNbIssued() >= d_min) {
+      if (node->isEnabled() && node->getNbIssued() >= d_min && node->getNbLinks() >= d_min) {
         set.nodes[j] = i;
         j++;
       }
@@ -314,7 +314,7 @@ namespace libwot {
     set.nbNodes = 0;
     for (uint32_t i = 0; i < mNodes.size(); i++) {
       Node *node = mNodes.at(i);
-      if (node->isEnabled() && node->getNbIssued() < d_min) {
+      if (node->isEnabled() && (node->getNbIssued() < d_min || node->getNbLinks() < d_min)) {
         set.nbNodes++;
       }
     }
@@ -322,7 +322,7 @@ namespace libwot {
     int j = 0;
     for (uint32_t i = 0; i < mNodes.size(); i++) {
       Node *node = mNodes.at(i);
-      if (node->isEnabled() && node->getNbIssued() < d_min) {
+      if (node->isEnabled() && (node->getNbIssued() < d_min || node->getNbLinks() < d_min)) {
         set.nodes[j] = i;
         j++;
       }

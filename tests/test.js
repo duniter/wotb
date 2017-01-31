@@ -196,10 +196,29 @@ function testSuite(title, mode) {
          * 3 --> 2
          */
         should.equal(wotb.getWoTSize(), 12);
-        should.equal(wotb.getSentries(FROM_1_LINK_SENTRIES).length, 3);
+        should.equal(wotb.getSentries(FROM_1_LINK_SENTRIES).length, 1);
         should.equal(wotb.getSentries(FROM_1_LINK_SENTRIES)[0], 2);
-        should.equal(wotb.getSentries(FROM_1_LINK_SENTRIES)[1], 3);
-        should.equal(wotb.getSentries(FROM_1_LINK_SENTRIES)[2], 5);
+        should.equal(wotb.getSentries(FROM_2_LINKS_SENTRIES).length, 0);
+        should.equal(wotb.getSentries(FROM_3_LINKS_SENTRIES).length, 0);
+        should.equal(wotb.getNonSentries(FROM_1_LINK_SENTRIES).length, 11); // 12 - 1 = 11
+        should.equal(wotb.getNonSentries(FROM_2_LINKS_SENTRIES).length, 12); // 12 - 0 = 12
+        should.equal(wotb.getNonSentries(FROM_3_LINKS_SENTRIES).length, 12); // 12 - 0 = 12
+        should.equal(wotb.getPaths(3, 0, MAX_DISTANCE_1).length, 0); // KO
+        should.equal(wotb.getPaths(3, 0, MAX_DISTANCE_2).length, 1);    // It exists 3 --> 2 --> 0
+        should.equal(wotb.getPaths(3, 0, MAX_DISTANCE_2)[0].length, 3); // It exists 3 --> 2 --> 0
+        should.equal(wotb.isOutdistanced(0, FROM_1_LINK_SENTRIES, MAX_DISTANCE_1, X_PERCENT), __OK__); // OK: 2 --> 0
+        should.equal(wotb.isOutdistanced(0, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_1, X_PERCENT), __OK__); // OK: 2 --> 0
+        should.equal(wotb.isOutdistanced(0, FROM_3_LINKS_SENTRIES, MAX_DISTANCE_1, X_PERCENT), __OK__); // OK: no sentry with 3 links issued
+        should.equal(wotb.isOutdistanced(0, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_2, X_PERCENT), __OK__); // OK: 2 --> 0
+
+        wotb.addLink(1, 3);
+        wotb.addLink(2, 3);
+
+        should.equal(wotb.getWoTSize(), 12);
+        should.equal(wotb.getSentries(FROM_1_LINK_SENTRIES).length, 3);
+        should.equal(wotb.getSentries(FROM_1_LINK_SENTRIES)[0], 1);
+        should.equal(wotb.getSentries(FROM_1_LINK_SENTRIES)[1], 2);
+        should.equal(wotb.getSentries(FROM_1_LINK_SENTRIES)[2], 3);
         should.equal(wotb.getSentries(FROM_2_LINKS_SENTRIES).length, 1);
         should.equal(wotb.getSentries(FROM_2_LINKS_SENTRIES)[0], 3);
         should.equal(wotb.getSentries(FROM_3_LINKS_SENTRIES).length, 0);
@@ -294,63 +313,69 @@ function testSuite(title, mode) {
         /**
          * Sentries of 1 link (X are not sentries):
          *
-         * 0 --> 1 --> 2 --> 4 --> 5 <==> 6 --> X
+         * X --> 1 --> 2 --> 4 --> 5 <==> 6 --> X
          *             ^
          *            ||
          *            ##==> 3 <-- 8 <-- 9 <========##
          *                       |                 ||
          *                       `> 10 <==> 11 <===##
          */
-          // => It can be seen 0..6, 8..11 = 11 sentries
+          // => It can be seen 1..6, 8..11 = 10 sentries
           // => MINUS the sentry #2 (which is tested and is not to be included)
-          // => 10 sentries
+          // => 9 sentries TESTED against member#2
+
+        it('should have 10 sentries', function() {
+          should.equal(wotb.getSentries(FROM_1_LINK_SENTRIES).length, 10);
+        });
 
         it('distance k = 1', function() {
           should.equal(wotb.isOutdistanced(2, FROM_1_LINK_SENTRIES, MAX_DISTANCE_1, _100_PERCENT), __OUTDISTANCED__);
           should.equal(wotb.isOutdistanced(2, FROM_1_LINK_SENTRIES, MAX_DISTANCE_1, 0.5), __OUTDISTANCED__);
           // 20% of the sentries: OK
-          // => 20% x 10 = 2 sentries to reach
+          // => 20% x 9 = 2 sentries to reach
           // => we have 1 --> 2
           // => we have 3 --> 2
           // => OK (1,3)
           should.equal(wotb.isOutdistanced(2, FROM_1_LINK_SENTRIES, MAX_DISTANCE_1, 0.2), __OK__);
           // Who can pass 20% can pass 10%
           should.equal(wotb.isOutdistanced(2, FROM_1_LINK_SENTRIES, MAX_DISTANCE_1, 0.1), __OK__);
-          // But cannot pass 21%
-          should.equal(wotb.isOutdistanced(2, FROM_1_LINK_SENTRIES, MAX_DISTANCE_1, 0.21), __OUTDISTANCED__);
+          // Can pass 23% (1,98 => 2 sentries)
+          should.equal(wotb.isOutdistanced(2, FROM_1_LINK_SENTRIES, MAX_DISTANCE_1, 0.22), __OK__);
+          // But cannot pass 23% (2,07 => 3 sentries)
+          should.equal(wotb.isOutdistanced(2, FROM_1_LINK_SENTRIES, MAX_DISTANCE_1, 0.23), __OUTDISTANCED__);
         });
 
         it('distance k = 2', function() {
           should.equal(wotb.isOutdistanced(2, FROM_1_LINK_SENTRIES, MAX_DISTANCE_2, _100_PERCENT), __OUTDISTANCED__);
           should.equal(wotb.isOutdistanced(2, FROM_1_LINK_SENTRIES, MAX_DISTANCE_2, 0.5), __OUTDISTANCED__);
-          // 40% of the sentries: OK
-          // => 40% x 10 = 4 sentries to reach
+          // 33% of the sentries: OK
+          // => 33% x 9 = 3 sentries to reach
           // With k = 2 we have the following paths:
-          // 0 --> 1 --> 2
+          // 1 --> 2
           // 8 --> 3 --> 2
-          // => OK (0,1,8,3)
-          should.equal(wotb.isOutdistanced(2, FROM_1_LINK_SENTRIES, MAX_DISTANCE_2, 0.4), __OK__);
+          // => OK (1,8,3)
+          should.equal(wotb.isOutdistanced(2, FROM_1_LINK_SENTRIES, MAX_DISTANCE_2, 0.33), __OK__);
           should.equal(wotb.isOutdistanced(2, FROM_1_LINK_SENTRIES, MAX_DISTANCE_2, 0.3), __OK__);
           should.equal(wotb.isOutdistanced(2, FROM_1_LINK_SENTRIES, MAX_DISTANCE_2, 0.2), __OK__);
           should.equal(wotb.isOutdistanced(2, FROM_1_LINK_SENTRIES, MAX_DISTANCE_2, 0.1), __OK__);
-          // But cannot pass 41%
-          should.equal(wotb.isOutdistanced(2, FROM_1_LINK_SENTRIES, MAX_DISTANCE_2, 0.41), __OUTDISTANCED__);
+          // But cannot pass 34% (3,06 => 4 sentries)
+          should.equal(wotb.isOutdistanced(2, FROM_1_LINK_SENTRIES, MAX_DISTANCE_2, 0.34), __OUTDISTANCED__);
         });
 
         it('distance k = 5', function() {
           should.equal(wotb.isOutdistanced(2, FROM_1_LINK_SENTRIES, MAX_DISTANCE_5, _100_PERCENT), __OUTDISTANCED__);
-          // 70% of the sentries: OK
-          // => 70% x 10 = 7 sentries to reach
+          // 66% of the sentries: OK
+          // => 66% x 9 = 6 sentries to reach
           // With k = 5 we have the following paths:
-          // 0 --> 1 --> 2
+          // 1 --> 2
           // 10 --> 11 --> 9 --> 8 --> 3 --> 2
-          // => OK (0,1,10,11,9,8,3)
-          should.equal(wotb.isOutdistanced(2, FROM_1_LINK_SENTRIES, MAX_DISTANCE_5, 0.7), __OK__);
+          // => OK (1,10,11,9,8,3)
+          should.equal(wotb.isOutdistanced(2, FROM_1_LINK_SENTRIES, MAX_DISTANCE_5, 0.66), __OK__);
           should.equal(wotb.isOutdistanced(2, FROM_1_LINK_SENTRIES, MAX_DISTANCE_5, 0.3), __OK__);
           should.equal(wotb.isOutdistanced(2, FROM_1_LINK_SENTRIES, MAX_DISTANCE_5, 0.2), __OK__);
           should.equal(wotb.isOutdistanced(2, FROM_1_LINK_SENTRIES, MAX_DISTANCE_5, 0.1), __OK__);
-          // But cannot pass 71%
-          should.equal(wotb.isOutdistanced(2, FROM_1_LINK_SENTRIES, MAX_DISTANCE_5, 0.71), __OUTDISTANCED__);
+          // But cannot pass 67% (6,03 => 7 sentries)
+          should.equal(wotb.isOutdistanced(2, FROM_1_LINK_SENTRIES, MAX_DISTANCE_5, 0.67), __OUTDISTANCED__);
         });
       });
 
@@ -358,10 +383,10 @@ function testSuite(title, mode) {
         /**
          * Sentries of 2 links (X are not sentries):
          *
-         * X --> X --> 2 --> X --> X <==> 6 --> X
+         * X --> X --> 2 --> X --> X <==> X --> X
          *             ^
          *            ||
-         *            ##==> X <-- 8 <-- 9 <========##
+         *            ##==> X <-- X <-- X <========##
          *                       |                 ||
          *                       `> X  <==> 11 <===##
          */
@@ -369,8 +394,12 @@ function testSuite(title, mode) {
           // => MINUS the sentry #2 (which is tested and is not to be included)
           // => 4 sentries
 
+        it('should have 2 sentries', function() {
+          should.equal(wotb.getSentries(FROM_2_LINKS_SENTRIES).length, 2);
+        });
+
         it('distance k = 1', function() {
-          should.equal(wotb.isOutdistanced(2, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_5, _100_PERCENT), __OUTDISTANCED__);
+          should.equal(wotb.isOutdistanced(2, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_1, _100_PERCENT), __OUTDISTANCED__);
           // With k = 1 we have no paths
           // => ALWAYS KO
           should.equal(wotb.isOutdistanced(2, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_1, 0.99), __OUTDISTANCED__);
@@ -379,51 +408,35 @@ function testSuite(title, mode) {
         });
 
         it('distance k = 2', function() {
+          // Always distanced with k = 2
           should.equal(wotb.isOutdistanced(2, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_2, _100_PERCENT), __OUTDISTANCED__);
-          // 25% of the sentries: OK
-          // => 25% x 4 = 1 sentries to reach
-          // With k = 2 we have the following paths:
-          // 8 --> X --> 2
-          // => OK (8)
-          should.equal(wotb.isOutdistanced(2, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_2, 0.25), __OK__);
-          should.equal(wotb.isOutdistanced(2, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_2, 0.24), __OK__);
+          should.equal(wotb.isOutdistanced(2, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_2, 0.25), __OUTDISTANCED__);
+          should.equal(wotb.isOutdistanced(2, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_2, 0.24), __OUTDISTANCED__);
           should.equal(wotb.isOutdistanced(2, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_2, 0.251), __OUTDISTANCED__);
         });
 
         it('distance k = 3', function() {
+          // Always distanced with k = 2
           should.equal(wotb.isOutdistanced(2, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_3, _100_PERCENT), __OUTDISTANCED__);
-          // 50% of the sentries: OK
-          // => 50% x 4 = 2 sentries to reach
-          // With k = 5 we have the following paths:
-          // 9 --> 8 --> X --> 2
-          // => OK (9,8)
-          should.equal(wotb.isOutdistanced(2, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_3, 0.50), __OK__);
-          should.equal(wotb.isOutdistanced(2, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_3, 0.49), __OK__);
+          should.equal(wotb.isOutdistanced(2, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_3, 0.50), __OUTDISTANCED__);
+          should.equal(wotb.isOutdistanced(2, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_3, 0.49), __OUTDISTANCED__);
           should.equal(wotb.isOutdistanced(2, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_3, 0.51), __OUTDISTANCED__);
         });
 
         it('distance k = 4', function() {
-          should.equal(wotb.isOutdistanced(2, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_4, _100_PERCENT), __OUTDISTANCED__);
-          // 75% of the sentries: OK
-          // => 75% x 4 = 3 sentries to reach
-          // With k = 5 we have the following paths:
-          // 11 --> 9 --> 8 --> X --> 2
-          // => OK (11,9,8)
+          // Only 1 sentry at distance 4: always OK
+          should.equal(wotb.isOutdistanced(2, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_4, _100_PERCENT), __OK__);
           should.equal(wotb.isOutdistanced(2, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_4, 0.75), __OK__);
-          should.equal(wotb.isOutdistanced(2, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_4, 0.74), __OK__);
-          should.equal(wotb.isOutdistanced(2, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_4, 0.76), __OUTDISTANCED__);
+          should.equal(wotb.isOutdistanced(2, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_4, 0.01), __OK__);
+          should.equal(wotb.isOutdistanced(2, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_4, 0.99), __OK__);
         });
 
         it('distance k = 5', function() {
-          should.equal(wotb.isOutdistanced(2, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_5, _100_PERCENT), __OUTDISTANCED__);
-          // 75% of the sentries: OK
-          // => 75% x 4 = 3 sentries to reach
-          // With k = 5 we have the following paths:
-          // 11 --> 9 --> 8 --> X --> 2
-          // => OK (11,9,8)
+          // Only 1 sentry at distance 4: always OK
+          should.equal(wotb.isOutdistanced(2, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_5, _100_PERCENT), __OK__);
           should.equal(wotb.isOutdistanced(2, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_5, 0.75), __OK__);
-          should.equal(wotb.isOutdistanced(2, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_5, 0.74), __OK__);
-          should.equal(wotb.isOutdistanced(2, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_5, 0.76), __OUTDISTANCED__);
+          should.equal(wotb.isOutdistanced(2, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_5, 0.01), __OK__);
+          should.equal(wotb.isOutdistanced(2, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_5, 0.99), __OK__);
         });
       });
 
