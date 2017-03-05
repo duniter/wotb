@@ -27,6 +27,7 @@ int main(int argc, char **argv) {
   wot->addNode();
   wot->addNode();
   wot->addNode();
+  wot->addNode();
 
   wot->getNodeAt(1)->addLinkTo((uint32_t)0);
   wot->getNodeAt(2)->addLinkTo((uint32_t)0);
@@ -37,9 +38,11 @@ int main(int argc, char **argv) {
   wot->getNodeAt(0)->addLinkTo((uint32_t)2);
   wot->getNodeAt(2)->addLinkTo((uint32_t)3);
   wot->getNodeAt(3)->addLinkTo((uint32_t)1);
+  wot->getNodeAt(3)->addLinkTo((uint32_t)1);
   // Add a path from 0 to 1
   wot->getNodeAt(0)->addLinkTo((uint32_t)4);
   wot->getNodeAt(4)->addLinkTo((uint32_t)1);
+  wot->getNodeAt(5)->setEnabled(false);
 
   // We can make mem copies
   WebOfTrust* wot2 = wot->clone();
@@ -50,7 +53,7 @@ int main(int argc, char **argv) {
 
 
   wot2->showTable();
-  wot2->showGraphviz();
+//  wot2->showGraphviz();
   Log() << "Sentries count = " << wot2->getSentries(1).nbNodes;
   Log() << "Non-Sentries count = " << wot2->getNonSentries(1).nbNodes;
 

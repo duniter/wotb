@@ -172,6 +172,7 @@ namespace libwot {
     // Create the nodes
     for (uint32_t i = 0; i < this->mNodes.size(); i++) {
       clone->addNode();
+      clone->getNodeAt(i)->setEnabled(this->mNodes[i]->isEnabled());
     }
     // Create the links
     for (uint32_t i = 0; i < this->mNodes.size(); i++) {
