@@ -7,6 +7,7 @@ NAN_METHOD(newMemoryInstance);
 NAN_METHOD(clearInstance);
 NAN_METHOD(setVerbose);
 NAN_METHOD(showWoT);
+NAN_METHOD(dumpWoT);
 NAN_METHOD(showGraph);
 NAN_METHOD(resetWoT);
 NAN_METHOD(getWoTSize);

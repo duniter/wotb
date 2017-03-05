@@ -40,6 +40,10 @@ function WotB(instanceID) {
     return binding.showWoT(instanceID);
   };
 
+  this.dumpWoT = () => {
+    return binding.dumpWoT(instanceID);
+  };
+
   this.showGraph = () => {
     return binding.showGraph(instanceID);
   };

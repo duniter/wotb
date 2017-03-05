@@ -37,6 +37,10 @@ namespace libwot {
     wot->showTable();
   }
 
+  std::string MemoryWoT::dumpWoT() {
+    return wot->dump();
+  }
+
   void MemoryWoT::showGraph() {
     wot->showTable();
   }

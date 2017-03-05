@@ -52,8 +52,10 @@ int main(int argc, char **argv) {
   Log::setEnabled(true);
 
 
-  wot2->showTable();
+//  wot2->showTable();
 //  wot2->showGraphviz();
+  Log() << "DUMP:";
+  Log() << wot2->dump();
   Log() << "Sentries count = " << wot2->getSentries(1).nbNodes;
   Log() << "Non-Sentries count = " << wot2->getNonSentries(1).nbNodes;
 

@@ -19,6 +19,7 @@ namespace libwot {
       void reset();
       WebOfTrust* getWoT();
       void showWoT();
+      std::string dumpWoT();
       void showGraph();
       uint32_t getWoTSize();
       uint32_t addNode();

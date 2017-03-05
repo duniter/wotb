@@ -64,6 +64,8 @@ function testSuite(title, mode) {
         // Add a node
         should.equal(wotb.addNode(), 0);
         should.equal(wotb.getWoTSize(), 1);
+        const value = wotb.dumpWoT();
+        should.equal(value, '[M] [E] [R] [I] -> Links[maxCert = 3]\n[0] [1] [0] [0] -> \n');
         // Add another
         should.equal(wotb.addNode(), 1);
         should.equal(wotb.getWoTSize(), 2);

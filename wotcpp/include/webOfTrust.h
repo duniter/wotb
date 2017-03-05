@@ -45,6 +45,7 @@ namespace libwot {
 
       WebOfTrust* clone();
       WebOfTrust* showTable();
+      std::string dump();
       WebOfTrust* showGraphviz();
 
       bool writeToDisk(std::string filename);

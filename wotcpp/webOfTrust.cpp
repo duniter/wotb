@@ -8,6 +8,7 @@
 #include <cmath>
 #include <random>
 #include <fstream>
+#include <sstream>
 
 namespace libwot {
 
@@ -190,23 +191,30 @@ namespace libwot {
 
 
   WebOfTrust* WebOfTrust::showTable() {
+    cout << this->dump();
+    return this;
+  }
+
+
+  std::string WebOfTrust::dump() {
+    std::stringstream theDump;
     int fieldWidth = (mNodes.size() >= 1) ? countDigits(mNodes.size() - 1) : 1;
     int i = 0;
-    cout << "[" << setw(fieldWidth) << right << "M" << "] [E] [R] [" << setw(fieldWidth) << right << "I" << "] -> " << "Links[maxCert = " << mMaxCert << "]" << endl;
+    theDump << "[" << setw(fieldWidth) << right << "M" << "] [E] [R] [" << setw(fieldWidth) << right << "I" << "] -> " << "Links[maxCert = " << mMaxCert << "]" << endl;
     for (vector<Node*>::iterator itNode = mNodes.begin(); itNode != mNodes.end(); itNode++) {
       Node* node = (Node*)*itNode;
-      cout << "[" << setw(fieldWidth) << right << i++ << "] [" << node->isEnabled() << "] [" << node->getNbLinks() << "] [" << setw(fieldWidth) << right << node->getNbIssued() << "] -> ";
+      theDump << "[" << setw(fieldWidth) << right << i++ << "] [" << node->isEnabled() << "] [" << node->getNbLinks() << "] [" << setw(fieldWidth) << right << node->getNbIssued() << "] -> ";
 
       vector<Node*> links = node->getLinks();
       for(vector<Node*>::iterator itLink = links.begin(); itLink != links.end(); itLink++) {
         Node* certified = ((Node*)*itLink);
-        cout << setw(fieldWidth) << right << getNodeIndex(certified) << " | ";
+        theDump << setw(fieldWidth) << right << getNodeIndex(certified) << " | ";
       }
 
-      cout << endl;
+      theDump << endl;
     }
 
-    return this;
+    return theDump.str();
   }
 
 

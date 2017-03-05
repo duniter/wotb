@@ -15,6 +15,7 @@ using v8::Object;
 using v8::Boolean;
 using v8::Integer;
 using v8::Number;
+using v8::String;
 using v8::Value;
 using v8::Isolate;
 using v8::HandleScope;
@@ -93,6 +94,13 @@ NAN_METHOD(showWoT) {
   int wotID = Nan::To<int>(info[0]).FromJust();
   AbstractWoT* wot = wots[wotID];
   wot->showWoT();
+}
+
+NAN_METHOD(dumpWoT) {
+  int wotID = Nan::To<int>(info[0]).FromJust();
+  AbstractWoT* wot = wots[wotID];
+  std::string value(wot->dumpWoT());
+  info.GetReturnValue().Set(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), value.c_str(), String::kNormalString));
 }
 
 NAN_METHOD(showGraph) {

@@ -17,6 +17,7 @@ NAN_MODULE_INIT(InitAll) {
   Set(target, New<String>("clearInstance").ToLocalChecked(), GetFunction(New<FunctionTemplate>(clearInstance)).ToLocalChecked());
   Set(target, New<String>("setVerbose").ToLocalChecked(), GetFunction(New<FunctionTemplate>(setVerbose)).ToLocalChecked());
   Set(target, New<String>("showWoT").ToLocalChecked(), GetFunction(New<FunctionTemplate>(showWoT)).ToLocalChecked());
+  Set(target, New<String>("dumpWoT").ToLocalChecked(), GetFunction(New<FunctionTemplate>(dumpWoT)).ToLocalChecked());
   Set(target, New<String>("showGraph").ToLocalChecked(), GetFunction(New<FunctionTemplate>(showGraph)).ToLocalChecked());
   Set(target, New<String>("resetWoT").ToLocalChecked(), GetFunction(New<FunctionTemplate>(resetWoT)).ToLocalChecked());
   Set(target, New<String>("getWoTSize").ToLocalChecked(), GetFunction(New<FunctionTemplate>(getWoTSize)).ToLocalChecked());

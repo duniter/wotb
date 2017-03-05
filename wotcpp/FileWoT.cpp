@@ -44,6 +44,13 @@ namespace libwot {
     delete wot;
   }
 
+  std::string FileWoT::dumpWoT() {
+    WebOfTrust* wot = WebOfTrust::readFromDisk(filename);
+    std::string tmp = wot->dump();
+    delete wot;
+    return tmp;
+  }
+
   void FileWoT::showGraph() {
     WebOfTrust* wot = WebOfTrust::readFromDisk(filename);
     wot->showTable();
