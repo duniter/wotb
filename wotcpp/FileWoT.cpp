@@ -164,6 +164,13 @@ namespace libwot {
     return result;
   }
 
+  WoTSet FileWoT::getDisabled() {
+    WebOfTrust* wot = WebOfTrust::readFromDisk(filename);
+    WoTSet result = wot->getDisabled();
+    delete wot;
+    return result;
+  }
+
   std::vector<std::vector<uint32_t>> FileWoT::getPaths(uint32_t from, uint32_t to, uint32_t k_max) {
     WebOfTrust* wot = WebOfTrust::readFromDisk(filename);
     std::vector<std::vector<uint32_t>> result = wot->getPaths(from, to, k_max);

@@ -105,6 +105,10 @@ namespace libwot {
     return wot->getNonSentries(d_min);
   }
 
+  WoTSet MemoryWoT::getDisabled() {
+    return wot->getDisabled();
+  }
+
   std::vector<std::vector<uint32_t>> MemoryWoT::getPaths(uint32_t from, uint32_t to, uint32_t k_max) {
     return wot->getPaths(from, to, k_max);
   }

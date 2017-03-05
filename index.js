@@ -104,6 +104,10 @@ function WotB(instanceID) {
     return binding.getNonSentries(instanceID, d_min);
   };
 
+  this.getDisabled = () => {
+    return binding.getDisabled(instanceID);
+  };
+
   this.getPaths = (from, to, k_max) => {
     return binding.getPaths(instanceID, from, to, k_max);
   };

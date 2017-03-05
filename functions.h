@@ -25,4 +25,5 @@ NAN_METHOD(isOutdistanced);
 // Data extraction
 NAN_METHOD(getSentries);
 NAN_METHOD(getNonSentries);
+NAN_METHOD(getDisabled);
 NAN_METHOD(getPaths);

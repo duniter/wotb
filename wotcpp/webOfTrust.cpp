@@ -339,6 +339,27 @@ namespace libwot {
     return set;
   }
 
+  WoTSet WebOfTrust::getDisabled() {
+    WoTSet set;
+    set.nbNodes = 0;
+    for (uint32_t i = 0; i < mNodes.size(); i++) {
+      Node *node = mNodes.at(i);
+      if (!node->isEnabled()) {
+        set.nbNodes++;
+      }
+    }
+    set.nodes = new uint32_t[set.nbNodes];
+    int j = 0;
+    for (uint32_t i = 0; i < mNodes.size(); i++) {
+      Node *node = mNodes.at(i);
+      if (!node->isEnabled()) {
+        set.nodes[j] = i;
+        j++;
+      }
+    }
+    return set;
+  }
+
   std::vector<std::vector<uint32_t>> WebOfTrust::getPaths(uint32_t from, uint32_t to, uint32_t k_max) {
     std::vector<WotStep*> paths;
     std::vector<WotStep*> matchingPaths;

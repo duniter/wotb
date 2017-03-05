@@ -217,6 +217,20 @@ NAN_METHOD(getNonSentries) {
   info.GetReturnValue().Set(result_list);
 }
 
+NAN_METHOD(getDisabled) {
+  int wotID = Nan::To<int>(info[0]).FromJust();
+  AbstractWoT* wot = wots[wotID];
+  int32_t d_min = Nan::To<int32_t>(info[1]).FromJust();
+  Local<Array> result_list = New<Array>();
+  WoTSet disabled = wot->getDisabled();
+  for (unsigned int i = 0; i < disabled.nbNodes; i++ ) {
+    Local<Number> nonSentry = New<Number>(disabled.nodes[i]);
+    result_list->Set(i, nonSentry);
+  }
+  delete[] disabled.nodes;
+  info.GetReturnValue().Set(result_list);
+}
+
 NAN_METHOD(getPaths) {
   int wotID = Nan::To<int>(info[0]).FromJust();
   AbstractWoT* wot = wots[wotID];

@@ -64,11 +64,12 @@ function testSuite(title, mode) {
         // Add a node
         should.equal(wotb.addNode(), 0);
         should.equal(wotb.getWoTSize(), 1);
-        const value = wotb.dumpWoT();
-        should.equal(value, '[M] [E] [R] [I] -> Links[maxCert = 3]\n[0] [1] [0] [0] -> \n');
+        should.equal(wotb.dumpWoT(), '[M] [E] [R] [I] -> Links[maxCert = 3]\n[0] [1] [0] [0] -> \n');
+        should.equal(wotb.getDisabled().length, 0);
         // Add another
         should.equal(wotb.addNode(), 1);
         should.equal(wotb.getWoTSize(), 2);
+        should.equal(wotb.getDisabled().length, 0);
         // Add 10 nodes
         for (let i = 0; i < 10; i++) {
           should.equal(wotb.addNode(), i + 2);
@@ -124,6 +125,7 @@ function testSuite(title, mode) {
         should.equal(wotb.setEnabled(false, 0), false);
         should.equal(wotb.setEnabled(false, 1), false);
         should.equal(wotb.setEnabled(false, 2), false);
+        should.equal(wotb.getDisabled().length, 3);
         should.equal(wotb.setEnabled(true, 1), true);
       });
 
@@ -137,6 +139,7 @@ function testSuite(title, mode) {
         should.equal(wotb.setEnabled(true, 1), true);
         should.equal(wotb.setEnabled(true, 2), true);
         should.equal(wotb.setEnabled(true, 1), true);
+        should.equal(wotb.getDisabled().length, 0);
       });
 
       it('should not exist a link from 2 to 0', function() {
@@ -251,12 +254,14 @@ function testSuite(title, mode) {
       it('should work with member 3 disabled', function() {
         // With member 3 disabled (non-member)
         should.equal(wotb.setEnabled(false, 3), false);
+        should.equal(wotb.getDisabled().length, 1);
         should.equal(wotb.isOutdistanced(0, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_1, X_PERCENT), __OK__); // OK: No path 3 --> 0, but is disabled
       });
 
       it('should be able to make a mem copy', function() {
         const copy = wotb.memCopy();
         should.equal(copy.setEnabled(false, 3), false);
+        should.equal(wotb.getDisabled().length, 1);
         should.equal(copy.isOutdistanced(0, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_1, X_PERCENT), __OK__); // OK: No path 3 --> 0, but is disabled
         copy.clear();
       });

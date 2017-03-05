@@ -32,6 +32,7 @@ namespace libwot {
       // Data extraction
       virtual WoTSet getSentries(int d_min) = 0;
       virtual WoTSet getNonSentries(int d_min) = 0;
+      virtual WoTSet getDisabled() = 0;
       virtual std::vector<std::vector<uint32_t>> getPaths(uint32_t from, uint32_t to, uint32_t k_max) = 0;
   };
 }
