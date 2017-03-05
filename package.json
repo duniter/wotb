@@ -1,6 +1,6 @@
 {
   "name": "wotb",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "C binding for Web of Trust fast tools",
   "main": "index.js",
   "engines": {
