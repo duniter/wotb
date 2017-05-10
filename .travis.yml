@@ -19,3 +19,12 @@ install:
 
 
 script: npm test
+deploy:
+  - provider: npm
+    email: cem.moreau@gmail.com
+    skip_cleanup: true
+    api_key:
+      secure: Q4Ddv10Qz5v5Ts5o0aviUVCs+uPQVykBFo+t/s3tpJBU5ociRHJSgsCehBejgrmH81OwBaBtXVMkG7QIAt3AUW1Egc4Vrw9lQjMMxO4kk3UGEo9KFyOc4Z3xZ4XdEjQQL/CAnVBWiioXzewJoE/zT8qkE68dqJYYitjKHazwGdVGJuOkHub4m/8Dsewu6ZwdH37GVCBV0CTnOPjBn8n03HEMeAAs4DGedMopoosiiLbioqQJ6sZJ7p9Ik5/cjXmLoQHgl41GY8MvMbhGZTu842j3fXwmS8aXSuoMi1e22c/RqOMa82WeBGijyskDS/rvSuT1WEO6z2KYf1uaQqGiNxrqeEWx+5nghC/GRd8o0tve8MaTb8NVyjvVDwgDyefcJRzzD9UsMS1tVvb1v/BhRy+fu+O+Ux7qHXGozlL4PudJlgZBzEI9MOX45YnG/QK03fN9Ci2PcEnd8KlEHAKDVCeU8au8rO9vAltP8w7O5n3cs6rvgLyAxiKXAffJ7mgsR032csRXNs7XueOIJn90DQdYGoP2+IsIWzeC2h4KmZn+kPMhAYZmEQ1tp3NsdGlDqzjEcyUEROannbYrSYt1AtEIVxHGk8MP8cSLhJMWdQTCkvoKPDdEbSdNhpzy1BRl+Z0gRdZ22y6vgfa6y1KaVpghPXKyCNd5jDk6WHbms2c=
+    on:
+      tags: true
+      repo: duniter/wotb
