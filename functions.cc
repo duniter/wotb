@@ -79,7 +79,7 @@ NAN_METHOD(clearInstance) {
   // Free the memory of this wot
   delete wot;
   // Eventually remove the wot from the list
-  if (wotID == wots.size()) {
+  if (wotID + 1 == wots.size()) {
     wots.pop_back();
   }
 }
