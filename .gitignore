@@ -4,3 +4,4 @@ node_modules/
 **/wot.bin
 npm-debug.log
 wotb.node
+cmake-build-debug/
