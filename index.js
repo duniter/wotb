@@ -1,114 +1,130 @@
 "use strict";
 
-var binary = require('node-pre-gyp');
-var path = require('path');
-var binding_path = binary.find(path.resolve(path.join(__dirname,'./package.json')));
-var binding = require(binding_path);
+const binary = require('node-pre-gyp');
+const path = require('path');
+const binding_path = binary.find(path.resolve(path.join(__dirname,'./package.json')));
+const binding = require(binding_path);
 
 module.exports = {
 
   newFileInstance: (filePath) => {
+    const instance = Object.create(WotB)
     if (process.platform == 'win32') {
       let bufferedPath = new Buffer(filePath,'ascii');
-      return new WotB(binding.newFileInstanceWin32(bufferedPath, bufferedPath.length));
+      instance.init(binding.newFileInstanceWin32(bufferedPath, bufferedPath.length))
     } else {
-      return new WotB(binding.newFileInstance(filePath));
+      instance.init(binding.newFileInstance(filePath));
     }
+    return instance
   },
 
-  newMemoryInstance: () =>
-    new WotB(binding.newMemoryInstance()),
+  newMemoryInstance: () => {
+    const instance = Object.create(WotB)
+    const id = binding.newMemoryInstance()
+    instance.init(id)
+    return instance
+  },
 
   setVerbose: (verbose) => binding.setVerbose(verbose)
 };
 
-function WotB(instanceID) {
+const WotB = {
+
+  instanceID: -1,
+
+  init: function(instanceId){
+    this.instanceID = instanceId
+  },
+
+  getId: function() { return this.instanceID },
 
   /**
    * Creates a copy of given instanceID as a new memory instance
    * @returns {WotB} A WotB wrapper.
    */
-  this.memCopy = () => {
-    return new WotB(binding.newMemoryInstance(instanceID));
-  };
+  memCopy: function() {
+    const instance = Object.create(WotB)
+    instance.init(binding.newMemoryInstance(this.instanceID))
+    return instance
+  },
 
-  this.clear = () => {
-    return binding.clearInstance(instanceID);
-  };
+  clear: function() {
+    return binding.clearInstance(this.instanceID);
+  },
 
-  this.showWoT = () => {
-    return binding.showWoT(instanceID);
-  };
+  showWoT: function() {
+    return binding.showWoT(this.instanceID);
+  },
 
-  this.dumpWoT = () => {
-    return binding.dumpWoT(instanceID);
-  };
+  dumpWoT: function() {
+    return binding.dumpWoT(this.instanceID);
+  },
 
-  this.showGraph = () => {
-    return binding.showGraph(instanceID);
-  };
+  showGraph: function() {
+    return binding.showGraph(this.instanceID);
+  },
 
-  this.resetWoT = () => {
-    return binding.resetWoT(instanceID);
-  };
+  resetWoT: function() {
+    return binding.resetWoT(this.instanceID);
+  },
 
-  this.getWoTSize = () => {
-    return binding.getWoTSize(instanceID);
-  };
+  getWoTSize: function() {
+    return binding.getWoTSize(this.instanceID);
+  },
 
-  this.addNode = () => {
-    return binding.addNode(instanceID);
-  };
+  addNode: function() {
+    return binding.addNode(this.instanceID);
+  },
 
-  this.removeNode = () => {
-    return binding.removeNode(instanceID);
-  };
+  removeNode: function() {
+    return binding.removeNode(this.instanceID);
+  },
 
-  this.setMaxCert = (max) => {
-    return binding.setMaxCert(instanceID, max);
-  };
+  setMaxCert: function(max) {
+    return binding.setMaxCert(this.instanceID, max);
+  },
 
-  this.getMaxCert = () => {
-    return binding.getMaxCert(instanceID);
-  };
+  getMaxCert: function() {
+    return binding.getMaxCert(this.instanceID);
+  },
 
-  this.isEnabled = (node) => {
-    return binding.isEnabled(instanceID, node);
-  };
+  isEnabled: function(node) {
+    return binding.isEnabled(this.instanceID, node);
+  },
 
-  this.setEnabled = (enabled, node) => {
-    return binding.setEnabled(instanceID, enabled, node);
-  };
+  setEnabled: function(enabled, node) {
+    return binding.setEnabled(this.instanceID, enabled, node);
+  },
 
-  this.existsLink = (from, to) => {
-    return binding.existsLink(instanceID, from, to);
-  };
+  existsLink: function(from, to) {
+    return binding.existsLink(this.instanceID, from, to);
+  },
 
-  this.addLink = (from, to) => {
-    return binding.addLink(instanceID, from, to);
-  };
+  addLink: function(from, to) {
+    return binding.addLink(this.instanceID, from, to);
+  },
 
-  this.removeLink = (from, to) => {
-    return binding.removeLink(instanceID, from, to);
-  };
+  removeLink: function(from, to) {
+    return binding.removeLink(this.instanceID, from, to);
+  },
 
-  this.isOutdistanced = (node, d_min, k_max, x_percent) => {
-    return binding.isOutdistanced(instanceID, node, d_min, k_max, x_percent);
-  };
+  isOutdistanced: function(node, d_min, k_max, x_percent) {
+    return binding.isOutdistanced(this.instanceID, node, d_min, k_max, x_percent);
+  },
 
-  this.getSentries = (d_min) => {
-    return binding.getSentries(instanceID, d_min);
-  };
+  getSentries: function(d_min) {
+    return binding.getSentries(this.instanceID, d_min);
+  },
 
-  this.getNonSentries = (d_min) => {
-    return binding.getNonSentries(instanceID, d_min);
-  };
+  getNonSentries: function(d_min) {
+    return binding.getNonSentries(this.instanceID, d_min);
+  },
 
-  this.getDisabled = () => {
-    return binding.getDisabled(instanceID);
-  };
+  getDisabled: function() {
+    return binding.getDisabled(this.instanceID);
+  },
 
-  this.getPaths = (from, to, k_max) => {
-    return binding.getPaths(instanceID, from, to, k_max);
-  };
+  getPaths: function(from, to, k_max) {
+    return binding.getPaths(this.instanceID, from, to, k_max);
+  }
 }

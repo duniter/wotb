@@ -150,6 +150,7 @@ namespace libwot {
 
 
   void WebOfTrust::removeNode() {
+    delete mNodes[mNodes.size() - 1];
     mNodes.pop_back();
   }
 
