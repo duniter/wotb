@@ -10,6 +10,8 @@ const NB_NODES_ADDED = 100
 
 describe('Memory leaks', function() {
 
+  this.timeout(10000) // 10 seconds max for a test
+
   it('wotb.clear() should have no leak', () => {
     const baseInstance = addon.newMemoryInstance()
     for (let i = 0; i < NB_NODES_INIT; i++) {
@@ -38,11 +40,11 @@ describe('Memory leaks', function() {
     testGetSentries(100, approx1MB)    // should add 1MB ...
     testGetSentries(1000, approx2MB)   // should add 2MB ...
     testGetSentries(10000, approx5MB)  // should add 5MB ...
-    testGetSentries(10000, approx0MB)  // should add 0MB until the end of the test
-    testGetSentries(10000, approx0MB)
-    testGetSentries(10000, approx0MB)
-    testGetSentries(10000, approx0MB)
-    testGetSentries(10000, approx0MB)
+    testGetSentries(10000, approx1MB)  // should add 1MB until the end of the test
+    testGetSentries(10000, approx1MB)
+    testGetSentries(10000, approx1MB)
+    testGetSentries(10000, approx1MB)
+    testGetSentries(10000, approx1MB)
 
     // Conclusion: no leak.
     // => only the magnitude of the WoT makes an increase of memory usage, but this not a leak.
