@@ -359,6 +359,7 @@ namespace libwot {
       result.push_back(thePath);
     }
     // Clean memory
+    delete[] wotDistance;
     for (int i = 0; i < paths.size(); i++) {
       delete paths[i];
     }
