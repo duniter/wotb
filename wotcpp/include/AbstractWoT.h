@@ -31,9 +31,9 @@ namespace libwot {
       virtual uint32_t removeLink(uint32_t from, uint32_t to) = 0;
       virtual bool isOutdistanced(uint32_t member, uint32_t d_min, uint32_t k_max, double x_percent) = 0;
       // Data extraction
-      virtual WoTSet getSentries(int d_min) = 0;
-      virtual WoTSet getNonSentries(int d_min) = 0;
-      virtual WoTSet getDisabled() = 0;
+      virtual std::vector<uint32_t> getSentries(int d_min) = 0;
+      virtual std::vector<uint32_t> getNonSentries(int d_min) = 0;
+      virtual std::vector<uint32_t> getDisabled() = 0;
       virtual std::vector<std::vector<uint32_t>> getPaths(uint32_t from, uint32_t to, uint32_t k_max) = 0;
   };
 }

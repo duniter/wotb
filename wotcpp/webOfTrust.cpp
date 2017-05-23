@@ -9,6 +9,7 @@
 #include <random>
 #include <fstream>
 #include <sstream>
+#include <vector>
 
 namespace libwot {
 
@@ -298,64 +299,34 @@ namespace libwot {
     }
   }
 
-  WoTSet WebOfTrust::getSentries(int d_min) {
-    WoTSet set;
-    set.nbNodes = 0;
+  vector<uint32_t> WebOfTrust::getSentries(int d_min) {
+    vector<uint32_t> set;
     for (uint32_t i = 0; i < mNodes.size(); i++) {
       Node *node = mNodes.at(i);
       if (node->isEnabled() && node->getNbIssued() >= d_min && node->getNbLinks() >= d_min) {
-        set.nbNodes++;
-      }
-    }
-    set.nodes = new uint32_t[set.nbNodes];
-    int j = 0;
-    for (uint32_t i = 0; i < mNodes.size(); i++) {
-      Node *node = mNodes.at(i);
-      if (node->isEnabled() && node->getNbIssued() >= d_min && node->getNbLinks() >= d_min) {
-        set.nodes[j] = i;
-        j++;
+        set.push_back(i);
       }
     }
     return set;
   }
 
-  WoTSet WebOfTrust::getNonSentries(int d_min) {
-    WoTSet set;
-    set.nbNodes = 0;
+  vector<uint32_t> WebOfTrust::getNonSentries(int d_min) {
+    vector<uint32_t> set;
     for (uint32_t i = 0; i < mNodes.size(); i++) {
       Node *node = mNodes.at(i);
       if (node->isEnabled() && (node->getNbIssued() < d_min || node->getNbLinks() < d_min)) {
-        set.nbNodes++;
-      }
-    }
-    set.nodes = new uint32_t[set.nbNodes];
-    int j = 0;
-    for (uint32_t i = 0; i < mNodes.size(); i++) {
-      Node *node = mNodes.at(i);
-      if (node->isEnabled() && (node->getNbIssued() < d_min || node->getNbLinks() < d_min)) {
-        set.nodes[j] = i;
-        j++;
+        set.push_back(i);
       }
     }
     return set;
   }
 
-  WoTSet WebOfTrust::getDisabled() {
-    WoTSet set;
-    set.nbNodes = 0;
+  std::vector<uint32_t> WebOfTrust::getDisabled() {
+    vector<uint32_t> set;
     for (uint32_t i = 0; i < mNodes.size(); i++) {
       Node *node = mNodes.at(i);
       if (!node->isEnabled()) {
-        set.nbNodes++;
-      }
-    }
-    set.nodes = new uint32_t[set.nbNodes];
-    int j = 0;
-    for (uint32_t i = 0; i < mNodes.size(); i++) {
-      Node *node = mNodes.at(i);
-      if (!node->isEnabled()) {
-        set.nodes[j] = i;
-        j++;
+        set.push_back(i);
       }
     }
     return set;

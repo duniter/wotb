@@ -194,12 +194,12 @@ NAN_METHOD(getSentries) {
   AbstractWoT* wot = wots[wotID];
   int32_t d_min = Nan::To<int32_t>(info[1]).FromJust();
   Local<Array> result_list = New<Array>();
-  WoTSet sentries = wot->getSentries(d_min);
-  for (unsigned int i = 0; i < sentries.nbNodes; i++ ) {
-    Local<Number> sentry = New<Number>(sentries.nodes[i]);
+  std::vector<uint32_t> sentries = wot->getSentries(d_min);
+  for (unsigned int i = 0; i < sentries.size(); i++ ) {
+    Local<Number> sentry = New<Number>(sentries[i]);
     result_list->Set(i, sentry);
   }
-  delete[] sentries.nodes;
+  sentries.clear();
   info.GetReturnValue().Set(result_list);
 }
 
@@ -208,12 +208,11 @@ NAN_METHOD(getNonSentries) {
   AbstractWoT* wot = wots[wotID];
   int32_t d_min = Nan::To<int32_t>(info[1]).FromJust();
   Local<Array> result_list = New<Array>();
-  WoTSet nonSentries = wot->getNonSentries(d_min);
-  for (unsigned int i = 0; i < nonSentries.nbNodes; i++ ) {
-    Local<Number> nonSentry = New<Number>(nonSentries.nodes[i]);
+  std::vector<uint32_t> nonSentries = wot->getNonSentries(d_min);
+  for (unsigned int i = 0; i < nonSentries.size(); i++ ) {
+    Local<Number> nonSentry = New<Number>(nonSentries[i]);
     result_list->Set(i, nonSentry);
   }
-  delete[] nonSentries.nodes;
   info.GetReturnValue().Set(result_list);
 }
 
@@ -222,12 +221,11 @@ NAN_METHOD(getDisabled) {
   AbstractWoT* wot = wots[wotID];
   int32_t d_min = Nan::To<int32_t>(info[1]).FromJust();
   Local<Array> result_list = New<Array>();
-  WoTSet disabled = wot->getDisabled();
-  for (unsigned int i = 0; i < disabled.nbNodes; i++ ) {
-    Local<Number> nonSentry = New<Number>(disabled.nodes[i]);
+  std::vector<uint32_t> disabled = wot->getDisabled();
+  for (unsigned int i = 0; i < disabled.size(); i++ ) {
+    Local<Number> nonSentry = New<Number>(disabled[i]);
     result_list->Set(i, nonSentry);
   }
-  delete[] disabled.nodes;
   info.GetReturnValue().Set(result_list);
 }
 

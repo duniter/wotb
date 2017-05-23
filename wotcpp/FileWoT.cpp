@@ -150,23 +150,23 @@ namespace libwot {
     return result.isOutdistanced;
   }
 
-  WoTSet FileWoT::getSentries(int d_min) {
+  vector<uint32_t> FileWoT::getSentries(int d_min) {
     WebOfTrust* wot = WebOfTrust::readFromDisk(filename);
-    WoTSet result = wot->getSentries(d_min);
+    vector<uint32_t> result = wot->getSentries(d_min);
     delete wot;
     return result;
   }
 
-  WoTSet FileWoT::getNonSentries(int d_min) {
+  vector<uint32_t> FileWoT::getNonSentries(int d_min) {
     WebOfTrust* wot = WebOfTrust::readFromDisk(filename);
-    WoTSet result = wot->getNonSentries(d_min);
+    vector<uint32_t> result = wot->getNonSentries(d_min);
     delete wot;
     return result;
   }
 
-  WoTSet FileWoT::getDisabled() {
+  vector<uint32_t> FileWoT::getDisabled() {
     WebOfTrust* wot = WebOfTrust::readFromDisk(filename);
-    WoTSet result = wot->getDisabled();
+    vector<uint32_t> result = wot->getDisabled();
     delete wot;
     return result;
   }

@@ -7,6 +7,7 @@
 #include <cmath>
 #include <random>
 #include <fstream>
+#include <vector>
 
 namespace libwot {
 
@@ -97,15 +98,15 @@ namespace libwot {
     return result.isOutdistanced;
   }
 
-  WoTSet MemoryWoT::getSentries(int d_min) {
+  vector<uint32_t> MemoryWoT::getSentries(int d_min) {
     return wot->getSentries(d_min);
   }
 
-  WoTSet MemoryWoT::getNonSentries(int d_min) {
+  vector<uint32_t> MemoryWoT::getNonSentries(int d_min) {
     return wot->getNonSentries(d_min);
   }
 
-  WoTSet MemoryWoT::getDisabled() {
+  vector<uint32_t> MemoryWoT::getDisabled() {
     return wot->getDisabled();
   }
 

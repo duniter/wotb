@@ -7,7 +7,6 @@
 
 #include "node.h"
 #include "distanceResult.h"
-#include "wotSet.h"
 #include "wotStep.h"
 
 
@@ -55,9 +54,9 @@ namespace libwot {
       void checkMatches(uint32_t m1, uint32_t distance, uint32_t distanceMax, bool *wotChecked);
 
       // Data extraction
-      WoTSet getSentries(int d_min);
-      WoTSet getNonSentries(int d_min);
-      WoTSet getDisabled();
+      std::vector<uint32_t> getSentries(int d_min);
+      std::vector<uint32_t> getNonSentries(int d_min);
+      std::vector<uint32_t> getDisabled();
       std::vector<std::vector<uint32_t>> getPaths(uint32_t from, uint32_t to, uint32_t k_max);
 
     private :

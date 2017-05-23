@@ -31,9 +31,9 @@ namespace libwot {
       uint32_t removeLink(uint32_t from, uint32_t to);
       bool isOutdistanced(uint32_t member, uint32_t d_min, uint32_t k_max, double x_percent);
       // Data extraction
-      WoTSet getSentries(int d_min);
-      WoTSet getNonSentries(int d_min);
-      WoTSet getDisabled();
+      std::vector<uint32_t> getSentries(int d_min);
+      std::vector<uint32_t> getNonSentries(int d_min);
+      std::vector<uint32_t> getDisabled();
       std::vector<std::vector<uint32_t>> getPaths(uint32_t from, uint32_t to, uint32_t k_max);
 
     private:

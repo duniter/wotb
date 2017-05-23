@@ -56,9 +56,9 @@ int main(int argc, char **argv) {
 //  wot2->showGraphviz();
   Log() << "DUMP:";
   Log() << wot2->dump();
-  Log() << "Sentries count = " << wot2->getSentries(1).nbNodes;
-  Log() << "Non-Sentries count = " << wot2->getNonSentries(1).nbNodes;
-  Log() << "Disabled count = " << wot2->getDisabled().nbNodes;
+  Log() << "Sentries count = " << wot2->getSentries(1).size();
+  Log() << "Non-Sentries count = " << wot2->getNonSentries(1).size();
+  Log() << "Disabled count = " << wot2->getDisabled().size();
 
   uint32_t by = 0;
   uint32_t target = 1;
