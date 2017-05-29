@@ -18,8 +18,8 @@ namespace libwot {
     wot = new WebOfTrust(3);
   }
 
-  MemoryWoT::MemoryWoT(WebOfTrust* sourceWoT) {
-    wot = sourceWoT->clone();
+  MemoryWoT::MemoryWoT(WebOfTrust* newWoT) {
+    wot = newWoT;
   }
 
   MemoryWoT::~MemoryWoT() {
@@ -30,8 +30,8 @@ namespace libwot {
     wot->reset();
   }
 
-  WebOfTrust* MemoryWoT::getWoT() {
-    return wot;
+  WebOfTrust* MemoryWoT::cloneWoT() {
+    return wot->clone();
   }
 
   void MemoryWoT::showWoT() {

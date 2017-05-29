@@ -15,7 +15,7 @@ namespace libwot {
     public:
       virtual ~AbstractWoT() {};
       virtual void reset() = 0;
-      virtual WebOfTrust* getWoT() = 0;
+      virtual WebOfTrust* cloneWoT() = 0;
       virtual void showWoT() = 0;
       virtual std::string dumpWoT() = 0;
       virtual void showGraph() = 0;

@@ -17,7 +17,7 @@ namespace libwot {
       MemoryWoT(WebOfTrust* sourceWoT);
       ~MemoryWoT();
       void reset();
-      WebOfTrust* getWoT();
+      WebOfTrust* cloneWoT();
       void showWoT();
       std::string dumpWoT();
       void showGraph();

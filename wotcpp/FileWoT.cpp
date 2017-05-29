@@ -33,7 +33,7 @@ namespace libwot {
     delete wot;
   }
 
-  WebOfTrust* FileWoT::getWoT() {
+  WebOfTrust* FileWoT::cloneWoT() {
     WebOfTrust* wot = WebOfTrust::readFromDisk(filename);
     return wot;
   }

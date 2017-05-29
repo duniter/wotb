@@ -64,7 +64,8 @@ NAN_METHOD(newMemoryInstance) {
     // Make a copy
     int wotID = Nan::To<int>(info[0]).FromJust();
     AbstractWoT* sourceWoT = wots[wotID];
-    wot = new MemoryWoT(sourceWoT->getWoT());
+    WebOfTrust* clone = sourceWoT->cloneWoT();
+    wot = new MemoryWoT(clone);
   } else {
     // Create a new one
     wot = new MemoryWoT();
