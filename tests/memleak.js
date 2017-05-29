@@ -1,5 +1,7 @@
 "use strict";
 
+const fs     = require('fs');
+const path   = require('path');
 const addon  = require('./../index');
 const assert = require('assert');
 const should = require('should');
@@ -7,10 +9,52 @@ const should = require('should');
 const NB_ITERATIONS = 10000
 const NB_NODES_INIT = 100
 const NB_NODES_ADDED = 100
+const PATH_TO_FILE_INSTANCE = path.join(__dirname, 'leak-test.bin')
+
+let baseFileInstance
 
 describe('Memory leaks', function() {
 
   this.timeout(10000) // 10 seconds max for a test
+
+  before(() => {
+    if (fs.existsSync(PATH_TO_FILE_INSTANCE)) {
+      fs.unlinkSync(PATH_TO_FILE_INSTANCE)
+    }
+    baseFileInstance = addon.newFileInstance(PATH_TO_FILE_INSTANCE)
+    for (let i = 0; i < NB_NODES_INIT; i++) {
+      assert.equal(baseFileInstance.addNode(), i);
+      // Each node certify its neighbor, the very last will certify the first.
+      if (i > 0) {
+        if (i < NB_NODES_INIT - 1) {
+          baseFileInstance.addLink(i - 1, i)
+        } else {
+          baseFileInstance.addLink(i, 0)
+        }
+      }
+    }
+  })
+
+  it('copy from file instance should have no leak', () => {
+    const rssStart = getMemoryUsageInMB()
+    for (let it = 0; it < NB_ITERATIONS; it++) {
+      const clone = baseFileInstance.memCopy()
+      clone.clear()
+    }
+    const rssEnd = getMemoryUsageInMB()
+    rssEnd.should.be.approximately(rssStart, 1);
+  })
+
+  it('copy from memory instance should have no leak', () => {
+    const memInstance = baseFileInstance.memCopy()
+    const rssStart = getMemoryUsageInMB()
+    for (let it = 0; it < NB_ITERATIONS; it++) {
+      const clone = memInstance.memCopy()
+      clone.clear()
+    }
+    const rssEnd = getMemoryUsageInMB()
+    rssEnd.should.be.approximately(rssStart, 1);
+  })
 
   it('wotb.clear() should have no leak', () => {
     const baseInstance = addon.newMemoryInstance()

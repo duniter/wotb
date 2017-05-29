@@ -2,6 +2,7 @@ build/
 node_modules/
 **/.idea
 **/wot.bin
+**/leak-test.bin
 npm-debug.log
 wotb.node
 cmake-build-debug/
