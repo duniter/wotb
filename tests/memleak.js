@@ -77,12 +77,12 @@ describe('Memory leaks', function() {
   it('wotb.getSentries() should have no leak', () => {
     const approx0MB = 0
     const approx1MB = 1
-    const approx2MB = 2
+    const approx3MB = 3
     const approx5MB = 5
     const rssStart = testGetSentries(1, approx0MB)
     testGetSentries(10, approx0MB)     // should add 0MB memory relatively to previous test
     testGetSentries(100, approx1MB)    // should add 1MB ...
-    testGetSentries(1000, approx2MB)   // should add 2MB ...
+    testGetSentries(1000, approx3MB)   // should add 2MB ...
     testGetSentries(10000, approx5MB)  // should add 5MB ...
     testGetSentries(10000, approx1MB)  // should add 1MB until the end of the test
     testGetSentries(10000, approx1MB)
