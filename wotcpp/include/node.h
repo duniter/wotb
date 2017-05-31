@@ -5,8 +5,6 @@
 #include <cstddef>
 #include <vector>
 
-#include <unordered_map> 
-
 namespace libwot {
 
   class WebOfTrust;
@@ -48,8 +46,6 @@ namespace libwot {
 
 	  /// \brief Index of the node in the WoT
 	  uint32_t mIndex ;
-
-	  std::unordered_map<uint32_t, Node*> mCert2 ;
   };
 }
 
