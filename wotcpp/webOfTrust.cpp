@@ -151,7 +151,7 @@ namespace libwot {
 
 
   Node* WebOfTrust::addNode() {
-    Node *node = new Node(this);
+	  Node *node = new Node(this, mNodes.size());
     mNodes.push_back(node);
     return node;
   }
@@ -163,9 +163,14 @@ namespace libwot {
   }
 
 
-  uint32_t WebOfTrust::getNodeIndex(Node* node) {
-    vector<Node*>::iterator it = find(mNodes.begin(), mNodes.end(), node);
-    return distance(mNodes.begin(), it);
+  uint32_t WebOfTrust::getNodeIndex(Node* node) const {
+	  if (node->get_index() != UINT32_MAX)
+		  return node->get_index() ;
+	  else
+	  {
+		vector<Node*>::const_iterator it = find(mNodes.begin(), mNodes.end(), node);
+		return distance(mNodes.begin(), it);
+	  }
   }
 
 
@@ -310,7 +315,7 @@ namespace libwot {
     vector<uint32_t> set;
     for (uint32_t i = 0; i < mNodes.size(); i++) {
       Node *node = mNodes.at(i);
-      if (node->isEnabled() && node->getNbIssued() >= d_min && node->getNbLinks() >= d_min) {
+      if (node->isEnabled() && d_min >= 0 && node->getNbIssued() >= (uint32_t)d_min && node->getNbLinks() >= (uint32_t)d_min) {
         set.push_back(i);
       }
     }
@@ -321,7 +326,7 @@ namespace libwot {
     vector<uint32_t> set;
     for (uint32_t i = 0; i < mNodes.size(); i++) {
       Node *node = mNodes.at(i);
-      if (node->isEnabled() && (node->getNbIssued() < d_min || node->getNbLinks() < d_min)) {
+      if (node->isEnabled() && d_min >= 0 && (node->getNbIssued() < (uint32_t)d_min || node->getNbLinks() < (uint32_t)d_min)) {
         set.push_back(i);
       }
     }
@@ -339,7 +344,7 @@ namespace libwot {
     return set;
   }
 
-  std::vector<std::vector<uint32_t>> WebOfTrust::getPaths(uint32_t from, uint32_t to, uint32_t k_max) {
+  std::vector<std::vector<uint32_t>> WebOfTrust::getPaths(uint32_t from, uint32_t to, uint32_t k_max) const {
     std::vector<WotStep*> paths;
     std::vector<WotStep*> matchingPaths;
     std::vector<std::vector<uint32_t>> result;
@@ -349,36 +354,49 @@ namespace libwot {
       wotDistance[i] = k_max + 1;
     }
     wotDistance[to] = 0;
-    WotStep* root = new WotStep();
+    
+	// Initial step
+	WotStep* root = new WotStep();
     root->distance = 0;
     root->member = to;
     root->previous = NULL;
     paths.push_back(root);
-    lookup(from, to, 1, k_max, root, &paths, &matchingPaths, wotDistance);
-    // Formatting as vectors
-    for (int i = 0; i < matchingPaths.size(); i++) {
-      std::vector<uint32_t> thePath;
+
+    lookup(from, to, 1, k_max, root, &paths, &matchingPaths, wotDistance) ;
+	
+	result.reserve(matchingPaths.size()) ;
+
+	// Formatting as vectors
+	size_t j = 0 ;
+    for (size_t i = 0; i < matchingPaths.size(); ++i) 
+	{
+      std::vector<uint32_t> thePath(k_max+1) ;
       WotStep* step = matchingPaths[i];
-      while (step != NULL) {
-        thePath.push_back(step->member);
+	  j = 0 ;
+      while (step != NULL) 
+	  {
+		thePath[j] = step->member ;
         step = step->previous;
+		++j ;
       }
       result.push_back(thePath);
     }
     // Clean memory
     delete[] wotDistance;
-    for (int i = 0; i < paths.size(); i++) {
+    for (size_t i = 0; i < paths.size(); i++) {
       delete paths[i];
     }
     // Result
     return result;
   }
 
-  void WebOfTrust::lookup(uint32_t source, uint32_t target, uint32_t distance, uint32_t distanceMax, WotStep* previous, std::vector<WotStep*>* paths, std::vector<WotStep*>* matchingPaths, uint32_t* wotDistance) {
-    if (source != target && distance <= distanceMax) {
+  void WebOfTrust::lookup(uint32_t source, uint32_t target, uint32_t distance, uint32_t distanceMax, WotStep* previous, std::vector<WotStep*>* paths, std::vector<WotStep*>* matchingPaths, uint32_t* wotDistance) const 
+  {
+    if (source != target && distance <= distanceMax) 
+	{
       std::vector<WotStep*> local_paths;
       // Mark as checked the linking nodes at this level
-      for (uint32_t j = 0; j < mNodes.at(target)->getNbLinks(); j++) {
+      for (uint32_t j = 0; j < mNodes.at(target)->getNbLinks(); ++j) {
         uint32_t by = getNodeIndex(mNodes.at(target)->getLinkAt(j));
         // Do not compute a same path twice if the distance is not shorter
         if (distance < wotDistance[by]) {

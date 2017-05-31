@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <vector>
 
+#include <unordered_map> 
 
 namespace libwot {
 
@@ -15,6 +16,7 @@ namespace libwot {
     public :
 
       Node(WebOfTrust* wot);
+      Node(WebOfTrust* wot, uint32_t pIndex);
       ~Node();
 
       bool isEnabled() {return mEnabled;};
@@ -24,7 +26,7 @@ namespace libwot {
 
 
       Node* setEnabled(bool enable);
-      std::vector<Node*> getLinks() {return mCert;};
+	  const std::vector<Node*> & getLinks() const {return mCert;};
 
       bool addLinkTo(uint32_t to);
       bool addLinkTo(Node* to);
@@ -34,12 +36,20 @@ namespace libwot {
       bool hasLinkFrom(Node* from);
       void removeLinkTo(uint32_t to);
 
+	  uint32_t get_index() const { return mIndex ; }
+	  void set_index(uint32_t pIndex) ;
+
     private :
 
       WebOfTrust *mWot;
       bool mEnabled;
       std::vector<Node*> mCert;
       uint32_t mNbIssued;
+
+	  /// \brief Index of the node in the WoT
+	  uint32_t mIndex ;
+
+	  std::unordered_map<uint32_t, Node*> mCert2 ;
   };
 }
 
