@@ -37,19 +37,26 @@ namespace libwot {
 
   WebOfTrust* WebOfTrust::createRandom(uint32_t nbMembers, uint32_t maxCertStock) {
     WebOfTrust *wot = new WebOfTrust(maxCertStock);
+	wot->mNodes.reserve(nbMembers) ;
     for (uint32_t i = 0; i < nbMembers; i++) {
       wot->addNode();
     }
+
+	// Random number generator
+	std::random_device rd;
+    std::mt19937 eng(rd());
+    std::uniform_int_distribution<> distr(0, nbMembers > 0 ? nbMembers - 1 : 0);
 
     for(vector<Node*>::iterator it = wot->mNodes.begin(); it != wot->mNodes.end(); it++) {
       Node* certified = NULL;
       for (uint32_t i = 0; i < maxCertStock; i++) {
         do{
-          certified = wot->getRandomNode();
+          certified = wot->mNodes.at(distr(eng)) ;
         } while (((Node*)*it)->addLinkTo(certified) != true);	
       }
       ((Node*)*it)->setEnabled(true);
     }
+
     return wot;
   }
 

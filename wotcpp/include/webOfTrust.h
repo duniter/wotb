@@ -35,6 +35,11 @@ namespace libwot {
         return count;
       };
       Node* getNodeAt(uint32_t index) { return mNodes.at(index);};
+
+	  /**
+		\brief Provide a node randomly
+		\note slow method if repeatedly called
+	  */
       Node* getRandomNode();
 
       Node* addNode();

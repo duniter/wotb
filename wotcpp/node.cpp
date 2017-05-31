@@ -15,6 +15,7 @@ namespace libwot {
     mEnabled = true;
     mNbIssued = 0;
     mCert = vector<Node*>();
+	mCert.reserve(wot->getMaxCert()) ;
   }
 
 
