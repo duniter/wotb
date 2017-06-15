@@ -313,7 +313,7 @@ namespace libwot {
 
   vector<uint32_t> WebOfTrust::getSentries(int d_min) {
     vector<uint32_t> set;
-	set.reserve(mModes.size()) ;
+	set.reserve(mNodes.size()) ;
     for (uint32_t i = 0; i < mNodes.size(); i++) {
       Node *node = mNodes.at(i);
       if (node->isEnabled() && d_min >= 0 && node->getNbIssued() >= (uint32_t)d_min && node->getNbLinks() >= (uint32_t)d_min) {
@@ -325,7 +325,7 @@ namespace libwot {
 
   vector<uint32_t> WebOfTrust::getNonSentries(int d_min) {
     vector<uint32_t> set;
-	set.reserve(mModes.size()) ;
+	set.reserve(mNodes.size()) ;
     for (uint32_t i = 0; i < mNodes.size(); i++) {
       Node *node = mNodes.at(i);
       if (node->isEnabled() && d_min >= 0 && (node->getNbIssued() < (uint32_t)d_min || node->getNbLinks() < (uint32_t)d_min)) {
