@@ -367,17 +367,15 @@ namespace libwot {
 	result.reserve(matchingPaths.size()) ;
 
 	// Formatting as vectors
-	size_t j = 0 ;
     for (size_t i = 0; i < matchingPaths.size(); ++i) 
 	{
-      std::vector<uint32_t> thePath(k_max+1) ;
+      std::vector<uint32_t> thePath ;
+	  thePath.reserve(k_max+1) ;
       WotStep* step = matchingPaths[i];
-	  j = 0 ;
       while (step != NULL) 
 	  {
-		thePath[j] = step->member ;
+		thePath.push_back(step->member) ;
         step = step->previous;
-		++j ;
       }
       result.push_back(thePath);
     }
