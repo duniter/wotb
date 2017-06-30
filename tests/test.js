@@ -2,6 +2,7 @@
 
 var addon  = require('./../index');
 var should = require('should');
+var assert = require('assert');
 var path = require('path');
 var fs = require('fs');
 
@@ -383,6 +384,12 @@ function testSuite(title, mode) {
           should.equal(wotb.isOutdistanced(2, FROM_1_LINK_SENTRIES, MAX_DISTANCE_5, 0.1), __OK__);
           // But cannot pass 67% (6,03 => 7 sentries)
           should.equal(wotb.isOutdistanced(2, FROM_1_LINK_SENTRIES, MAX_DISTANCE_5, 0.67), __OUTDISTANCED__);
+          assert.deepEqual(wotb.detailedDistance(2, FROM_1_LINK_SENTRIES, MAX_DISTANCE_5, 0.67), {
+            nbReached: 7, // +1 compared to reached sentries, because of member `0`
+            nbSuccess: 6,
+            nbSentries: 9,
+            isOutdistanced: true
+          });
         });
       });
 

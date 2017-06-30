@@ -6,6 +6,7 @@ namespace libwot {
   struct DistanceResult {
     int32_t nbSentries;
     int32_t nbSuccess;
+    int32_t nbReached;
     bool isOutdistanced;
   };
 }

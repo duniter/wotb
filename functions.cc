@@ -4,6 +4,7 @@
 #include "wotcpp/include/FileWoT.h"
 #include "wotcpp/include/MemoryWoT.h"
 #include "wotcpp/include/webOfTrust.h"
+#include "wotcpp/include/distanceResult.h"
 #include "wotcpp/include/log.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -187,7 +188,24 @@ NAN_METHOD(isOutdistanced) {
   int32_t d_min = Nan::To<int32_t>(info[2]).FromJust();
   int32_t k_max = Nan::To<int32_t>(info[3]).FromJust();
   double x_percent = Nan::To<double>(info[4]).FromJust();
-  info.GetReturnValue().Set(New<Boolean>((wot->isOutdistanced(member, d_min, k_max, x_percent))));
+  info.GetReturnValue().Set(New<Boolean>((wot->computeDistance(member, d_min, k_max, x_percent).isOutdistanced)));
+}
+
+NAN_METHOD(detailedDistance) {
+  Isolate* isolate = info.GetIsolate();
+  int wotID = Nan::To<int>(info[0]).FromJust();
+  AbstractWoT* wot = wots[wotID];
+  int32_t member = Nan::To<int32_t>(info[1]).FromJust();
+  int32_t d_min = Nan::To<int32_t>(info[2]).FromJust();
+  int32_t k_max = Nan::To<int32_t>(info[3]).FromJust();
+  double x_percent = Nan::To<double>(info[4]).FromJust();
+  DistanceResult result = wot->computeDistance(member, d_min, k_max, x_percent);
+  Local<Object> obj = New<Object>();
+  obj->Set(String::NewFromUtf8(isolate, "nbSuccess"),      New<Number>(result.nbSuccess));
+  obj->Set(String::NewFromUtf8(isolate, "nbSentries"),     New<Number>(result.nbSentries));
+  obj->Set(String::NewFromUtf8(isolate, "nbReached"),      New<Number>(result.nbReached));
+  obj->Set(String::NewFromUtf8(isolate, "isOutdistanced"), New<Boolean>(result.isOutdistanced));
+  info.GetReturnValue().Set(obj);
 }
 
 NAN_METHOD(getSentries) {

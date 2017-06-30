@@ -93,9 +93,8 @@ namespace libwot {
     return wot->getNodeAt(to)->getNbLinks();
   }
 
-  bool MemoryWoT::isOutdistanced(uint32_t member, uint32_t d_min, uint32_t k_max, double x_percent) {
-    DistanceResult result = wot->computeDistance(member, d_min, k_max, x_percent);
-    return result.isOutdistanced;
+  DistanceResult MemoryWoT::computeDistance(uint32_t member, uint32_t d_min, uint32_t k_max, double x_percent) {
+    return wot->computeDistance(member, d_min, k_max, x_percent);
   }
 
   vector<uint32_t> MemoryWoT::getSentries(int d_min) {

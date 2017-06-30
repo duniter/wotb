@@ -112,6 +112,10 @@ const WotB = {
     return binding.isOutdistanced(this.instanceID, node, d_min, k_max, x_percent);
   },
 
+  detailedDistance: function(node, d_min, k_max, x_percent) {
+    return binding.detailedDistance(this.instanceID, node, d_min, k_max, x_percent);
+  },
+
   getSentries: function(d_min) {
     return binding.getSentries(this.instanceID, d_min);
   },

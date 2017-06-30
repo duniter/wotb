@@ -21,6 +21,7 @@ NAN_METHOD(existsLink);
 NAN_METHOD(addLink);
 NAN_METHOD(removeLink);
 NAN_METHOD(isOutdistanced);
+NAN_METHOD(detailedDistance);
 
 // Data extraction
 NAN_METHOD(getSentries);

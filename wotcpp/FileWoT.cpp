@@ -143,11 +143,11 @@ namespace libwot {
     return nbLinks;
   }
 
-  bool FileWoT::isOutdistanced(uint32_t member, uint32_t d_min, uint32_t k_max, double x_percent) {
+  DistanceResult FileWoT::computeDistance(uint32_t member, uint32_t d_min, uint32_t k_max, double x_percent) {
     WebOfTrust* wot = WebOfTrust::readFromDisk(filename);
     DistanceResult result = wot->computeDistance(member, d_min, k_max, x_percent);
     delete wot;
-    return result.isOutdistanced;
+    return result;
   }
 
   vector<uint32_t> FileWoT::getSentries(int d_min) {

@@ -31,7 +31,7 @@ namespace libwot {
       bool existsLink(uint32_t from, uint32_t to);
       uint32_t addLink(uint32_t from, uint32_t to);
       uint32_t removeLink(uint32_t from, uint32_t to);
-      bool isOutdistanced(uint32_t member, uint32_t d_min, uint32_t k_max, double x_percent);
+      DistanceResult computeDistance(uint32_t member, uint32_t d_min, uint32_t k_max, double x_percent);
       // Data extraction
       std::vector<uint32_t> getSentries(int d_min);
       std::vector<uint32_t> getNonSentries(int d_min);

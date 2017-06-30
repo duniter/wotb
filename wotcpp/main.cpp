@@ -1,4 +1,5 @@
 #include <iostream>
+#include <math.h>
 #include "include/webOfTrust.h"
 #include "include/log.h"
 
@@ -56,13 +57,26 @@ int main(int argc, char **argv) {
 //  wot2->showGraphviz();
   Log() << "DUMP:";
   Log() << wot2->dump();
+
+  // Distance tests
+  uint32_t k_max = 3;
+  uint32_t d_min = ceil(pow(wot2->getSize(), 1 / k_max));
+  double x_percent = 0.8;
+  for (uint32_t i = 0; i < wot2->getSize(); i++) {
+    Log::setEnabled(false);
+    DistanceResult distance = wot2->computeDistance(i, d_min, k_max, x_percent);
+    Log::setEnabled(true);
+    Log() << "Distance to " << i << ": nbSentries = " << distance.nbSentries << ", nbSuccess = " << distance.nbSuccess << ", nbReached = " << distance.nbReached << ", isOutdistanced = " << distance.isOutdistanced;
+  }
+
+  Log();
+
   Log() << "Sentries count = " << wot2->getSentries(1).size();
   Log() << "Non-Sentries count = " << wot2->getNonSentries(1).size();
   Log() << "Disabled count = " << wot2->getDisabled().size();
 
   uint32_t by = 0;
   uint32_t target = 1;
-  uint32_t k_max = 3;
   std::vector<std::vector<uint32_t>> steps = wot2->getPaths(by, target, k_max);
   if (steps.size() == 0) {
     Log() << target << " is NOT reachable by " << by;

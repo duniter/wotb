@@ -263,23 +263,28 @@ namespace libwot {
     }
     // The member to check is not considered a sentry
     sentries[member] = false;
-    wotMatches[member] = true;
     result.nbSuccess = 0;
+    result.nbReached = 0;
     findMatches(member, k_max, wotMatches);
+    // We do not count the reaching of the member himself
+    wotMatches[member] = false;
     for (uint32_t i = 0; i < mNodes.size(); i++) {
       if (sentries[i]) {
         result.nbSentries++;
         if (wotMatches[i]) {
           Log() << "Sentry " << i << ": OK";
           result.nbSuccess++;
+          result.nbReached++;
         } else {
           Log() << "Sentry " << i << ": KO";
         }
       } else {
         Log() << "NON-Sentry "  << i;
+        if (wotMatches[i]) {
+          result.nbReached++;
+        }
       }
     }
-    result.isOutdistanced = result.nbSuccess < result.nbSentries;
     delete[] wotMatches;
     delete[] sentries;
 

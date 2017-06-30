@@ -29,7 +29,7 @@ namespace libwot {
       virtual bool existsLink(uint32_t from, uint32_t to) = 0;
       virtual uint32_t addLink(uint32_t from, uint32_t to) = 0;
       virtual uint32_t removeLink(uint32_t from, uint32_t to) = 0;
-      virtual bool isOutdistanced(uint32_t member, uint32_t d_min, uint32_t k_max, double x_percent) = 0;
+      virtual DistanceResult computeDistance(uint32_t member, uint32_t d_min, uint32_t k_max, double x_percent) = 0;
       // Data extraction
       virtual std::vector<uint32_t> getSentries(int d_min) = 0;
       virtual std::vector<uint32_t> getNonSentries(int d_min) = 0;

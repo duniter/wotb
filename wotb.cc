@@ -31,6 +31,7 @@ NAN_MODULE_INIT(InitAll) {
   Set(target, New<String>("addLink").ToLocalChecked(), GetFunction(New<FunctionTemplate>(addLink)).ToLocalChecked());
   Set(target, New<String>("removeLink").ToLocalChecked(), GetFunction(New<FunctionTemplate>(removeLink)).ToLocalChecked());
   Set(target, New<String>("isOutdistanced").ToLocalChecked(), GetFunction(New<FunctionTemplate>(isOutdistanced)).ToLocalChecked());
+  Set(target, New<String>("detailedDistance").ToLocalChecked(), GetFunction(New<FunctionTemplate>(detailedDistance)).ToLocalChecked());
   // Extract data
   Set(target, New<String>("getSentries").ToLocalChecked(), GetFunction(New<FunctionTemplate>(getSentries)).ToLocalChecked());
   Set(target, New<String>("getNonSentries").ToLocalChecked(), GetFunction(New<FunctionTemplate>(getNonSentries)).ToLocalChecked());

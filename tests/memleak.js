@@ -251,6 +251,7 @@ function testDistance(repetitions, approximation) {
   const rssStart = getMemoryUsageInMB()
   for (let it = 0; it < repetitions; it++) {
     assert.equal(baseInstance.isOutdistanced(1, 1, 5, 0.5), 1);
+    assert.deepEqual(baseInstance.detailedDistance(1, 1, 5, 0.5), 1);
   }
   const rssEnd = getMemoryUsageInMB()
   rssEnd.should.be.approximately(rssStart, approximation);
