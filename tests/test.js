@@ -33,7 +33,7 @@ function testSuite(title, mode) {
 
   function newInstance(launchTests) {
     return () => {
-      if (mode == FILE_MODE) {
+      if (mode === FILE_MODE) {
         let wotb = addon.newFileInstance(FILE);
         launchTests(wotb, () => {
           wotb.resetWoT();
@@ -51,6 +51,14 @@ function testSuite(title, mode) {
     describe('Basic operations', newInstance((wotb, cleanInstance) => {
 
       before(cleanInstance);
+
+      it('should have a file path in FILE mode', function() {
+        if (mode === FILE_MODE) {
+          assert.equal(wotb.filePath, FILE)
+        } else {
+          assert.equal(wotb.filePath, "")
+        }
+      });
 
       it('should have an initial size of 0', function() {
         should.equal(wotb.getWoTSize(), 0);

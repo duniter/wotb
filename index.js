@@ -15,6 +15,7 @@ module.exports = {
     } else {
       instance.init(binding.newFileInstance(filePath));
     }
+    instance.setFilePath(filePath)
     return instance
   },
 
@@ -31,9 +32,18 @@ module.exports = {
 const WotB = {
 
   instanceID: -1,
+  filePath: "",
 
   init: function(instanceId){
     this.instanceID = instanceId
+  },
+
+  /**
+   * Eventually has a file path if it is a file instance.
+   * @param filePath
+   */
+  setFilePath: function(filePath){
+    this.filePath = filePath
   },
 
   getId: function() { return this.instanceID },
