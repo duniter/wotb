@@ -15,7 +15,7 @@ let baseFileInstance
 
 describe('Memory leaks', function() {
 
-  this.timeout(12000) // 12 seconds max for a test
+  this.timeout(20000) // 20 seconds max for a test
 
   before(() => {
     if (fs.existsSync(PATH_TO_FILE_INSTANCE)) {
