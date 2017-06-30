@@ -15,7 +15,7 @@ let baseFileInstance
 
 describe('Memory leaks', function() {
 
-  this.timeout(10000) // 10 seconds max for a test
+  this.timeout(12000) // 12 seconds max for a test
 
   before(() => {
     if (fs.existsSync(PATH_TO_FILE_INSTANCE)) {
@@ -167,15 +167,36 @@ describe('Memory leaks', function() {
   it('wotb.isOutdistanced() should have no leak', () => {
     const approx0MB = 0
     const approx1MB = 1
-    const approx3MB = 3
-    const approx9MB = 9
+    const approx2MB = 2
+    const approx6MB = 6
     const rssStart = testDistance(1, approx0MB)
     testDistance(10, approx0MB)     // should add 0MB memory relatively to previous test
-    testDistance(100, approx1MB)    // should add 1MB ...
+    testDistance(100, approx0MB)    // should add 0MB ...
     testDistance(1000, approx1MB)   // should add 1MB ...
-    testDistance(10000, approx9MB)  // should add 9MB ...
+    testDistance(10000, approx6MB)  // should add 6MB ...
     for (let i = 0; i < 1000; i++) {
-      testDistance(1000, approx3MB)  // should add MAX 3MB on each test
+      testDistance(1000, approx2MB)  // should add MAX 2MB on each test
+    }
+
+    // Conclusion: no leak.
+    // => only the magnitude of the WoT makes an increase of memory usage, but this not a leak.
+
+    const rssEnd = getMemoryUsageInMB()
+    rssEnd.should.be.approximately(rssStart, approx6MB); // From the beginning, only 6MB should have been added.
+  })
+
+  it('wotb.detailedDistance() should have no leak', () => {
+    const approx0MB = 0
+    const approx1MB = 1
+    const approx3MB = 3
+    const approx9MB = 9
+    const rssStart = testDetailedDistance(1, approx0MB)
+    testDetailedDistance(10, approx0MB)     // should add 0MB memory relatively to previous test
+    testDetailedDistance(100, approx0MB)    // should add 0MB ...
+    testDetailedDistance(1000, approx1MB)   // should add 1MB ...
+    testDetailedDistance(10000, approx9MB)  // should add 9MB ...
+    for (let i = 0; i < 1000; i++) {
+      testDetailedDistance(1000, approx3MB)  // should add MAX 3MB on each test
     }
 
     // Conclusion: no leak.
@@ -251,6 +272,18 @@ function testDistance(repetitions, approximation) {
   const rssStart = getMemoryUsageInMB()
   for (let it = 0; it < repetitions; it++) {
     assert.equal(baseInstance.isOutdistanced(1, 1, 5, 0.5), 1);
+  }
+  const rssEnd = getMemoryUsageInMB()
+  rssEnd.should.be.approximately(rssStart, approximation);
+  baseInstance.clear();
+  return rssStart
+}
+
+function testDetailedDistance(repetitions, approximation) {
+  const nbNodes = 100
+  const baseInstance = createBaseWoT(nbNodes)
+  const rssStart = getMemoryUsageInMB()
+  for (let it = 0; it < repetitions; it++) {
     assert.deepEqual(baseInstance.detailedDistance(1, 1, 5, 0.5), {
       "isOutdistanced": true,
       "nbReached": 2,
