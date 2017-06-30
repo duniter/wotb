@@ -15,8 +15,18 @@ namespace libwot {
     mEnabled = true;
     mNbIssued = 0;
     mCert = vector<Node*>();
+	mCert.reserve(wot->getMaxCert()) ;
+	mIndex = UINT32_MAX ;
   }
 
+  Node::Node(WebOfTrust* wot, uint32_t pIndex) {
+    mWot = wot;
+    mEnabled = true;
+    mNbIssued = 0;
+    mCert = vector<Node*>();
+	mCert.reserve(wot->getMaxCert()) ;
+	mIndex = pIndex ;
+  }
 
   Node::~Node() {
   }
@@ -82,4 +92,9 @@ namespace libwot {
     }
   }
 
+	void Node::set_index(uint32_t pIndex)
+	{
+		mIndex = pIndex ;
+	}
 }
+
