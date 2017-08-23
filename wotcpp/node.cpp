@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <algorithm>
 #include <iostream>
+#include <limits>
 
 #include "include/webOfTrust.h"
 #include "include/log.h"
@@ -16,7 +17,7 @@ namespace libwot {
     mNbIssued = 0;
     mCert = vector<Node*>();
 	mCert.reserve(wot->getMaxCert()) ;
-	mIndex = UINT32_MAX ;
+	mIndex = numeric_limits<int>::max() ;
   }
 
   Node::Node(WebOfTrust* wot, uint32_t pIndex) {
