@@ -59,6 +59,33 @@ NAN_METHOD(newFileInstanceWin32) {
   info.GetReturnValue().Set(New<Number>(wots.size() - 1));
 }
 
+NAN_METHOD(newFileInstanceFromCopy) {
+  v8::Local<v8::String> fileJSString = Nan::To<v8::String>(info[0]).ToLocalChecked();
+  v8::String::Utf8Value fileParam(fileJSString);
+  // Make a copy
+  int wotID = Nan::To<int>(info[1]).FromJust();
+  AbstractWoT* sourceWoT = wots[wotID];
+  WebOfTrust* clone = sourceWoT->cloneWoT();
+  AbstractWoT* wot = new FileWoT(string(*fileParam), clone);
+  wots.push_back(wot);
+  info.GetReturnValue().Set(New<Number>(wots.size() - 1));
+}
+
+NAN_METHOD(newFileInstanceFromCopyWin32) {
+  v8::Local<v8::Object> path_to_file = Nan::To<v8::Object>(info[0]).ToLocalChecked();
+  int path_length = Nan::To<int>(info[1]).FromJust();
+  const char* buf = node::Buffer::Data(path_to_file);
+  std::string path_ascii;
+  path_ascii.assign(buf, path_length);
+  // Make a copy
+  int wotID = Nan::To<int>(info[2]).FromJust();
+  AbstractWoT* sourceWoT = wots[wotID];
+  WebOfTrust* clone = sourceWoT->cloneWoT();
+  AbstractWoT* wot = new FileWoT(path_ascii, clone);
+  wots.push_back(wot);
+  info.GetReturnValue().Set(New<Number>(wots.size() - 1));
+}
+
 NAN_METHOD(newMemoryInstance) {
   AbstractWoT* wot;
   if (info.Length() == 1) {

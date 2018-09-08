@@ -7,6 +7,7 @@ var path = require('path');
 var fs = require('fs');
 
 const FILE = path.join(__dirname, 'wot.bin');
+const FILE_COPY = path.join(__dirname, 'wot.copy.bin');
 const X_PERCENT = 1.0;
 const _100_PERCENT = 1.0;
 const MAX_DISTANCE_1 = 1;
@@ -269,6 +270,14 @@ function testSuite(title, mode) {
 
       it('should be able to make a mem copy', function() {
         const copy = wotb.memCopy();
+        should.equal(copy.setEnabled(false, 3), false);
+        should.equal(wotb.getDisabled().length, 1);
+        should.equal(copy.isOutdistanced(0, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_1, X_PERCENT), __OK__); // OK: No path 3 --> 0, but is disabled
+        copy.clear();
+      });
+
+      it('should be able to make a file copy', function() {
+        const copy = wotb.fileCopy(FILE_COPY);
         should.equal(copy.setEnabled(false, 3), false);
         should.equal(wotb.getDisabled().length, 1);
         should.equal(copy.isOutdistanced(0, FROM_2_LINKS_SENTRIES, MAX_DISTANCE_1, X_PERCENT), __OK__); // OK: No path 3 --> 0, but is disabled

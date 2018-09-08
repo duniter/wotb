@@ -3,6 +3,8 @@
 
 NAN_METHOD(newFileInstance);
 NAN_METHOD(newFileInstanceWin32);
+NAN_METHOD(newFileInstanceFromCopy);
+NAN_METHOD(newFileInstanceFromCopyWin32);
 NAN_METHOD(newMemoryInstance);
 NAN_METHOD(clearInstance);
 NAN_METHOD(setVerbose);

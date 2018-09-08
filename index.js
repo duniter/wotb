@@ -58,6 +58,21 @@ const WotB = {
     return instance
   },
 
+  /**
+   * Creates a copy of given instanceID as a new file instance
+   * @returns {WotB} A WotB wrapper.
+   */
+  fileCopy: function(filePath) {
+    const instance = Object.create(WotB)
+    if (process.platform == 'win32') {
+      let bufferedPath = new Buffer(filePath,'ascii');
+      instance.init(binding.newFileInstanceFromCopyWin32(bufferedPath, bufferedPath.length, this.instanceID))
+    } else {
+      instance.init(binding.newFileInstanceFromCopy(filePath, this.instanceID))
+    }
+    return instance
+  },
+
   clear: function() {
     return binding.clearInstance(this.instanceID);
   },

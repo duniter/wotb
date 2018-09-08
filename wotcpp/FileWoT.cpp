@@ -23,6 +23,13 @@ namespace libwot {
     delete wot;
   }
 
+  FileWoT::FileWoT(std::string f, WebOfTrust* newWoT) {
+    filename = f;
+    WebOfTrust *wot = newWoT;
+    wot->writeToDisk(f);
+    delete wot;
+  }
+
   FileWoT::~FileWoT() {
   }
 

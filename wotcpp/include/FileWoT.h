@@ -13,6 +13,7 @@ namespace libwot {
   class FileWoT : public AbstractWoT {
     public:
       FileWoT(std::string f);
+      FileWoT(std::string f, WebOfTrust* newWoT);
       ~FileWoT();
       void reset();
       WebOfTrust* cloneWoT();
